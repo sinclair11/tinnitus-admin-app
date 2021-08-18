@@ -1,0 +1,24 @@
+.Container{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 10px;
+    border: 2px solid aquamarine;
+    background-color:rgb(179, 226, 245);
+}
+
+.ActionIcon{
+    width: 32px;
+    height: 32px;
+    margin-left: 10px;
+}
+
+.ActionIcon:hover{
+    transform: scale(1.2);
+}
+
+@media only screen and (max-width: 1280px) {
+    .ActionIcon:hover{
+        transform: scale(1.1);
+    }
+}
