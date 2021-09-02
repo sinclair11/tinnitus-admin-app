@@ -1,48 +1,25 @@
-# Electron React Webpack Typescript - Boilerplate 2021 (ERWT)
-
-Minimal boilerplate for writing Desktop Applications using [Electron](https://www.electronjs.org/), [React](https://reactjs.org/), [Webpack](https://webpack.js.org/) & [TypeScript](https://www.typescriptlang.org/). <br /> This project makes use of latest packages and configurations to serve the best environment for development.
+# TinnistusSounds CMS Application 2021 (TNS)
 
 ## Screenshot
 
-<img src="assets/images/shot310.png" />
+<img src="assets/images/logo.png" />
 
 <br>
 
 ## Core Features
 
-- 🌟 Electron
-- 🌀 TypeScript
-- ⚛️ React
-- 🛶 LESS Loader
-- 🎨 CSS Loader
-- 📸 Image Loader
-- 🆎 Font Loader
-- 🧹 ESLint
-- 📦 Electron Forge
-- 🔱 Webpack & Configuration
-- 🧩 Aliases for project paths
-- 🔥 Hot Module Replacement (Live Reload)
-- 🎁 Package Bundling (Distribution / Release)
+- 🎥   Upload videos
+- 🎶   Upload audios
+- 🎛   Sounds generator
+- 📊   Statistics
+- ▶️   YouTube channel
 
 <br />
 
 ## Installation
 
-#### To install the ERWT boilerplate you need to run following commands
-
-Clone the repository :
-
-```bash
-git clone https://github.com/codesbiome/electron-react-webpack-typescript-2021 erwt
-cd erwt
-```
-<br>
-
-Install dependencies using [Yarn](https://www.npmjs.com/package/yarn) or [NPM](https://www.npmjs.com/) :
-
-```bash
-yarn install
-```
+- Use install .exe for Windows
+- Run .app bunddle for MacOS
 
 <br />
 
@@ -107,5 +84,3 @@ This configurations file is available in :
 ```
 tools/forge/forge.config.js
 ```
-
-For further information, you can visit [Electron Forge Configuration](https://www.electronforge.io/configuration)
