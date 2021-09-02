@@ -1,125 +1,129 @@
-.BrowseBtn {
-    color: white;
-    font-size: 12px;
-    margin-left: 3%;
-    background-color: #0b537c;
-    border: 1px solid aquamarine;
-    margin-top: 10px;
+.UploadFormContainerr {
+  margin-top: 15px;
+  width: 100%;
+  height: 100%;
 }
-
-.UploadForm {
-    margin-top: 15px;
-    width: 100%;
-    height: 100%;
-}
-
-.InputGroupPath {
-    width: 100%;
-    height: 70%;
-    display: flex;
-    align-items: center;
-}
-
-.InputLabel {
-    background-color: #0f81c4;
-    font-size: 14px;
-    padding: 5px;
-    margin-top: 10px;
-}
-
-.InputText {
-    width: 80%;
-    height: 20px;
-    overflow: auto;
-    margin-top: 10px;
-}
-
-.InputArea{
-    width: 100%;
-    height: 150px;
-}
-
-.InputSection{
-    width: 100%;
-    height: 10%;
-    display: flex;
-    flex-direction:column;
-}
-
-.InputInfo{
-    width: 100%;
-    height: 65%;
-    border-radius: 20px;
-    border: 1px solid aquamarine;
-    margin-top: 20px;
-}
-
-.InputInfoGroup{
-    display: flex;
-    align-items: center;
-}
-
-.InputTagDescGroup{
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
+.ModalTitle {
+  position: absolute;
+  top: 5px;
+  font-weight: 300;
+  padding: 0px;
+  margin: 0px;
+  left: 0px;
+  padding-left: 5px;
+  border-bottom: 1px solid aquamarine;
+  width: 100%;
+  height: 23px;
+  font-weight: 500;
 }
 
 .CancelIcon {
-    position: absolute;
-    top: 4px;
-    right: 5px;
-    width: 20px;
-    height: 20px;
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+}
+
+.BrowseBtn {
+  color: white;
+  font-size: 12px;
+  margin-left: 3%;
+  background-color: #0b537c;
+  border: 1px solid aquamarine;
+  margin-top: 10px;
+}
+
+.BrowseBtn:hover {
+  transform: scale(1);
+  opacity: .5;
+}
+
+.InputGroupPath {
+  width: 100%;
+  height: 70%;
+  display: flex;
+  align-items: center;
+}
+
+.InputLabel {
+  background-color: #0f81c4;
+  font-size: 14px;
+  padding: 5px;
+  margin-top: 10px;
+}
+
+.InputText {
+  width: 80%;
+  height: 20px;
+  overflow: auto;
+  margin-top: 10px;
+}
+
+.InputArea {
+  width: 100%;
+  height: 150px;
+}
+
+.InputSection {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  flex-direction: column;
+}
+
+.InputInfo {
+  width: 100%;
+  height: 65%;
+  border-radius: 20px;
+  border: 1px solid aquamarine;
+  margin-top: 20px;
+}
+
+.InputInfoGroup {
+  display: flex;
+  align-items: center;
+}
+
+.InputTagDescGroup {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .InfoRow {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
-    height: 60%;
-    border-bottom: 1px solid aquamarine;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 60%;
+  border-bottom: 1px solid aquamarine;
 }
 
 .InfoCol {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    height: 100%;
-    padding-top: 20px;
-    padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  height: 100%;
+  padding-top: 20px;
+  padding-left: 20px;
 }
 
 .InvalidField {
-    font-size: 14px;
-    color: red;
-    padding: 0px;
-    margin:0px;
-}
-
-.ModalTitle {
-    position: absolute;
-    top: 5px;
-    font-weight: 300;
-    padding: 0px;
-    margin: 0px;
-    left: 0px;
-    padding-left: 5px;
-    border-bottom: 1px solid aquamarine;
-    width: 100%;
-    height: 23px;
-    font-weight: 500;
+  font-size: 14px;
+  color: red;
+  padding: 0px;
+  margin: 0px;
 }
 
 .UploadBtn {
-    position: absolute;
-    left: 45%;
-    margin-top: 15px;
-    align-self: center;
-    color: white;
-    font-size: 16px;
-    background-color: #0b537c;
-    border: 1px solid aquamarine;
-    font-weight: 100;
+  position: absolute;
+  left: 45%;
+  margin-top: 15px;
+  align-self: center;
+  color: white;
+  font-size: 16px;
+  background-color: #0b537c;
+  border: 1px solid aquamarine;
+  font-weight: 100;
 }
