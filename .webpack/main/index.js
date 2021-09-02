@@ -1354,6 +1354,7 @@ const createWindow = () => {
             preload: '/Users/stefantnc/Developer/Family/Tinnitus/admin_app/tinnitus_admin_app/.webpack/renderer/main_window/preload.js',
         },
     });
+    mainWindow.webContents.openDevTools();
     // and load the index.html of the app.
     mainWindow.loadURL('http://localhost:3000/main_window');
     // Show window when its ready to

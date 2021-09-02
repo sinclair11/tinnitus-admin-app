@@ -27,12 +27,14 @@ const createWindow = (): void => {
     },
   });
 
+  mainWindow.webContents.openDevTools();
+
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Show window when its ready to
   mainWindow.on('ready-to-show', () => mainWindow.show());
-  
+
   // Create the browser window.
   // const childWindow = new BrowserWindow({
   //   width: 800,
