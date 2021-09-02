@@ -2,7 +2,7 @@
 
 ## Screenshot
 
-![Image](/Users/stefantnc/Developer/Family/Tinnitus/admin_app/tinnitus_admin_app/assets/images/logo.png?raw=true "Logo")
+![Image](/assets/images/logo.png?raw=true "Logo")
 
 ## Core Features
 
