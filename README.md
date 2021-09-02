@@ -1,7 +1,5 @@
 # TinnistusSounds CMS Application 2021 (TNS)
 
-## Screenshot
-
 ![Image](/assets/images/logo.png?raw=true "Logo")
 
 ## Core Features
