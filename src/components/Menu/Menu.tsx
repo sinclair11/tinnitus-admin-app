@@ -29,7 +29,7 @@ export const Menu: React.FC<{ page: string; outer: string }> = (props) => {
                 <img src={Logo} className="LogoMenu" />
                 <p className="Title" >Tinnitus Admin</p>
             </div>
-            <Link className="MenuLink" style={{borderTop: '1px solid aquamarine'}} to="/">
+            <Link className="MenuLink" style={{borderTop: '1px solid aquamarine'}} to="/welcome">
                 <div className="LinkPlaceholder">
                     <img src={Icons['HomeIcon']} className="MenuIcon" />
                     <p className="LinkText">Home</p>
