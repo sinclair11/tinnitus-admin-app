@@ -1,0 +1,103 @@
+#View {
+  display: flex;
+  height: 100%;
+  margin: 0px;
+}
+
+#Page {
+  width: 100vw;
+  height: 100vh;
+  display: inline-block;
+  /* background: linear-gradient( 200.96deg, #1649f1 -29.09%, #1086ca 51.77%, #00ffff 129.35%); */
+  background: rgb(4, 118, 163);
+  /* Prevent sidebar from showing a scrollbar on page */
+  overflow: hidden;
+}
+
+.SearchBarDiv {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 10%;
+  padding-top: 33px;
+}
+
+.ContentPlaceholder {
+  width: 100%;
+  height: 100%;
+}
+
+.Row {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.Col {
+  width: 50%;
+  padding-left: 5%;
+}
+
+.ColInfo {
+  width: 50%;
+  padding-left: 10%;
+}
+
+.VideoPlaceholder {
+  width: 100%;
+  height: 40%;
+  background-color: beige;
+}
+
+.InfoFilePos {
+  margin-top: 5%;
+}
+
+.Toolbar {
+  width: 100%;
+  height: 5%;
+  margin-bottom: 2%;
+}
+
+.Graph {
+  margin-top: 20px;
+  width: 100%;
+  height: 40%;
+}
+
+.SwitchIcon {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  bottom: 20px;
+  right: 30px;
+}
+
+.SwitchIcon:hover {
+  animation: rotate 0.3s ease-in-out both;
+  animation-timing-function: linear;
+  transform: rotate(180deg);
+}
+
+.SwitchIcon:not(:hover) {
+  animation: leave 0.3s ease-in-out both;
+  animation-timing-function: linear;
+}
+
+@keyframes rotate {
+  from{
+    transform: rotate(0deg)
+  }
+  to{
+    transform: rotate(180deg)
+  }
+}
+
+@keyframes leave {
+  from{
+    transform: rotate(180deg)
+  }
+  to{
+    transform: rotate(0deg)
+  }
+}
