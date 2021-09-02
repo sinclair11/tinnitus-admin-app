@@ -2,27 +2,49 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Electron: Main",
       "type": "node",
       "request": "launch",
+      "name": "Electron: Main",
       "protocol": "inspector",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["start:main --inspect=5858 --remote-debugging-port=9223"],
-      "preLaunchTask": "Start Webpack Dev"
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+      "runtimeArgs": [
+        "--remote-debugging-port=9000",
+        "."
+      ],
+      "windows": {
+        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+      },
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/",
+        "!/node_modules/**"
+    ],
     },
     {
       "name": "Electron: Renderer",
       "type": "chrome",
       "request": "attach",
-      "port": 9223,
-      "webRoot": "${workspaceFolder}",
-      "timeout": 15000
+      "port": 9000,
+      "webRoot": "${workspaceRoot}",
+      "timeout": 30000
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Electron MainForge",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-nix",
+      // runtimeArgs will be passed directly to your Electron application
+      "runtimeArgs": [
+      ],
+      "cwd": "${workspaceFolder}"
     }
   ],
   "compounds": [
     {
       "name": "Electron: All",
-      "configurations": ["Electron: Main", "Electron: Renderer"]
+      "configurations": [
+        "Electron: Main",
+        "Electron: Renderer"
+      ]
     }
   ]
 }
