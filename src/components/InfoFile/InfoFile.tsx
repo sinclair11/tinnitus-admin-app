@@ -21,7 +21,7 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
                 <ul className="InfoList">
                     {
                         props.elements.map((item, index) =>
-                            <li key={index}>{item.name}: {item.value}</li>
+                            <li key={index}>{item.name}: <b>{item.value}</b></li>
                         )
                     }
                 </ul>

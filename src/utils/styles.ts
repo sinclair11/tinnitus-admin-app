@@ -57,3 +57,22 @@ export const progressStyles = {
     overflow: 'hidden',
   }
 }
+
+export const hourglassStyle = {
+  content: {
+    width: '580px',
+    height: '580px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgb(255, 255, 255, 0)',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    overflow: 'hidden',
+    border: 0,
+  },
+};

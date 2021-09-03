@@ -5,11 +5,13 @@
   height: 60%;
   border: 1px solid aquamarine;
   border-radius: 5px;
-  background-color: whitesmoke;
+  background-color: rgb(255, 255, 255);
+  padding: 0px;
 }
 
 .InfoLog{
   padding-left: 10px;
   padding-top: 0px;
+  padding-bottom: 0px;
   overflow: scroll;
 }

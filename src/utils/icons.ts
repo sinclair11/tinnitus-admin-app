@@ -15,6 +15,7 @@ import ZoomIn from '../icons/zoom-in.png'
 import ZoomOut from '../icons/zoom-out.png'
 import Switch from '../icons/switch.png'
 import Cancel from '../icons/cancel.png'
+import List from '../icons/list.png'
 
 
 export const Icons = {
@@ -28,6 +29,7 @@ export const Icons = {
     ChannelIcon: Channel,
     SwitchIcon: Switch,
     CancelIcon: Cancel,
+    ListIcon: List,
 }
 
 export const ToolbarIcons = {
