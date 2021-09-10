@@ -1,7 +1,8 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import installExtension, {
   REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS,
 } from 'electron-devtools-installer';
+import remote from 'electron';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -67,4 +68,10 @@ app.on('activate', async () => {
 app.whenReady().then(() => {
   installExtension(REDUX_DEVTOOLS);
   installExtension(REACT_DEVELOPER_TOOLS);
+
+  console.log(app.getPath("userData"));
+});
+
+ipcMain.on("eventFromRenderer", (event) => {
+  event.returnValue = app.getPath("userData");
 });

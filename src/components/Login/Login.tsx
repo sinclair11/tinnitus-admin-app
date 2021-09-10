@@ -3,11 +3,10 @@ import './login.css'
 import { InputGroup, FormControl, Button, Form } from 'react-bootstrap';
 import logo from '../../icons/logo.png'
 import axios from 'axios'
-import { encrypt, iv } from '../../utils/utils'
 import crypto from 'crypto';
 import { useHistory } from 'react-router-dom';
 import fs from 'fs';
-import Store from 'electron-store';
+import { ipcRenderer } from 'electron';
 
 
 export const Login: React.FC = () => {
@@ -19,7 +18,7 @@ export const Login: React.FC = () => {
   const history = useHistory();
 
   function storeToken(token: string) {
-     fs.writeFile('../../sdjkvneriuhweiubkdshbcvds', token, () => { history.push('/welcome'); console.log('Token written') })
+    fs.writeFile(ipcRenderer.sendSync("eventFromRenderer") + '/.sdjkvneriuhweiubkdshbcvds', token, () => { history.push('/welcome'); console.log('Token written') })
   }
 
   async function AuthAdmin(event: any) {
@@ -67,10 +66,10 @@ export const Login: React.FC = () => {
       }
       catch (error) {
         //console.error(error)
-        if(error.response === undefined) {
+        if (error.response === undefined) {
           setPasswInvalid(error.message)
         }
-        else if(error.response.status === 401) {
+        else if (error.response.status === 401) {
           setPasswInvalid('Credentialele de admin sunt invalide');
         }
         setAdmin('')

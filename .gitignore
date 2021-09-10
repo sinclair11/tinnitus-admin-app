@@ -56,3 +56,13 @@ Thumbs.db
 /.webpack/renderer/main_window.309417bd3461cba3bdd0.hot-update.js
 /.webpack/renderer/main_window.5de8e132dcb3a3c0bfa8.hot-update.js
 /.webpack/renderer/main_window.a9a2a6609dc180d1149a.hot-update.js
+.webpack/main/index.js
+.webpack/main/index.js.map
+.webpack/renderer/main_window/index.html
+.webpack/renderer/main_window/index.js
+.webpack/renderer/main_window/preload.js
+.webpack/main/index.js
+.webpack/main/index.js.map
+.webpack/renderer/main_window/index.html
+.webpack/renderer/main_window/index.js
+.webpack/renderer/main_window/preload.js

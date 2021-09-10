@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import './modalupload.css';
 import { InputGroup, FormControl, Button, Row, Col, Form } from 'react-bootstrap';
-import electron from 'electron'
+import electron, { ipcRenderer } from 'electron'
 import { ResponseCodes, storeThumbnail, Err } from '../../utils/utils'
 import axios, { AxiosResponse } from 'axios'
 import fs from 'fs';
@@ -138,7 +138,7 @@ export const UploadForm: React.FC<InfoFieldProps> = (props?: InfoFieldProps) => 
       props.progressModal(true);
       //First get authorization permission
       try {
-        const secret = fs.readFileSync('.sdjkvneriuhweiubkdshbcvds').toString('utf-8')
+        const secret = fs.readFileSync(ipcRenderer.sendSync("eventFromRenderer") + '/.sdjkvneriuhweiubkdshbcvds').toString('utf-8')
         //Request authorization from server
         const authorizationResonse = await axios({
           method: 'post',

@@ -7,6 +7,7 @@ import fs from 'fs';
 import { ResponseCodes } from '@src/utils/utils';
 import { Icons } from '@src/utils/icons'
 import Store from 'electron-store';
+import { ipcRenderer } from 'electron';
 
 /**
  * @type        SearchbarProps
@@ -72,7 +73,7 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
    * @description Callback function which aquires resource general and usage information
    */
   async function getResourceData() {
-    const secret = fs.readFileSync('.sdjkvneriuhweiubkdshbcvds').toString('utf-8')
+    const secret = fs.readFileSync(ipcRenderer.sendSync("eventFromRenderer") + '/.sdjkvneriuhweiubkdshbcvds').toString('utf-8')
     const id = crypto.createHash('sha256').update(searchVal).digest('hex').toString()
     let dataInfo = []
     let dataUsage = []
@@ -139,7 +140,7 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
   }
 
   async function getListOfResources() {
-    const secret = fs.readFileSync('../../sdjkvneriuhweiubkdshbcvds').toString('utf-8');
+    const secret = fs.readFileSync(ipcRenderer.sendSync("eventFromRenderer") + '/.sdjkvneriuhweiubkdshbcvds').toString('utf-8');
 
     //Show loading modal
     props.setIsOpen(true)
