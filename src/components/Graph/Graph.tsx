@@ -74,8 +74,8 @@ export const Graph: React.FC<GraphProps> = (props: GraphProps) => {
           <XAxis dataKey="data" stroke="aqua" />
           <YAxis dataKey="vizualizari" stroke="aqua" />
           <Tooltip />
-          <Area type="monotone" dataKey="data" stroke="black" fill="aquamarine" />
-          <Area type="monotone" dataKey="vizualizari" stroke="black" fill="aquamarine" />
+          <Area isAnimationActive={false} type="monotone" dataKey="data" stroke="black" fill="aquamarine" />
+          <Area isAnimationActive={false} type="monotone" dataKey="vizualizari" stroke="black" fill="aquamarine" />
         </AreaChart>
       </ResponsiveContainer>
     </div>
