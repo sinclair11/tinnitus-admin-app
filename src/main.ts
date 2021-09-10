@@ -1,4 +1,7 @@
 import { app, BrowserWindow } from 'electron';
+import installExtension, {
+  REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS,
+} from 'electron-devtools-installer';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -24,6 +27,7 @@ const createWindow = (): void => {
       contextIsolation: false,
       enableRemoteModule: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      devTools: true,
     },
   });
 
@@ -34,29 +38,7 @@ const createWindow = (): void => {
 
   // Show window when its ready to
   mainWindow.on('ready-to-show', () => mainWindow.show());
-
-  // Create the browser window.
-  // const childWindow = new BrowserWindow({
-  //   width: 800,
-  //   height: 600,
-  //   backgroundColor: '#0d1117',
-  //   show: false,
-  //   autoHideMenuBar: true,
-  //   webPreferences: {
-  //     nodeIntegration: true,
-  //     contextIsolation: false,
-  //     enableRemoteModule: true,
-  //     preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-  //   },
-  // });
-
-  // // and load the index.html of the app.
-  // childWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
-  // // Show window when its ready to
-  // childWindow.on('ready-to-show', () => childWindow.show());
 };
-
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -72,7 +54,7 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('activate', () => {
+app.on('activate', async () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
@@ -82,3 +64,7 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+app.whenReady().then(() => {
+  installExtension(REDUX_DEVTOOLS);
+  installExtension(REACT_DEVELOPER_TOOLS);
+});

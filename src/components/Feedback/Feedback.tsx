@@ -57,6 +57,7 @@ export const FeedbackComment: React.FC = () => {
                     isOpen={modalIsOpen}
                     style={customStyles}
                     contentLabel="Example Modal"
+                    ariaHideApp={false}
                 >
                     <div>
                         <div>

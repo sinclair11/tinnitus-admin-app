@@ -7,6 +7,7 @@ import { encrypt, iv } from '../../utils/utils'
 import crypto from 'crypto';
 import { useHistory } from 'react-router-dom';
 import fs from 'fs';
+import Store from 'electron-store';
 
 
 export const Login: React.FC = () => {
@@ -18,7 +19,7 @@ export const Login: React.FC = () => {
   const history = useHistory();
 
   function storeToken(token: string) {
-    fs.writeFile('.sdjkvneriuhweiubkdshbcvds', token, () => { history.push('/welcome'); console.log('Token written') })
+     fs.writeFile('../../sdjkvneriuhweiubkdshbcvds', token, () => { history.push('/welcome'); console.log('Token written') })
   }
 
   async function AuthAdmin(event: any) {
@@ -66,7 +67,12 @@ export const Login: React.FC = () => {
       }
       catch (error) {
         //console.error(error)
-        setPasswInvalid(error.message)
+        if(error.response === undefined) {
+          setPasswInvalid(error.message)
+        }
+        else if(error.response.status === 401) {
+          setPasswInvalid('Credentialele de admin sunt invalide');
+        }
         setAdmin('')
         setPassw('')
       }

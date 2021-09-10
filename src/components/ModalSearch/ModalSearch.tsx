@@ -14,6 +14,7 @@ export const ModalSearch: React.FC<ModalSearchProps> = (props: ModalSearchProps)
     <Modal
       isOpen={props.isOpen}
       style={hourglassStyle}
+      ariaHideApp={false}
     >
       <div className="hourglass"></div>
     </Modal>

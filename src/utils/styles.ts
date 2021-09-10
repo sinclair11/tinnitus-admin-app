@@ -18,10 +18,10 @@ export const modalStyles = {
   },
 };
 
-export const doneStyles = {
+export const dialogStyles = {
   content: {
-    width: '200px',
-    height: '200px',
+    width: '300px',
+    height: '130px',
     display: 'inline-block',
     justifyContent: 'center',
     alignItems: 'center',
@@ -35,6 +35,7 @@ export const doneStyles = {
     borderRadius: '5px',
     border: '1px solid aqua',
     overflow: 'hidden',
+    padding: '0px',
   },
 }
 
@@ -74,5 +75,26 @@ export const hourglassStyle = {
     transform: 'translate(-50%, -50%)',
     overflow: 'hidden',
     border: 0,
+  },
+};
+
+export const tableStyles = {
+  content: {
+    width: '580px',
+    height: '600px',
+    display: 'inline-block',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgb(0, 183, 255)',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    borderRadius: '5px',
+    border: '1px solid aqua',
+    overflow: 'hidden',
+    padding: '0px'
   },
 };

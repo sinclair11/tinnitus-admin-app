@@ -29,6 +29,7 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (props: UploadModalP
         isOpen={props.modalIsOpen}
         style={modalStyles}
         contentLabel="Upload"
+        ariaHideApp={false}
       >
         <div className="UploadFormContainer">
           <UploadForm

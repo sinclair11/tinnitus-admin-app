@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import './searchbar.css'
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
-import magnifier from '../../icons/magnifier.png'
 import axios from 'axios';
 import crypto from 'crypto';
 import fs from 'fs';
 import { ResponseCodes } from '@src/utils/utils';
+import { Icons } from '@src/utils/icons'
+import Store from 'electron-store';
 
 /**
  * @type        SearchbarProps
@@ -22,6 +23,16 @@ type SearchbarProps = {
    * @description Set state action for resource usage information
    */
   updateUsage?: React.Dispatch<React.SetStateAction<Array<{ name: string, value: unknown }>>>,
+
+  setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+
+  setDialog?: React.Dispatch<React.SetStateAction<boolean>>;
+
+  setTableOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+
+  setDialogMessage?: React.Dispatch<React.SetStateAction<string>>;
+
+  setTableData?: React.Dispatch<React.SetStateAction<Array<{ name: string, date: unknown }>>>,
 }
 
 
@@ -53,7 +64,7 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
     props.updateUsage(arr => [...arr, { name: 'Durata per utilizator', value: dataUsage['views_per_user'] }])
     props.updateUsage(arr => [...arr, { name: 'Aprecieri', value: dataUsage['likes'] }])
     props.updateUsage(arr => [...arr, { name: 'Favorizari', value: dataUsage['favs'] }])
-    props.updateUsage(arr => [...arr, { name: 'Feedback-uri', value: dataUsage['feedback'] }])
+    props.updateUsage(arr => [...arr, { name: 'Feedback-uri', value: dataUsage['nr_feedback'] }])
   }
 
   /**
@@ -65,6 +76,9 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
     const id = crypto.createHash('sha256').update(searchVal).digest('hex').toString()
     let dataInfo = []
     let dataUsage = []
+
+    //Show loading modal
+    props.setIsOpen(true)
     //Get general information about resource
     try {
       const response = await axios({
@@ -91,7 +105,7 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
             dataUsage = response.data;
             //Update view with info from firestore
             updateInfoData(dataInfo, dataUsage);
-            /** @todo Notify user */
+            props.setIsOpen(false);
           }
         }
         catch (err) {
@@ -100,9 +114,12 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
             message = err.message;
           }
           else {
-            message = ResponseCodes.get(err.response.data);
+            message = ResponseCodes.get(err.response.status);
           }
-          /** @todo Notify user about error */
+          /* Notify user about error */
+          props.setDialogMessage(message);
+          props.setIsOpen(false);
+          props.setDialog(true);
         }
       }
     }
@@ -112,9 +129,53 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
         message = err.message;
       }
       else {
-        message = ResponseCodes.get(err.response.data);
+        message = ResponseCodes.get(err.response.status);
       }
-      /** @todo Notify user about error */
+      /* Notify user about error */
+      props.setDialogMessage(message);
+      props.setIsOpen(false);
+      props.setDialog(true);
+    }
+  }
+
+  async function getListOfResources() {
+    const secret = fs.readFileSync('../../sdjkvneriuhweiubkdshbcvds').toString('utf-8');
+
+    //Show loading modal
+    props.setIsOpen(true)
+    //Get a list with all uploaded videosnm
+    try {
+      const response = await axios({
+        method: 'get',
+        url: `http://127.0.0.1:3000/api/admin/videos/infodb/listofvideos`,
+        headers: {
+          'Authorization': `${secret}`
+        },
+      });
+      const names = response.data['names'];
+      const dates = response.data['dates'];
+      const length = names.length;
+      //Data containing the records name and upload date
+      for (let i = 0; i < length; i++) {
+        props.setTableData(arr => [...arr, { name: names[i], date: dates[i] }])
+      }
+      //Hide hourglass modal
+      props.setIsOpen(false)
+      //Display table with data
+      props.setTableOpen(true)
+    }
+    catch (err) {
+      let message: string
+      if (err.response === undefined) {
+        message = err.message;
+      }
+      else {
+        message = ResponseCodes.get(err.response.status);
+      }
+      /* Notify user about error */
+      props.setDialogMessage(message);
+      props.setIsOpen(false);
+      props.setDialog(true);
     }
   }
 
@@ -129,10 +190,19 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
         onChange={(e: any) => setSearchVal(e.target.value)}
       />
       <Button
+        data-tip="Cauta"
         className="SearchButton"
         onClick={getResourceData}
       >
-        <img src={magnifier} className="SearchIcon"></img>
+        <img src={Icons['MagnifierIcon']} className="SearchIcon"></img>
+      </Button>
+      <Button
+        data-tip="Lista video"
+        className="SearchButton"
+        style={{ marginLeft: '5px' }}
+        onClick={getListOfResources}
+      >
+        <img src={Icons['ListIcon']} className="SearchIcon"></img>
       </Button>
     </InputGroup>
   )

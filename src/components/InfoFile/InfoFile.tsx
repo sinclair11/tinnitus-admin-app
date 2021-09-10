@@ -10,8 +10,6 @@ type InfoProps = {
 
 export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
 
-    console.log(props.elements)
-
     return (
         <div className={"InfoPlaceholder " + props.className}>
             <div className="InfoTitle">

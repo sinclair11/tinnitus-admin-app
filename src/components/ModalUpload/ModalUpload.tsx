@@ -73,7 +73,7 @@ export const UploadForm: React.FC<InfoFieldProps> = (props?: InfoFieldProps) => 
     if (value === '') {
       setState(fieldEmpty)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      result++
+      result.value++
     }
     else if (!value.match(/^(((0[1-9]|[12]\d|3[01])\/(0[13578]|1[02])\/((19|[2-9]\d)\d{2}))|((0[1-9]|[12]\d|30)\/(0[13456789]|1[012])\/((19|[2-9]\d)\d{2}))|((0[1-9]|1\d|2[0-8])\/02\/((19|[2-9]\d)\d{2}))|(29\/02\/((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|(([1][26]|[2468][048]|[3579][26])00))))$/g)) {
       setState(formatInvalid)
@@ -81,6 +81,20 @@ export const UploadForm: React.FC<InfoFieldProps> = (props?: InfoFieldProps) => 
       result.value++
     }
     else {
+      setState('')
+    }
+  }
+
+  function verifyLengthInput(value: string,setState: React.Dispatch<React.SetStateAction<unknown>>, result: any){
+    if(value === ''){
+      setState(fieldEmpty)
+      result++
+    }
+    else if(!value.match(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/)){
+      setState(formatInvalid)
+      result.value++
+    }
+    else{
       setState('')
     }
   }
@@ -112,7 +126,7 @@ export const UploadForm: React.FC<InfoFieldProps> = (props?: InfoFieldProps) => 
     verifyPathInput(event.target[0].value, setFilePathInvalid, failedCounter)
     verifyPathInput(event.target[2].value, setThmbPathInvalid, failedCounter)
     verifyEmptyInput(event.target[4].value, setNameInvalid, failedCounter)
-    verifyEmptyInput(event.target[6].value, setLengthInvalid, failedCounter)
+    verifyLengthInput(event.target[6].value, setLengthInvalid, failedCounter)
     verifyDateInput(event.target[5].value, setCrDateInvalid, failedCounter)
     verifyDateInput(event.target[7].value, setUpDateInvalid, failedCounter)
     verifyEmptyInput(event.target[9].value, setDescInvalid, failedCounter)
@@ -570,9 +584,9 @@ export const UploadForm: React.FC<InfoFieldProps> = (props?: InfoFieldProps) => 
                 <FormControl
                   className="InputText"
                   style={{ width: '70%' }}
-                  placeholder="secunde"
-                  value={length}
-                  onChange={(e: any) => verifyInputLength(e.target.value)}
+                  placeholder="hh:mm:ss"
+                  // value={length}
+                  // onChange={(e: any) => verifyInputLength(e.target.value)}
                   required
                 />
               </InputGroup>

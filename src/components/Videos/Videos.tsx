@@ -11,6 +11,9 @@ import ReactPlayer from 'react-player';
 import { Icons } from '../../utils/icons'
 import ReactTooltip from 'react-tooltip';
 import { Feedback } from '../Feedback/Feedback'
+import { ModalSearch } from '@src/components/ModalSearch/ModalSearch'
+import { Dialog } from '../Dialog/Dialog';
+import { ResourceTable } from '../ResourceTable/ResourceTable';
 
 export const Videos: React.FC = () => {
 
@@ -63,6 +66,11 @@ export const Videos: React.FC = () => {
     name: 'Feedback-uri',
     value: 'N/A'
   },]);
+  const [isOpen, setIsOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [message, setMessage] = useState('')
+  const [tableElements, setTableElements] = useState([])
+  const [tableOpen, setTableOpen] = useState(false)
 
   function moveToFeedback() {
     setIsVisible(!isVisible)
@@ -88,6 +96,11 @@ export const Videos: React.FC = () => {
             <SearchBar
               updateInfo={setInfo}
               updateUsage={setUsage}
+              setIsOpen={setIsOpen}
+              setDialog={setDialogOpen}
+              setDialogMessage={setMessage}
+              setTableData={setTableElements}
+              setTableOpen={setTableOpen}
             />
           </div>}
           {isVisible && <Container id="content" className="ContentPlaceholder">
@@ -124,6 +137,21 @@ export const Videos: React.FC = () => {
             src={Icons['SwitchIcon']}
             className="SwitchIcon"
             onClick={() => moveToFeedback()}
+          />
+          <ModalSearch
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+          />
+          <Dialog
+            isOpen={dialogOpen}
+            setIsOpen={setDialogOpen}
+            message={message}
+          />
+          <ResourceTable
+            isOpen={tableOpen}
+            setIsOpen={setTableOpen}
+            elements={tableElements}
+            setElements={setTableElements}
           />
         </div>
       </div>

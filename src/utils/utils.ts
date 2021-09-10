@@ -166,7 +166,6 @@ export const ResponseCodes = new Map([
 ])
 
 const algorithm = 'aes-256-ctr';
-console.log(__dirname)
 // const encBuffer = fs.readFileSync(path.resolve(__dirname, '/.asdslvdjkvndfkjnvkjdfnkjvowenhfj'))
 // const secretKey = encBuffer.toString()
 const secretKey = "S948vjpAirnvGp20S948vjpAirnvGp20"

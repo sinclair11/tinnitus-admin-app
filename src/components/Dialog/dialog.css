@@ -1,0 +1,22 @@
+.BtnOk{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  width: 70px;
+  height: 30px;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+.BtnOk:hover{
+  transform: scale(1.0);
+  opacity: 0.5;
+}
+
+.DialogHeader{
+  border-bottom: 1px solid aquamarine;
+  width: 100%;
+  height: 25px;
+}

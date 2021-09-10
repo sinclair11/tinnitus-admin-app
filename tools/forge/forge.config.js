@@ -7,6 +7,7 @@ module.exports = {
   packagerConfig: {
     // Create asar archive for main, renderer process files
     asar: true,
+    icon: "/Users/stefantnc/Developer/Family/Tinnitus/assets/icon.icns",
   },
   // Forge Makers
   makers: [
