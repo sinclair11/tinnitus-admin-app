@@ -32,7 +32,7 @@ export const Login: React.FC = () => {
     else {setAdminInvalid('')}
 
     if (passw === '') {
-      setPasswInvalid('Acest camp este obligator')
+      setPasswInvalid('Acest camp este obligatoriu')
       isValid++
     }
     else {setPasswInvalid('')}
