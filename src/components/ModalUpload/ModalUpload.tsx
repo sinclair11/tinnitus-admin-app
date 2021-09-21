@@ -27,7 +27,7 @@ type TransactionData = {
   tags: string;
 }
 
-type InfoFieldProps = {
+type UploadProps = {
   formModal?: React.Dispatch<React.SetStateAction<boolean>>,
   progressModal?: React.Dispatch<React.SetStateAction<boolean>>,
   updateConsoleLog?: React.Dispatch<React.SetStateAction<Array<{ type: string, value: unknown }>>>,
@@ -35,7 +35,7 @@ type InfoFieldProps = {
   setVariant?: React.Dispatch<React.SetStateAction<string>>,
 }
 
-export const UploadForm: React.FC<InfoFieldProps> = (props?: InfoFieldProps) => {
+export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 
   const [filePath, setFilePath] = useState('')
   const [thmbPath, setThmbPath] = useState('')
@@ -235,7 +235,7 @@ export const UploadForm: React.FC<InfoFieldProps> = (props?: InfoFieldProps) => 
         props.updateProgress(progress)
         props.updateConsoleLog(arr => [...arr, { type: 'black', value: response.data }]);
         props.updateConsoleLog(arr => [...arr, { type: 'black', value: 'Se incarca fisierul video...' }]);
-        //Try sending the vide in chunks
+        //Try sending the video in chunks
         sendVideoInChunks(transactionData, 0);
       })
       .catch(error => {

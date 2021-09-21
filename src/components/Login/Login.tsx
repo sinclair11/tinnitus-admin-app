@@ -29,13 +29,13 @@ export const Login: React.FC = () => {
       setAdminInvalid('Acest camp este obligatoriu')
       isValid++
     }
-    else {/*Do nothing*/ }
+    else {setAdminInvalid('')}
 
     if (passw === '') {
       setPasswInvalid('Acest camp este obligator')
       isValid++
     }
-    else {/*Do nothing*/ }
+    else {setPasswInvalid('')}
 
     if (isValid === 0) {
       const psswEnc = crypto.createHash('sha256').update(passw).digest('hex');

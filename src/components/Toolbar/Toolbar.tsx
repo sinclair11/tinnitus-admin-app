@@ -3,12 +3,10 @@ import './toolbar.css'
 import { ToolbarIcons } from '../../utils/icons'
 import ReactTooltip from 'react-tooltip';
 import { UploadVideoModal } from '../Upload/Upload'
-import { Modal } from 'react-bootstrap';
 
 type ToolbarProps = {
   container: string;
 }
-
 
 export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 
