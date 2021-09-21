@@ -1,26 +1,31 @@
-.GraphActions{
-    display:flex;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
-    height: 12%;
-    border-radius: 10px;
-    border: 2px solid aquamarine;
-    background-color:rgb(179, 226, 245);
+.GraphActions {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 12%;
+  border-radius: 10px;
+  border: 2px solid aquamarine;
+  background-color: rgb(179, 226, 245);
 }
 
-.GraphIcon{
-    width: 30px;
-    height: 30px;
-    margin-left: 10px;
+.GraphIcon {
+  width: 30px;
+  height: 30px;
+  margin-left: 10px;
 }
 
-.GraphIcon:hover{
-    transform: scale(1.2);
+.GraphIcon:hover {
+  transform: scale(1.2);
 }
 
 @media only screen and (max-width: 1280px) {
-    .GraphIcon:hover{
-        transform: scale(1.1);
-    }
+  .GraphIcon {
+    width: 28px;
+    height: 28px;
+    margin-left: 10px;
+  }
+  .GraphIcon:hover {
+    transform: scale(1.1);
+  }
 }

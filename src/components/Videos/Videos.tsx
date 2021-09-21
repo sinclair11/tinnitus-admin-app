@@ -71,6 +71,7 @@ export const Videos: React.FC = () => {
   const [message, setMessage] = useState('')
   const [tableElements, setTableElements] = useState([])
   const [tableOpen, setTableOpen] = useState(false)
+  const [videoSelected, setVideoSelected] = useState(false);
 
   function moveToFeedback() {
     setIsVisible(!isVisible)
@@ -83,6 +84,33 @@ export const Videos: React.FC = () => {
     }
     else {
       return 'Feedback-uri'
+    }
+  }
+
+  function playerOrPlaceholder() {
+    if (videoSelected) {
+      return (
+        <ReactPlayer
+          className='react-player'
+          url='https://youtu.be/T-4ACR94U4M'
+          width="100%"
+          height="40%"
+          controls={true}
+        />
+      )
+    }
+    else {
+      return (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: "100%", height: "40%",
+          border: "1px solid aquamarine"
+        }}>
+          <p>Functia de redare video nu este disponibila momentan.</p>
+        </div>
+      )
     }
   }
 
@@ -107,15 +135,7 @@ export const Videos: React.FC = () => {
             <Row className="Row">
               <Col className="Col">
                 <Toolbar container='Toolbar' />
-                {/* <div className="VideoPlaceholder">
-                            </div> */}
-                <ReactPlayer
-                  className='react-player'
-                  url='https://youtu.be/T-4ACR94U4M'
-                  width="100%"
-                  height="40%"
-                  controls={true}
-                />
+                {playerOrPlaceholder()}
                 <Graph container='Graph' />
               </Col>
               <Col className="ColInfo">
