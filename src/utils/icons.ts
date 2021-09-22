@@ -17,27 +17,26 @@ import Switch from '../icons/switch.png'
 import Cancel from '../icons/cancel.png'
 import List from '../icons/list.png'
 
-
 export const Icons = {
-    HomeIcon: Home,
-    AudioIcon: Audio,
-    VideoIcon: Video,
-    GeneratorIcon: Generatorr,
-    LogoIcon: Logo,
-    MagnifierIcon: Magnifier,
-    StatisticsIcon: Statistics,
-    ChannelIcon: Channel,
-    SwitchIcon: Switch,
-    CancelIcon: Cancel,
-    ListIcon: List,
+	HomeIcon: Home,
+	AudioIcon: Audio,
+	VideoIcon: Video,
+	GeneratorIcon: Generatorr,
+	LogoIcon: Logo,
+	MagnifierIcon: Magnifier,
+	StatisticsIcon: Statistics,
+	ChannelIcon: Channel,
+	SwitchIcon: Switch,
+	CancelIcon: Cancel,
+	ListIcon: List,
 }
 
 export const ToolbarIcons = {
-    UploadIcon: Upload,
-    EditIcon: Edit,
-    DeleteIcon: Trash,
-    CalendarIcon: Calendar,
-    ChartIcon: Chart,
-    ZoominIcon: ZoomIn,
-    ZoomoutIcon: ZoomOut,
+	UploadIcon: Upload,
+	EditIcon: Edit,
+	DeleteIcon: Trash,
+	CalendarIcon: Calendar,
+	ChartIcon: Chart,
+	ZoominIcon: ZoomIn,
+	ZoomoutIcon: ZoomOut,
 }

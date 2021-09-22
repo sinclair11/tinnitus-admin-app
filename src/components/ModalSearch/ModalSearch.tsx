@@ -1,22 +1,19 @@
-import React from 'react';
+import React from 'react'
 import './modalsearch.css'
-import Modal from 'react-modal';
-import {hourglassStyle} from '@src/utils/styles'
+import Modal from 'react-modal'
+import { hourglassStyle } from '@src/utils/styles'
 
 type ModalSearchProps = {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	isOpen: boolean
+	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-
-export const ModalSearch: React.FC<ModalSearchProps> = (props: ModalSearchProps) => {
-  return (
-    <Modal
-      isOpen={props.isOpen}
-      style={hourglassStyle}
-      ariaHideApp={false}
-    >
-      <div className="hourglass"></div>
-    </Modal>
-  )
+export const ModalSearch: React.FC<ModalSearchProps> = (
+	props: ModalSearchProps,
+) => {
+	return (
+		<Modal isOpen={props.isOpen} style={hourglassStyle} ariaHideApp={false}>
+			<div className="hourglass"></div>
+		</Modal>
+	)
 }

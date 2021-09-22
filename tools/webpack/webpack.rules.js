@@ -47,7 +47,6 @@ module.exports = [
     test: /\.(gif|jpe?g|tiff|png|webp|bmp|svg)$/,
     use: [
       {
-
         loader: 'file-loader',
         options: {
           publicPath: 'assets/images',
