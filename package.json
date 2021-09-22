@@ -5,12 +5,13 @@
   "description": "",
   "main": ".webpack/main",
   "scripts": {
-    "start": "cross-env NODE_ENV=development electron-forge start",
+    "start": "npm run lint && cross-env NODE_ENV=development electron-forge start",
     "debug": "cross-env NODE_ENV=production electron-forge start --inspect-electron",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts ."
+    "lint": "eslint 'src/**/*.{js,ts,tsx}' --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\" "
   },
   "keywords": [
     "electron boilerplate",
@@ -51,8 +52,10 @@
     "electron-react-devtools": "^0.5.3",
     "electron-store": "^8.0.0",
     "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.24.0",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^6.3.2",

@@ -72,3 +72,8 @@ Thumbs.db
 .webpack/renderer/main_window/index.js
 .webpack/renderer/main_window/preload.js
 .webpack/renderer/main_window/index.js
+.webpack/renderer/main_window/preload.js
+.webpack/renderer/main_window/index.js
+.webpack/renderer/main_window/index.html
+.webpack/main/index.js.map
+.webpack/main/index.js
