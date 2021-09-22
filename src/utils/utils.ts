@@ -116,8 +116,6 @@ async function getChartData(
 		})
 }
 
-// export function storeThumbnail(path: string) {}
-
 function PackInfoData(data: InfoData): Array<{ name: string; value: unknown }> {
 	let pack: Array<{ name: string; value: unknown }>
 	pack.push({ name: 'Nume', value: data['name'] })
