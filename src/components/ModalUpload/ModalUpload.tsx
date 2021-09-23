@@ -542,7 +542,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			])
 			//Abort transaction
 			axios({
-				method: 'post',
+				method: 'delete',
 				url: 'http://127.0.0.1:3000/api/admin/videos',
 				headers: {
 					'Content-Type': 'application/json',
