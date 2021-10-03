@@ -1,21 +1,20 @@
-import React, { useState } from 'react'
-import './video.css'
-import { Menu } from '../Menu/Menu'
-import { Container, Row, Col } from 'react-bootstrap'
-import { SearchBar } from '../SearchBar/SearchBar'
-import { InfoFile } from '../InfoFile/InfoFile'
-import { Toolbar } from '../Toolbar/Toolbar'
-import { Graph } from '../Graph/Graph'
-import ReactPlayer from 'react-player'
-import { Icons } from '../../utils/icons'
-import ReactTooltip from 'react-tooltip'
-import { Feedback } from '../Feedback/Feedback'
-import { ModalSearch } from '@src/components/ModalSearch/ModalSearch'
-import { Dialog } from '../Dialog/Dialog'
-import { ResourceTable } from '../ResourceTable/ResourceTable'
+import React, { useState } from 'react';
+import { Menu } from '../menu/menu';
+import { Container, Row, Col } from 'react-bootstrap';
+import { SearchBar } from '../searchbar/searchbar';
+import { InfoFile } from '../infofile/infofile';
+import { Toolbar } from '../toolbar/toolbar';
+import { Graph } from '../graph/graph';
+import ReactPlayer from 'react-player';
+import { Icons } from '../../utils/icons';
+import ReactTooltip from 'react-tooltip';
+import { Feedback } from '../feedback/feedback';
+import { ModalSearch } from '@src/components/modal-search/modal-search';
+import { Dialog } from '../dialog/dialog';
+import { ResourceTable } from '../table/table';
 
 export const Videos: React.FC = () => {
-	const [isVisible, setIsVisible] = useState(true)
+	const [isVisible, setIsVisible] = useState(true);
 	const [info, setInfo] = useState([
 		{
 			name: 'Nume',
@@ -41,7 +40,7 @@ export const Videos: React.FC = () => {
 			name: 'Descriere',
 			value: 'N/A',
 		},
-	])
+	]);
 	const [usage, setUsage] = useState([
 		{
 			name: 'Total durata vizionari',
@@ -67,25 +66,25 @@ export const Videos: React.FC = () => {
 			name: 'Feedback-uri',
 			value: 'N/A',
 		},
-	])
-	const [isOpen, setIsOpen] = useState(false)
-	const [dialogOpen, setDialogOpen] = useState(false)
-	const [message, setMessage] = useState('')
-	const [tableElements, setTableElements] = useState([])
-	const [tableOpen, setTableOpen] = useState(false)
+	]);
+	const [isOpen, setIsOpen] = useState(false);
+	const [dialogOpen, setDialogOpen] = useState(false);
+	const [message, setMessage] = useState('');
+	const [tableElements, setTableElements] = useState([]);
+	const [tableOpen, setTableOpen] = useState(false);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [videoSelected, setVideoSelected] = useState(false)
+	const [videoSelected, setVideoSelected] = useState(false);
 
 	function moveToFeedback(): void {
-		setIsVisible(!isVisible)
-		ReactTooltip.hide()
+		setIsVisible(!isVisible);
+		ReactTooltip.hide();
 	}
 
 	function changeBtnTip(): string {
 		if (!isVisible) {
-			return 'Pagina principala'
+			return 'Pagina principala';
 		} else {
-			return 'Feedback-uri'
+			return 'Feedback-uri';
 		}
 	}
 
@@ -99,7 +98,7 @@ export const Videos: React.FC = () => {
 					height="40%"
 					controls={true}
 				/>
-			)
+			);
 		} else {
 			return (
 				<div
@@ -114,7 +113,7 @@ export const Videos: React.FC = () => {
 				>
 					<p>Functia de redare video nu este disponibila momentan.</p>
 				</div>
-			)
+			);
 		}
 	}
 
@@ -200,5 +199,5 @@ export const Videos: React.FC = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};

@@ -1,15 +1,20 @@
-import React from 'react'
-import './toolbar.css'
-import { ToolbarIcons } from '../../utils/icons'
-import ReactTooltip from 'react-tooltip'
-import { UploadVideoModal } from '../Upload/Upload'
+import React, { useState } from 'react';
+import { ToolbarIcons } from '../../utils/icons';
+import ReactTooltip from 'react-tooltip';
+import { UploadVideoModal } from '../upload/upload';
 
 type ToolbarProps = {
-	container: string
-}
+	container: string;
+};
 
 export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
-	const [modalIsOpen, setIsOpen] = React.useState(false)
+	const [modalIsOpen, setIsOpen] = useState(false);
+	const [modalType, setModalType] = useState('');
+
+	function openModal(type: string): void {
+		setModalType(type);
+		setIsOpen(true);
+	}
 
 	return (
 		<div className={props.container + ' Container'}>
@@ -23,12 +28,13 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 				data-tip="Incarca"
 				src={ToolbarIcons['UploadIcon']}
 				className="ActionIcon"
-				onClick={(): void => setIsOpen(true)}
+				onClick={(): void => openModal('upload')}
 			/>
 			<img
 				data-tip="Editeaza"
 				src={ToolbarIcons['EditIcon']}
 				className="ActionIcon"
+				onClick={(): void => openModal('edit')}
 			/>
 			<img
 				data-tip="Sterge"
@@ -38,7 +44,8 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 			<UploadVideoModal
 				modalIsOpen={modalIsOpen}
 				setModalIsOpen={setIsOpen}
+				type={modalType}
 			/>
 		</div>
-	)
-}
+	);
+};

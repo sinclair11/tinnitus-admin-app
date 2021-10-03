@@ -1,34 +1,34 @@
-import React, { useState } from 'react'
-import { Icons } from '@src/utils/icons'
-import { modalStyles } from '../../utils/styles'
-import Modal from 'react-modal'
-import './upload.css'
-import { UploadForm } from '../ModalUpload/ModalUpload'
-import { ProgressbarUpload } from '@src/components/Progressbar/ProgressbarUpload'
+import React, { useState } from 'react';
+import { Icons } from '@src/utils/icons';
+import { modalStyle } from '../../styles/styles';
+import Modal from 'react-modal';
+import { UploadForm } from '../modal-upload/modal-upload';
+import { ProgressbarUpload } from '@src/components/progressbar/progressbar-upload';
 
 type UploadModalProps = {
-	modalIsOpen: boolean
-	setModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-	setDone?: React.Dispatch<React.SetStateAction<boolean>>
-}
+	modalIsOpen: boolean;
+	setModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	setDone?: React.Dispatch<React.SetStateAction<boolean>>;
+	type: string;
+};
 
 export const UploadVideoModal: React.FC<UploadModalProps> = (
 	props: UploadModalProps,
 ) => {
-	const [progressOpen, setProgressOpen] = useState(false)
-	const [progress, setProgress] = useState(0)
-	const [messages, setMessages] = useState([])
-	const [variant, setVariant] = useState('success')
+	const [progressOpen, setProgressOpen] = useState(false);
+	const [progress, setProgress] = useState(0);
+	const [messages, setMessages] = useState([]);
+	const [variant, setVariant] = useState('success');
 
 	function closeModal(): void {
-		props.setModalIsOpen(false)
+		props.setModalIsOpen(false);
 	}
 
 	return (
 		<div>
 			<Modal
 				isOpen={props.modalIsOpen}
-				style={modalStyles}
+				style={modalStyle(props.type)}
 				contentLabel="Upload"
 				ariaHideApp={false}
 			>
@@ -39,10 +39,16 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (
 						updateProgress={setProgress}
 						updateConsoleLog={setMessages}
 						setVariant={setVariant}
+						type={props.type}
+						rowClass={
+							props.type === 'upload' ? 'UploadType' : 'EditType'
+						}
 					/>
 				</div>
 
-				<p className="ModalTitle">Upload</p>
+				<p className="ModalTitle">
+					{props.type === 'upload' ? 'Upload' : 'Edit'}
+				</p>
 				<img
 					src={Icons['CancelIcon']}
 					className="CancelIcon"
@@ -60,5 +66,5 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (
 				updateVariant={setVariant}
 			/>
 		</div>
-	)
-}
+	);
+};
