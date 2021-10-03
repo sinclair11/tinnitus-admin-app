@@ -1,21 +1,23 @@
-export const modalStyles = {
-	content: {
-		width: '580px',
-		height: '580px',
-		display: 'inline-block',
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: 'rgb(0, 183, 255)',
-		top: '50%',
-		left: '50%',
-		right: 'auto',
-		bottom: 'auto',
-		marginRight: '-50%',
-		transform: 'translate(-50%, -50%)',
-		borderRadius: '5px',
-		border: '1px solid aqua',
-		overflow: 'hidden',
-	},
+export function modalStyle(type: string): unknown {
+	return {
+		content: {
+			width: '580px',
+			height: type === 'upload' ? '580px' : '450px',
+			display: 'inline-block',
+			justifyContent: 'center',
+			alignItems: 'center',
+			backgroundColor: 'rgb(0, 183, 255)',
+			top: '50%',
+			left: '50%',
+			right: 'auto',
+			bottom: 'auto',
+			marginRight: '-50%',
+			transform: 'translate(-50%, -50%)',
+			borderRadius: '5px',
+			border: '1px solid aqua',
+			overflow: 'hidden',
+		},
+	};
 }
 
 export const dialogStyles = {
@@ -37,7 +39,7 @@ export const dialogStyles = {
 		overflow: 'hidden',
 		padding: '0px',
 	},
-}
+};
 
 export const progressStyles = {
 	content: {
@@ -57,7 +59,7 @@ export const progressStyles = {
 		border: '1px solid aqua',
 		overflow: 'hidden',
 	},
-}
+};
 
 export const hourglassStyle = {
 	content: {
@@ -76,7 +78,7 @@ export const hourglassStyle = {
 		overflow: 'hidden',
 		border: 0,
 	},
-}
+};
 
 export const tableStyles = {
 	content: {
@@ -97,4 +99,4 @@ export const tableStyles = {
 		overflow: 'hidden',
 		padding: '0px',
 	},
-}
+};
