@@ -1,19 +1,18 @@
-import React, { useState } from 'react'
-import './login.css'
-import { InputGroup, FormControl, Button, Form } from 'react-bootstrap'
-import logo from '../../icons/logo.png'
-import axios from 'axios'
-import crypto from 'crypto'
-import { useHistory } from 'react-router-dom'
-import fs from 'fs'
-import { ipcRenderer } from 'electron'
+import React, { useState } from 'react';
+import { InputGroup, FormControl, Button, Form } from 'react-bootstrap';
+import logo from '../../icons/logo.png';
+import axios from 'axios';
+import crypto from 'crypto';
+import { useHistory } from 'react-router-dom';
+import fs from 'fs';
+import { ipcRenderer } from 'electron';
 
 export const Login: React.FC = () => {
-	const [admin, setAdmin] = useState('')
-	const [passw, setPassw] = useState('')
-	const [adminInvalid, setAdminInvalid] = useState('')
-	const [passwInvalid, setPasswInvalid] = useState('')
-	const history = useHistory()
+	const [admin, setAdmin] = useState('');
+	const [passw, setPassw] = useState('');
+	const [adminInvalid, setAdminInvalid] = useState('');
+	const [passwInvalid, setPasswInvalid] = useState('');
+	const history = useHistory();
 
 	function storeToken(token: string): void {
 		fs.writeFile(
@@ -21,34 +20,34 @@ export const Login: React.FC = () => {
 				'/.sdjkvneriuhweiubkdshbcvds',
 			token,
 			() => {
-				history.push('/welcome')
-				console.log('Token written')
+				history.push('/welcome');
+				console.log('Token written');
 			},
-		)
+		);
 	}
 
 	async function AuthAdmin(): Promise<void> {
-		let isValid = 0
+		let isValid = 0;
 
 		if (admin === '') {
-			setAdminInvalid('Acest camp este obligatoriu')
-			isValid++
+			setAdminInvalid('Acest camp este obligatoriu');
+			isValid++;
 		} else {
-			setAdminInvalid('')
+			setAdminInvalid('');
 		}
 
 		if (passw === '') {
-			setPasswInvalid('Acest camp este obligatoriu')
-			isValid++
+			setPasswInvalid('Acest camp este obligatoriu');
+			isValid++;
 		} else {
-			setPasswInvalid('')
+			setPasswInvalid('');
 		}
 
 		if (isValid === 0) {
 			const psswEnc = crypto
 				.createHash('sha256')
 				.update(passw)
-				.digest('hex')
+				.digest('hex');
 			//Send authentication request
 			try {
 				const response = await axios({
@@ -62,28 +61,28 @@ export const Login: React.FC = () => {
 						user: admin,
 						passw: psswEnc,
 					},
-				})
+				});
 				if (response.status === 200) {
 					// history.push('/welcome')
 					const data = response.data as {
-						message: string
-						token: string
-					}
-					storeToken(data.token)
+						message: string;
+						token: string;
+					};
+					storeToken(data.token);
 				} else {
-					setPasswInvalid('Credentialele de admin sunt invalide.')
+					setPasswInvalid('Credentialele de admin sunt invalide.');
 				}
-				setAdmin('')
-				setPassw('')
+				setAdmin('');
+				setPassw('');
 			} catch (error) {
 				//console.error(error)
 				if (error.response === undefined) {
-					setPasswInvalid(error.message)
+					setPasswInvalid(error.message);
 				} else if (error.response.status === 401) {
-					setPasswInvalid('Credentialele de admin sunt invalide')
+					setPasswInvalid('Credentialele de admin sunt invalide');
 				}
-				setAdmin('')
-				setPassw('')
+				setAdmin('');
+				setPassw('');
 			}
 		} else {
 			/*Do nothing*/
@@ -135,5 +134,5 @@ export const Login: React.FC = () => {
 			</Form>
 			<p className="Copyright">© 2021 Tinnitus Sounds</p>
 		</div>
-	)
-}
+	);
+};

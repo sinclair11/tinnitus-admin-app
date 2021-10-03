@@ -1,15 +1,14 @@
-import React from 'react'
-import Modal from 'react-modal'
-import './dialog.css'
-import { dialogStyles } from '@src/utils/styles'
-import { Button } from 'react-bootstrap'
-import { Icons } from '@src/utils/icons'
+import React from 'react';
+import Modal from 'react-modal';
+import { dialogStyles } from '@src/styles/styles';
+import { Button } from 'react-bootstrap';
+import { Icons } from '@src/utils/icons';
 
 type DialogProps = {
-	isOpen: boolean
-	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-	message: string
-}
+	isOpen: boolean;
+	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	message: string;
+};
 
 export const Dialog: React.FC<DialogProps> = (props: DialogProps) => {
 	return (
@@ -30,5 +29,5 @@ export const Dialog: React.FC<DialogProps> = (props: DialogProps) => {
 				onClick={(): void => props.setIsOpen(false)}
 			/>
 		</Modal>
-	)
-}
+	);
+};

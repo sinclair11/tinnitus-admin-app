@@ -1,9 +1,8 @@
-import React from 'react'
-import { ButtonGroup, Button } from 'react-bootstrap'
-import { useHistory } from 'react-router-dom'
-import logoIcon from '../../icons/logo.png'
-import './welcome.css'
-import { Icons } from '../../utils/icons'
+import React from 'react';
+import { ButtonGroup, Button } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
+import logoIcon from '../../icons/logo.png';
+import { Icons } from '../../utils/icons';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const Welcome: React.FC = () => {
@@ -13,14 +12,14 @@ const Welcome: React.FC = () => {
 			<GridActions />
 			<p>© 2021 Tinnitus Sounds</p>
 		</div>
-	)
-}
+	);
+};
 
 const GridActions: React.FC = () => {
-	const history = useHistory()
+	const history = useHistory();
 
 	function goToRoute(route: string): void {
-		history.push(route)
+		history.push(route);
 	}
 
 	return (
@@ -59,7 +58,7 @@ const GridActions: React.FC = () => {
 				</Button>
 			</ButtonGroup>
 		</div>
-	)
-}
+	);
+};
 
-export default Welcome
+export default Welcome;

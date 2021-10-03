@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { slide as ScaleMenu } from 'react-burger-menu'
-import './menu.css'
-import Logo from '../../icons/logo.png'
-import useWindowDimensions from '../../hooks/useWindowDimensions'
-import { Icons } from '../../utils/icons'
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { slide as ScaleMenu } from 'react-burger-menu';
+import Logo from '../../icons/logo.png';
+import useWindowDimensions from '../../hooks/use-window-dimensions';
+import { Icons } from '../../utils/icons';
 
 export const Menu: React.FC<{ page: string; outer: string }> = (props) => {
-	const [menuWidth, setMenuWidth] = useState('25%')
+	const [menuWidth, setMenuWidth] = useState('25%');
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { height, width } = useWindowDimensions()
+	const { height, width } = useWindowDimensions();
 
 	useEffect(() => {
 		if (width > 1280) {
-			setMenuWidth('15%')
+			setMenuWidth('15%');
 		} else {
-			setMenuWidth('20%')
+			setMenuWidth('20%');
 		}
-	})
+	});
 
 	return (
 		<ScaleMenu
@@ -79,5 +78,5 @@ export const Menu: React.FC<{ page: string; outer: string }> = (props) => {
 			</button>
 			<p className="CopyMenu">© 2021 Tinnitus Sounds</p>
 		</ScaleMenu>
-	)
-}
+	);
+};

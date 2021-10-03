@@ -1,66 +1,65 @@
-import React, { useEffect, useState } from 'react'
-import './progressbar.css'
-import Modal from 'react-modal'
-import { progressStyles } from '@src/utils/styles'
-import { ProgressBar, Button } from 'react-bootstrap'
-import { Icons } from '@src/utils/icons'
-import { InfoLog } from '@src/components/InfoLog/InfoLog'
-import { setAbort } from '@src/components/ModalUpload/ModalUpload'
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useEffect, useState } from 'react';
+import './progressbar.css';
+import Modal from 'react-modal';
+import { progressStyles } from '@src/styles/styles';
+import { ProgressBar, Button } from 'react-bootstrap';
+import { Icons } from '@src/utils/icons';
+import { InfoLog } from '@src/components/infolog/infolog';
+import { setAbort } from '@src/components/modal-upload/modal-upload';
 
 type ProgressProps = {
-	isOpen?: boolean
-	setOpen?: React.Dispatch<React.SetStateAction<boolean>>
-	jobDone?: boolean
-	progress?: number
-	messages?: Array<{ type: string; value: unknown }>
+	isOpen?: boolean;
+	setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+	jobDone?: boolean;
+	progress?: number;
+	messages?: Array<{ type: string; value: unknown }>;
 	updateConsoleLog?: React.Dispatch<
 		React.SetStateAction<Array<{ type: string; value: unknown }>>
-	>
-	updateProgress?: React.Dispatch<React.SetStateAction<number>>
-	variant?: string
-	updateVariant?: React.Dispatch<React.SetStateAction<string>>
-}
+	>;
+	updateProgress?: React.Dispatch<React.SetStateAction<number>>;
+	variant?: string;
+	updateVariant?: React.Dispatch<React.SetStateAction<string>>;
+};
 
 export const ProgressbarUpload: React.FC<ProgressProps> = (
 	props: ProgressProps,
 ) => {
-	const [continueOpac, setContinueOpac] = useState(0.5)
-	const [abortOpac, setAbortOpac] = useState(1)
+	const [continueOpac, setContinueOpac] = useState(0.5);
+	const [abortOpac, setAbortOpac] = useState(1);
 
 	useEffect(() => {
 		if (props.progress === 100) {
-			setAbortOpac(0.5)
-			setContinueOpac(1)
+			setAbortOpac(0.5);
+			setContinueOpac(1);
 		} else {
-			setContinueOpac(0.5)
-			setAbortOpac(1)
+			setContinueOpac(0.5);
+			setAbortOpac(1);
 		}
-	})
+	});
 
 	function resetProgress(): void {
-		props.updateProgress(0)
-		props.updateConsoleLog([])
-		props.updateVariant('success')
-		props.setOpen(false)
+		props.updateProgress(0);
+		props.updateConsoleLog([]);
+		props.updateVariant('success');
+		props.setOpen(false);
 	}
 
 	function closeModal(): void {
 		if (props.progress < 100) {
-			abortJob()
+			abortJob();
 		}
-		resetProgress()
+		resetProgress();
 	}
 
 	function continueModal(): void {
 		if (props.progress === 100) {
-			resetProgress()
+			resetProgress();
 		}
 	}
 
 	function abortJob(): void {
 		if (props.progress < 100) {
-			setAbort(true)
+			setAbort(true);
 		}
 	}
 
@@ -101,5 +100,5 @@ export const ProgressbarUpload: React.FC<ProgressProps> = (
 				<p className="BtnProgressTxt">Continue</p>
 			</Button>
 		</Modal>
-	)
-}
+	);
+};

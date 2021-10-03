@@ -1,11 +1,10 @@
-import React from 'react'
-import './infofile.css'
+import React from 'react';
 
 type InfoProps = {
-	title?: string
-	className?: string
-	elements?: Array<{ name: string; value: unknown }>
-}
+	title?: string;
+	className?: string;
+	elements?: Array<{ name: string; value: unknown }>;
+};
 
 export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
 	return (
@@ -23,5 +22,5 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
 				</ul>
 			</div>
 		</div>
-	)
-}
+	);
+};

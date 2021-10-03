@@ -23,7 +23,7 @@ export const InfoFileList: Array<{ name: string; value: unknown }> = [
 		name: 'Descriere',
 		value: 'N/A',
 	},
-]
+];
 
 export const InfoUsageList: Array<{ name: string; value: unknown }> = [
 	{
@@ -50,4 +50,4 @@ export const InfoUsageList: Array<{ name: string; value: unknown }> = [
 		name: 'Feedback-uri',
 		value: 'N/A',
 	},
-]
+];

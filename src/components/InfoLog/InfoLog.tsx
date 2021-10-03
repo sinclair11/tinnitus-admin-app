@@ -1,9 +1,8 @@
-import React from 'react'
-import './infolog.css'
+import React from 'react';
 
 type InfologProps = {
-	messages?: Array<{ type: string; value: unknown }>
-}
+	messages?: Array<{ type: string; value: unknown }>;
+};
 
 export const InfoLog: React.FC<InfologProps> = (props: InfologProps) => {
 	return (
@@ -23,5 +22,5 @@ export const InfoLog: React.FC<InfologProps> = (props: InfologProps) => {
 				))}
 			</ul>
 		</div>
-	)
-}
+	);
+};

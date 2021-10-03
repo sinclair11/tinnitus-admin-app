@@ -1,20 +1,19 @@
-import React from 'react'
-import './feedback.css'
-import { Icons, ToolbarIcons } from '../../utils/icons'
-import ReactTooltip from 'react-tooltip'
-import Modal from 'react-modal'
-import { Button } from 'react-bootstrap'
+import React from 'react';
+import { Icons, ToolbarIcons } from '../../utils/icons';
+import ReactTooltip from 'react-tooltip';
+import Modal from 'react-modal';
+import { Button } from 'react-bootstrap';
 
 export const Feedback: React.FC = () => {
 	return (
 		<div className="FbContainer">
 			<FeedbackComment />
 		</div>
-	)
-}
+	);
+};
 
 export const FeedbackComment: React.FC = () => {
-	const [modalIsOpen, setIsOpen] = React.useState(false)
+	const [modalIsOpen, setIsOpen] = React.useState(false);
 
 	const customStyles = {
 		content: {
@@ -32,10 +31,10 @@ export const FeedbackComment: React.FC = () => {
 			border: '1px solid aqua',
 			padding: '0px',
 		},
-	}
+	};
 
 	function closeModal(): void {
-		setIsOpen(false)
+		setIsOpen(false);
 	}
 
 	return (
@@ -106,5 +105,5 @@ export const FeedbackComment: React.FC = () => {
 				<p className="FbackText">Feedback review</p>
 			</div>
 		</div>
-	)
-}
+	);
+};

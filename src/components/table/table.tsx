@@ -1,19 +1,18 @@
-import React from 'react'
-import Modal from 'react-modal'
-import { Button } from 'react-bootstrap'
-import './table.css'
-import { tableStyles } from '@src/utils/styles'
-import { Icons } from '@src/utils/icons'
-import { Column, useTable } from 'react-table'
+import React from 'react';
+import Modal from 'react-modal';
+import { Button } from 'react-bootstrap';
+import { tableStyles } from '@src/styles/styles';
+import { Icons } from '@src/utils/icons';
+import { Column, useTable } from 'react-table';
 
 type TableProps = {
-	isOpen?: boolean
-	setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>
-	elements: Array<{ name: string; date: string }>
+	isOpen?: boolean;
+	setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+	elements: Array<{ name: string; date: string }>;
 	setElements?: React.Dispatch<
 		React.SetStateAction<Array<{ name: string; date: string }>>
-	>
-}
+	>;
+};
 
 export const ResourceTable: React.FC<TableProps> = (props: TableProps) => {
 	const columns: Array<Column<{ name: string; date: string }>> =
@@ -29,23 +28,23 @@ export const ResourceTable: React.FC<TableProps> = (props: TableProps) => {
 				},
 			],
 			[],
-		)
-	const data = props.elements
+		);
+	const data = props.elements;
 
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
 		useTable({
 			columns,
 			data,
-		})
+		});
 
 	function onOk(): void {
-		props.setElements([])
-		props.setIsOpen(false)
+		props.setElements([]);
+		props.setIsOpen(false);
 	}
 
 	function onCancel(): void {
-		props.setElements([])
-		props.setIsOpen(false)
+		props.setElements([]);
+		props.setIsOpen(false);
 	}
 
 	return (
@@ -73,7 +72,7 @@ export const ResourceTable: React.FC<TableProps> = (props: TableProps) => {
 				</thead>
 				<tbody {...getTableBodyProps()}>
 					{rows.map((row) => {
-						prepareRow(row)
+						prepareRow(row);
 						return (
 							<tr {...row.getRowProps()}>
 								{row.cells.map((cell) => {
@@ -81,10 +80,10 @@ export const ResourceTable: React.FC<TableProps> = (props: TableProps) => {
 										<td {...cell.getCellProps()}>
 											{cell.render('Cell')}
 										</td>
-									)
+									);
 								})}
 							</tr>
-						)
+						);
 					})}
 				</tbody>
 			</table>
@@ -99,5 +98,5 @@ export const ResourceTable: React.FC<TableProps> = (props: TableProps) => {
 				OK
 			</Button>
 		</Modal>
-	)
-}
+	);
+};

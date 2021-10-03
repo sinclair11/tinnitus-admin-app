@@ -1,5 +1,4 @@
-import React from 'react'
-import './graph.css'
+import React from 'react';
 import {
 	AreaChart,
 	Area,
@@ -8,14 +7,14 @@ import {
 	CartesianGrid,
 	Tooltip,
 	ResponsiveContainer,
-} from 'recharts'
-import { ToolbarIcons } from '../../utils/icons'
-import ReactTooltip from 'react-tooltip'
+} from 'recharts';
+import { ToolbarIcons } from '../../utils/icons';
+import ReactTooltip from 'react-tooltip';
 
 type GraphProps = {
-	container?: string
-	data?: Array<{ data: string; vizualizari: number }>
-}
+	container?: string;
+	data?: Array<{ data: string; vizualizari: number }>;
+};
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const Graph: React.FC<GraphProps> = (props: GraphProps) => {
@@ -38,7 +37,7 @@ export const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 						momentan.
 					</p>
 				</div>
-			)
+			);
 		} else {
 			return (
 				<ResponsiveContainer
@@ -77,7 +76,7 @@ export const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 						/>
 					</AreaChart>
 				</ResponsiveContainer>
-			)
+			);
 		}
 	}
 
@@ -114,5 +113,5 @@ export const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 			</div>
 			{GraphOrPlaceholder()}
 		</div>
-	)
-}
+	);
+};
