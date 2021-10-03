@@ -14,12 +14,14 @@
     "resolveJsonModule": true,
     "paths": {
       "*": ["node_modules/*"],
-      "@assets/*": ["./assets/*"],
-      "@src/*": ["./src/*"]
+      "@src/*": ["./src/*"],
+	  "@assets/*": ["./assets/*"],
+	  "@components": ["./src/components/*"],
     },
     "typeRoots": [
       "node_modules/@types"
     ]
   },
-  "include": ["src/**/*", "tools/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["tools/**/*"],
 }
