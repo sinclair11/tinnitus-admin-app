@@ -5,8 +5,9 @@
 	height: $height
 	color: white
 	font-size: 14px
-	border: 1px solid aquamarine
+	border: 1px solid colors.$border
 	background-color: colors.$btn
+	border-radius: 5px
 	#{$prop}: $val
 
 @mixin flexCenter($direction)
@@ -38,3 +39,7 @@
 	padding-bottom: $bottom
 	padding-left: $left
 	padding-right: $right
+
+$boxshadow: -3px 5px 4px -1px rgba(0,0,0,0.66)
+
+

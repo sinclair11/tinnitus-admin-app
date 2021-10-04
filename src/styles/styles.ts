@@ -2,11 +2,11 @@ export function modalStyle(type: string): unknown {
 	return {
 		content: {
 			width: '580px',
-			height: type === 'upload' ? '580px' : '450px',
+			height: type === 'upload' ? '600px' : '500px',
 			display: 'inline-block',
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: 'rgb(0, 183, 255)',
+			backgroundColor: '#0E3386',
 			top: '50%',
 			left: '50%',
 			right: 'auto',
@@ -19,7 +19,7 @@ export function modalStyle(type: string): unknown {
 		},
 	};
 }
-
+//#034694
 export const dialogStyles = {
 	content: {
 		width: '300px',
@@ -27,7 +27,7 @@ export const dialogStyles = {
 		display: 'inline-block',
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: '#0b537c',
+		backgroundColor: '#0E3386',
 		top: '50%',
 		left: '50%',
 		right: 'auto',
@@ -48,7 +48,7 @@ export const progressStyles = {
 		display: 'inline-block',
 		justifyContent: 'right',
 		alignItems: 'center',
-		backgroundColor: 'rgb(0, 183, 255)',
+		backgroundColor: '#0E3386',
 		top: '50%',
 		left: '50%',
 		right: 'auto',
@@ -87,7 +87,7 @@ export const tableStyles = {
 		display: 'inline-block',
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: '#0b537c' /*'rgb(0, 183, 255)'*/,
+		backgroundColor: '#0E3386' /*'rgb(0, 183, 255)'*/,
 		top: '50%',
 		left: '50%',
 		right: 'auto',

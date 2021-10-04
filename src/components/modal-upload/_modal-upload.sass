@@ -1,7 +1,23 @@
+@use '../../styles/colors'
+@use '../../styles/custom'
+
 .UploadFormContainerr
   margin-top: 15px
   width: 100%
   height: 100%
+
+.Form
+  width: 100%
+  height: 90%
+  border-radius: 20px
+  border: 1px solid aquamarine
+  margin-top: 20px
+
+.FormU
+ height: 90%
+
+.FormE
+  height: 85%
 
 .ModalTitle
   position: absolute
@@ -23,29 +39,97 @@
   width: 20px
   height: 20px
 
-.BrowseBtn
-  color: white
-  font-size: 12px
-  margin-left: 3%
-  background-color: #0b537c
-  border: 1px solid aquamarine
-  margin-top: 10px
-
-  &:hover
-    transform: scale(1)
-    opacity: .5
-
 .InputGroupPath
   width: 100%
   height: 80%
   display: flex
   align-items: center
 
-.InputLabel
+.InputInfoGroup
+  display: flex
+  align-items: center
+
+.InputTagDescGroup
+  display: flex
+  flex-direction: column
+  height: 86%
+
+.Section
+  width: 100%
+  height: 35%
+  display: flex
+  flex-direction: column
+
+.SectionPath
+  margin-bottom: 20px
+
+.SectionInput
+  margin-top: 10px
+
+.InfoRow
+  display: flex
+  justify-content: flex-start
+  align-items: center
+  width: 100%
+  border-bottom: 1px solid aquamarine
+
+.LastRow
+  border-bottom: 0px
+
+.RowPathU
+  height: 25%
+
+.RowInfoU
+  height: 25%
+
+.RowTagU
+  height: 20%
+
+.RowDescU
+  height: 30%
+
+.RowInfoE
+  height: 30%
+
+.RowDescE
+  height: 40%
+
+.RowTagE
+  height: 30%
+
+.Col
+  display: flex
+  flex-direction: column
+  height: 100%
+
+.ColInfo
+  @extend .Col
+  width: 50%
+  padding: 20px
+
+.ColPath
+  @extend .Col
+  width: 100%
+  padding: 10px
+
+.ColDesc
+  @extend .Col
+  width: 100%
+  padding: 15px
+
+.Label
   background-color: #0f81c4
   font-size: 14px
   padding: 5px
   margin-top: 10px
+
+.LabelDate
+  @extend .Label
+  width: 60%
+
+.LabelArea
+  @extend .Label
+  width: 98%
 
 .InputText
   width: 80%
@@ -57,75 +141,23 @@
   width: 99%
   height: 80%
 
-.InputInfo
-  width: 100%
-  height: 85%
-  border-radius: 20px
-  border: 1px solid aquamarine
-  margin-top: 20px
+.BrowseBtn
+  @include custom.btnStyle($width: 80px, $height: 35px, $prop: font-size, $val: 12px)
+  margin-left: 3%
+  margin-top: 10px
+  text-align: center
 
-.InputInfoGroup
-  display: flex
-  align-items: center
-
-.InputTagDescGroup
-  display: flex
-  flex-direction: column
-  height: 88%
-
-.InfoRow
-  display: flex
-  justify-content: flex-start
-  align-items: center
-  width: 100%
-  border-bottom: 1px solid aquamarine
-
-.InfoCol
-  display: flex
-  flex-direction: column
-  width: 50%
-  height: 100%
-  padding: 20px
+  &:hover
+    transform: scale(1)
+    opacity: .5
 
 .UploadBtn
+  @include custom.btnStyle($width: 100px, $height: 40px, $prop: font-size, $val: 16px)
   position: absolute
   left: 45%
-  margin-top: 15px
-  align-self: center
-  color: white
-  font-size: 16px
-  background-color: #0b537c
-  border: 1px solid aquamarine
+  bottom: 10px
   font-weight: 100
 
-.UploadType
-  height: 33%
-
-.EditType
-  height: 50%
-
-.ColPath
-  width: 100%
-  padding: 10px
-
-.Section
-  width: 100%
-  height: 50%
-  display: flex
-  flex-direction: column
-
-.SectionPath
-  margin-bottom: 20px
-
-.SectionInput
-  margin-top: 10px
-
-.LabelDate
-  width: 60%
-
-.LabelArea
-  width: 98%
-
-.RowArea
-  @extend .InfoRow
-  border-bottom: 0px
+  &:hover
+    transform: scale(1)
+    opacity: .5
