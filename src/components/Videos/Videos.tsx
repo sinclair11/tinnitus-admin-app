@@ -4,7 +4,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { SearchBar } from '../searchbar/searchbar';
 import { InfoFile } from '../infofile/infofile';
 import { Toolbar } from '../toolbar/toolbar';
-import { Graph } from '../graph/graph';
+import { Graph } from '@src/components/graph/graph';
 import ReactPlayer from 'react-player';
 import { Icons } from '../../utils/icons';
 import ReactTooltip from 'react-tooltip';
@@ -108,7 +108,8 @@ export const Videos: React.FC = () => {
 						alignItems: 'center',
 						width: '100%',
 						height: '40%',
-						border: '1px solid aquamarine',
+						background: '#004687',
+						boxShadow: '-3px 5px 4px -1px rgba(0,0,0,0.66)',
 					}}
 				>
 					<p>Functia de redare video nu este disponibila momentan.</p>

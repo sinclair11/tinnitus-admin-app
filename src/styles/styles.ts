@@ -2,7 +2,7 @@ export function modalStyle(type: string): unknown {
 	return {
 		content: {
 			width: '580px',
-			height: type === 'upload' ? '600px' : '500px',
+			// height: type === 'upload' ? '600px' : '500px',
 			display: 'inline-block',
 			justifyContent: 'center',
 			alignItems: 'center',

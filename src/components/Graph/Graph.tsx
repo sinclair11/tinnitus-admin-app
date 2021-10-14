@@ -29,7 +29,8 @@ export const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 						alignItems: 'center',
 						width: '100%',
 						height: '65%',
-						border: '1px solid aquamarine',
+						background: '#004687',
+						boxShadow: '-3px 5px 4px -1px rgba(0,0,0,0.66)',
 					}}
 				>
 					<p>
