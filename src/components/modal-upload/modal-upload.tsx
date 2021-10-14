@@ -78,14 +78,14 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	function createPathElements(): JSX.Element {
 		if (props.type === 'upload') {
 			return (
-				<Row className="InfoRow UploadType">
+				<Row className="IRow">
 					<Col className="ColPath">
 						<div className="Section SectionPath">
 							<InputGroup
 								className="InputGroupPath"
 								hasValidation
 							>
-								<InputGroup.Text className="InputLabel">
+								<InputGroup.Text className="Label">
 									Fisier
 								</InputGroup.Text>
 								<FormControl
@@ -112,11 +112,11 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 								className="InputGroupPath"
 								hasValidation
 							>
-								<InputGroup.Text className="InputLabel">
+								<InputGroup.Text className="Label">
 									Coperta
 								</InputGroup.Text>
 								<FormControl
-									className="InputText"
+									className="InputThmb"
 									value={thmbPath}
 									// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 									onChange={(e: any) =>
@@ -682,16 +682,16 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			className="UploadFormContainerr"
 			onSubmit={handleSubmit}
 		>
-			<div className="InputInfo">
+			<div className="Form">
 				{createPathElements()}
-				<Row className={'InfoRow ' + props.rowClass}>
-					<Col className="InfoCol">
+				<Row className={'IRow'}>
+					<Col className="ColInfo">
 						<div className="Section SectionInput">
 							<InputGroup
 								className="InputInfoGroup"
 								hasValidation
 							>
-								<InputGroup.Text className="InputLabel">
+								<InputGroup.Text className="Label">
 									Nume
 								</InputGroup.Text>
 								<FormControl className="InputText" required />
@@ -704,7 +704,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 								className="InputInfoGroup"
 								hasValidation
 							>
-								<InputGroup.Text className="InputLabel LabelDate">
+								<InputGroup.Text className="LabelDate">
 									Data creare
 								</InputGroup.Text>
 								<FormControl
@@ -716,13 +716,13 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 							<p className="InvalidField">{crDateInvalid}</p>
 						</div>
 					</Col>
-					<Col className="InfoCol">
+					<Col className="ColInfo">
 						<div className="Section SectionInput">
 							<InputGroup
 								className="InputInfoGroup"
 								hasValidation
 							>
-								<InputGroup.Text className="InputLabel">
+								<InputGroup.Text className="Label">
 									Lungime
 								</InputGroup.Text>
 								<FormControl
@@ -739,7 +739,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 								className="InputInfoGroup"
 								hasValidation
 							>
-								<InputGroup.Text className="InputLabel LabelDate">
+								<InputGroup.Text className="LabelDate">
 									Data incarcare
 								</InputGroup.Text>
 								<FormControl
@@ -753,10 +753,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					</Col>
 				</Row>
 
-				<Row className={'InfoRow ' + props.rowClass + ' RowArea'}>
-					<Col className="InfoCol">
+				<Row className={'IRow'}>
+					<Col className="ColPath">
 						<InputGroup className="InputTagDescGroup">
-							<InputGroup.Text className="InputLabel LabelArea">
+							<InputGroup.Text className="LabelArea">
 								Tags
 							</InputGroup.Text>
 							<FormControl
@@ -766,9 +766,11 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 							/>
 						</InputGroup>
 					</Col>
-					<Col className="InfoCol">
+				</Row>
+				<Row className={'IRow LastRow'}>
+					<Col className="ColDesc">
 						<InputGroup hasValidation className="InputTagDescGroup">
-							<InputGroup.Text className="InputLabel LabelArea">
+							<InputGroup.Text className="LabelArea">
 								Descriere
 							</InputGroup.Text>
 							<FormControl
@@ -781,9 +783,11 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					</Col>
 				</Row>
 			</div>
-			<Button type="submit" className="UploadBtn">
-				Upload
-			</Button>
+			<div className="BtnSection">
+				<Button type="submit" className="UploadBtn">
+					Upload
+				</Button>
+			</div>
 		</Form>
 	);
 };
