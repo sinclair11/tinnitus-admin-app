@@ -10,7 +10,7 @@ const Welcome: React.FC = () => {
 		<div className="Stack">
 			<img src={logoIcon} className="Logo fade linear" />
 			<GridActions />
-			<p>© 2021 Tinnitus Sounds</p>
+			<p style={{ color: 'black' }}>© 2021 Tinnitus Sounds</p>
 		</div>
 	);
 };
