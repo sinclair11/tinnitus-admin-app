@@ -212,7 +212,143 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
-	async function handleSubmit(event: any): Promise<void> {
+	async function getAuth(): Promise<any> {
+		try {
+			const secret = fs
+				.readFileSync(
+					ipcRenderer.sendSync('eventFromRenderer') +
+						'/.sdjkvneriuhweiubkdshbcvds',
+				)
+				.toString('utf-8');
+			//Request authorization from server
+			const authorizationResonse = await axios({
+				method: 'post',
+				url: 'http://127.0.0.1:3000/api/admin/auth',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				data: {
+					phase: secret,
+				},
+			});
+			return authorizationResonse;
+		} catch (error) {
+			//Problem sending authorization request or received response
+			const status = error.response.status;
+			if (status === 401) {
+				props.setVariant('danger');
+				props.updateProgress(100);
+				props.updateConsoleLog((arr) => [
+					...arr,
+					{
+						type: 'red',
+						value: 'Tranzactia nu a fost autorizata',
+					},
+				]);
+			} else {
+				setErrorLog(error.response.status);
+			}
+			throw error;
+		}
+	}
+
+	function uploadResData(event: any): void {
+		//Generate unique id
+		const resourceId = crypto
+			.createHash('sha256')
+			.update(event.target[4].value)
+			.digest('hex');
+
+		//Create an instance with transaction data
+		const transactionData = {
+			id: resourceId,
+			pathVideo: event.target[0].value,
+			pathThumbnail: event.target[2].value,
+			name: event.target[4].value,
+			length: event.target[6].value,
+			creation: event.target[5].value,
+			upload: event.target[7].value,
+			description: event.target[9].value,
+			tags: event.target[8].value,
+		};
+		// Try sending the video
+		storeVideo(transactionData);
+	}
+
+	function editResData(event: any): void {
+		//Generate unique id
+		const resourceId = crypto
+			.createHash('sha256')
+			.update(event.target[0].value)
+			.digest('hex');
+
+		const transactionData = {
+			id: resourceId,
+			name: event.target[0].value,
+			length: event.target[2].value,
+			creation: event.target[1].value,
+			upload: event.target[3].value,
+			description: event.target[5].value,
+			tags: event.target[4].value,
+		};
+		// Try editing info
+		//editVideo();
+	}
+
+	async function handleOnEdit(event: any): Promise<void> {
+		// eslint-disable-next-line prefer-const
+		let failedCounter = {
+			value: 0,
+		};
+
+		event.preventDefault();
+		isAborted = false;
+
+		verifyEmptyInput(event.target[0].value, setNameInvalid, failedCounter);
+		verifyDateInput(event.target[1].value, setCrDateInvalid, failedCounter);
+		verifyLengthInput(
+			event.target[2].value,
+			setLengthInvalid,
+			failedCounter,
+		);
+		verifyDateInput(event.target[3].value, setUpDateInvalid, failedCounter);
+		verifyEmptyInput(event.target[5].value, setDescInvalid, failedCounter);
+
+		if (failedCounter.value == 0) {
+			//Hide form and show progress bar
+			props.formModal(false);
+			props.progressModal(true);
+			//First get authorization permission
+			try {
+				//Get authorization permission
+				const response = await getAuth();
+				const status = response.status;
+
+				if (status === 200) {
+					//First step completed
+					//Authorization completed -> update progress
+					progress += 5;
+					props.updateProgress(progress);
+					props.updateConsoleLog((arr) => [
+						...arr,
+						{ type: 'blue', value: 'Tranzactia a fost autorizata' },
+					]);
+					transactionToken = response.data.toString('utf-8');
+					//Edit or upload data
+					editResData(event);
+				} else {
+					setErrorLog(status);
+				}
+			} catch (error) {
+				//Problem sending authorization request or receiving response
+				console.log(error);
+			}
+		} else {
+			//Exit
+		}
+	}
+
+	async function handleOnUpload(event: any): Promise<void> {
 		// eslint-disable-next-line prefer-const
 		let failedCounter = {
 			value: 0,
@@ -240,36 +376,18 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		verifyDateInput(event.target[7].value, setUpDateInvalid, failedCounter);
 		verifyEmptyInput(event.target[9].value, setDescInvalid, failedCounter);
 
-		//Check if all inputs are valid
 		if (failedCounter.value == 0) {
 			//Hide form and show progress bar
 			props.formModal(false);
 			props.progressModal(true);
 			//First get authorization permission
 			try {
-				const secret = fs
-					.readFileSync(
-						ipcRenderer.sendSync('eventFromRenderer') +
-							'/.sdjkvneriuhweiubkdshbcvds',
-					)
-					.toString('utf-8');
 				//Request authorization from server
-				const authorizationResonse = await axios({
-					method: 'post',
-					url: 'http://127.0.0.1:3000/api/admin/auth',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					data: {
-						phase: secret,
-					},
-				});
-				const status = authorizationResonse.status;
-				// console.log(authorizationResonse)
+				const response = await getAuth();
+				const status = response.status;
 
 				if (status === 200) {
 					//First step completed
-					// console.log('Procesul de autorizare a reusit')
 					//Authorization completed -> update progress
 					progress += 5;
 					props.updateProgress(progress);
@@ -277,27 +395,9 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 						...arr,
 						{ type: 'blue', value: 'Tranzactia a fost autorizata' },
 					]);
-					transactionToken =
-						authorizationResonse.data.toString('utf-8');
-					//Generate unique id
-					const resourceId = crypto
-						.createHash('sha256')
-						.update(event.target[4].value)
-						.digest('hex');
-					//Create an instance with transaction data
-					const transactionData = {
-						id: resourceId,
-						pathVideo: event.target[0].value,
-						pathThumbnail: event.target[2].value,
-						name: event.target[4].value,
-						length: event.target[6].value,
-						creation: event.target[5].value,
-						upload: event.target[7].value,
-						description: event.target[9].value,
-						tags: event.target[8].value,
-					};
-					//Try sending the video
-					storeVideo(transactionData);
+					transactionToken = response.data.toString('utf-8');
+					//Upload resource with data
+					uploadResData(event);
 				} else {
 					setErrorLog(status);
 				}
@@ -320,7 +420,14 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				}
 			}
 		} else {
-			//At least one input is invalid
+		}
+	}
+
+	async function handleSubmit(event: any): Promise<void> {
+		if (props.type === 'upload') {
+			handleOnUpload(event);
+		} else if (props.type === 'edit') {
+			handleOnEdit(event);
 		}
 	}
 
