@@ -66,7 +66,7 @@ export const Menu: React.FC<{ page: string; outer: string }> = (props) => {
 				className="ChannelLink"
 				onClick={(): Window =>
 					window.open(
-						'https://www.youtube.com/c/TinnitusSounds',
+						'https://www.youtube.com/channel/UCIygYFvZg8xH3S05mS7xzNg',
 						'modal',
 					)
 				}
