@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { InputGroup, FormControl, Button, Form } from 'react-bootstrap';
 import logo from '../../icons/logo.png';
 import axios from 'axios';
-import crypto from 'crypto';
 import { useHistory } from 'react-router-dom';
 import fs from 'fs';
 import { ipcRenderer } from 'electron';
+import { ResponseCodes } from '@src/utils/utils';
 
 export const Login: React.FC = () => {
 	const [admin, setAdmin] = useState('');
@@ -21,7 +21,6 @@ export const Login: React.FC = () => {
 			token,
 			() => {
 				history.push('/welcome');
-				console.log('Token written');
 			},
 		);
 	}
@@ -44,10 +43,6 @@ export const Login: React.FC = () => {
 		}
 
 		if (isValid === 0) {
-			const psswEnc = crypto
-				.createHash('sha256')
-				.update(passw)
-				.digest('hex');
 			//Send authentication request
 			try {
 				const response = await axios({
@@ -57,9 +52,8 @@ export const Login: React.FC = () => {
 						'Content-Type': 'application/json',
 					},
 					data: {
-						uid: 'kuUFNpDIUHX7u5hOODUIvA1ICp73',
 						user: admin,
-						passw: psswEnc,
+						passw: passw,
 					},
 				});
 				if (response.status === 200) {
@@ -78,8 +72,8 @@ export const Login: React.FC = () => {
 				//console.error(error)
 				if (error.response === undefined) {
 					setPasswInvalid(error.message);
-				} else if (error.response.status === 401) {
-					setPasswInvalid('Credentialele de admin sunt invalide');
+				} else {
+					setPasswInvalid(ResponseCodes.get(error.response.status));
 				}
 				setAdmin('');
 				setPassw('');
@@ -106,7 +100,7 @@ export const Login: React.FC = () => {
 							}
 						/>
 					</InputGroup>
-					<p className="InvalidField" style={{ marginTop: '2px' }}>
+					<p className="InvalidRed" style={{ marginTop: '2px' }}>
 						{adminInvalid}
 					</p>
 				</div>
@@ -124,7 +118,7 @@ export const Login: React.FC = () => {
 							}
 						/>
 					</InputGroup>
-					<p className="InvalidField" style={{ marginTop: '2px' }}>
+					<p className="InvalidRed" style={{ marginTop: '2px' }}>
 						{passwInvalid}
 					</p>
 				</div>
