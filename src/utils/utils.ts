@@ -19,7 +19,6 @@ type InfoUsage = {
 	favs: number;
 	feedbacks: number;
 };
-
 export class Err {
 	code: number;
 	message: string;
@@ -158,7 +157,7 @@ export const ResponseCodes = new Map([
 	[501, 'Metoda cererii trimisa nu este suportata de catre acest server.'],
 	[
 		503,
-		"Serviciul cerut nu este disponibil. Serverul este in mentenanta sau indisponibil in momentul de fata. Sunati ingineru' ce sa mai.",
+		'Serviciul cerut nu este disponibil. Serverul este in mentenanta sau indisponibil in momentul de fata.',
 	],
 	[
 		507,
@@ -175,3 +174,9 @@ export const encrypt = (text: string): string => {
 	const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
 	return encrypted.toString('hex');
 };
+
+export function watchToken(counter: number): void {
+	setTimeout(() => {
+		/**/
+	}, counter);
+}
