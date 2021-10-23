@@ -220,34 +220,8 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 						'/.sdjkvneriuhweiubkdshbcvds',
 				)
 				.toString('utf-8');
-			//Request authorization from server
-			const authorizationResonse = await axios({
-				method: 'post',
-				url: 'http://127.0.0.1:3000/api/admin/auth',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				data: {
-					phase: secret,
-				},
-			});
-			return authorizationResonse;
+			return secret;
 		} catch (error) {
-			//Problem sending authorization request or received response
-			const status = error.response.status;
-			if (status === 401) {
-				props.setVariant('danger');
-				props.updateProgress(100);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{
-						type: 'red',
-						value: 'Tranzactia nu a fost autorizata',
-					},
-				]);
-			} else {
-				setErrorLog(error.response.status);
-			}
 			throw error;
 		}
 	}
@@ -276,23 +250,49 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	}
 
 	function editResData(event: any): void {
-		//Generate unique id
+		//Generate signature
 		const resourceId = crypto
 			.createHash('sha256')
 			.update(event.target[0].value)
 			.digest('hex');
-
-		const transactionData = {
-			id: resourceId,
-			name: event.target[0].value,
-			length: event.target[2].value,
-			creation: event.target[1].value,
-			upload: event.target[3].value,
-			description: event.target[5].value,
-			tags: event.target[4].value,
-		};
 		// Try editing info
-		//editVideo();
+		axios({
+			method: 'post',
+			url: 'http://127.0.0.1:3000/api/admin/videos/infodb',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${transactionToken}`,
+			},
+			data: {
+				action: 'edit',
+				id: resourceId,
+				name: event.target[0].value,
+				length: event.target[2].value,
+				creation: event.target[1].value,
+				upload: event.target[3].value,
+				description: event.target[5].value,
+				tags: event.target[4].value,
+			},
+		})
+			.then((response) => {
+				props.updateProgress(100);
+				props.updateConsoleLog((arr) => [
+					...arr,
+					{
+						type: 'green',
+						value: 'Informatiile au fost editate cu succes',
+					},
+				]);
+			})
+			.catch((error) => {
+				console.log(error);
+				props.setVariant('danger');
+				props.updateProgress(100);
+				props.updateConsoleLog((arr) => [
+					...arr,
+					{ type: 'red', value: 'Operatiunea de editare a esuat' },
+				]);
+			});
 	}
 
 	async function handleOnEdit(event: any): Promise<void> {
@@ -320,25 +320,17 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			props.progressModal(true);
 			//First get authorization permission
 			try {
-				//Get authorization permission
-				const response = await getAuth();
-				const status = response.status;
-
-				if (status === 200) {
-					//First step completed
-					//Authorization completed -> update progress
-					progress += 5;
-					props.updateProgress(progress);
-					props.updateConsoleLog((arr) => [
-						...arr,
-						{ type: 'blue', value: 'Tranzactia a fost autorizata' },
-					]);
-					transactionToken = response.data.toString('utf-8');
-					//Edit or upload data
-					editResData(event);
-				} else {
-					setErrorLog(status);
-				}
+				//JWT
+				const secret = await getAuth();
+				//First step completed
+				props.updateProgress(10);
+				props.updateConsoleLog((arr) => [
+					...arr,
+					{ type: 'blue', value: 'Tranzactia a fost autorizata' },
+				]);
+				transactionToken = secret;
+				//Edit or upload data
+				editResData(event);
 			} catch (error) {
 				//Problem sending authorization request or receiving response
 				console.log(error);
@@ -382,25 +374,18 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			props.progressModal(true);
 			//First get authorization permission
 			try {
-				//Request authorization from server
-				const response = await getAuth();
-				const status = response.status;
-
-				if (status === 200) {
-					//First step completed
-					//Authorization completed -> update progress
-					progress += 5;
-					props.updateProgress(progress);
-					props.updateConsoleLog((arr) => [
-						...arr,
-						{ type: 'blue', value: 'Tranzactia a fost autorizata' },
-					]);
-					transactionToken = response.data.toString('utf-8');
-					//Upload resource with data
-					uploadResData(event);
-				} else {
-					setErrorLog(status);
-				}
+				//JWT
+				const secret = await getAuth();
+				//First step completed
+				progress += 5;
+				props.updateProgress(progress);
+				props.updateConsoleLog((arr) => [
+					...arr,
+					{ type: 'blue', value: 'Tranzactia a fost autorizata' },
+				]);
+				transactionToken = secret;
+				//Upload resource with data
+				uploadResData(event);
 			} catch (error) {
 				//Problem sending authorization request or received response
 				// console.error(error);
@@ -440,6 +425,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		]);
 	}
 
+	/**
+	 * @function storeVideo
+	 * @param transactionData
+	 */
 	function storeVideo(transactionData: TransactionData): void {
 		//First register asset and create path
 		axios({
