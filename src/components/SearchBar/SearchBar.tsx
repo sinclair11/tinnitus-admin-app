@@ -140,7 +140,7 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
 				method: 'get',
 				url: `http://127.0.0.1:3000/api/admin/videos/infodb/general?id=${id}`,
 				headers: {
-					Authorization: `${secret}`,
+					Authorization: `Bearer ${secret}`,
 				},
 			});
 			if (response.status === 200) {
@@ -152,7 +152,7 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
 						method: 'get',
 						url: `http://127.0.0.1:3000/api/admin/videos/infodb/usage?id=${id}`,
 						headers: {
-							Authorization: `${secret}`,
+							Authorization: `Bearer ${secret}`,
 						},
 					});
 					if (response.status === 200) {
@@ -205,7 +205,7 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
 				method: 'get',
 				url: `http://127.0.0.1:3000/api/admin/videos/infodb/listofvideos`,
 				headers: {
-					Authorization: `${secret}`,
+					Authorization: `Bearer ${secret}`,
 				},
 			});
 			const names = response.data['names'];
