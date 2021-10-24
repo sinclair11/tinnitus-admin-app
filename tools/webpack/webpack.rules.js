@@ -12,7 +12,7 @@ module.exports = [
 		test: /\.(m?js|node)$/,
 		parser: { amd: false },
 		use: {
-			loader: '@marshallofsound/webpack-asset-relocator-loader',
+			loader: '@timfish/webpack-asset-relocator-loader'/*'@marshallofsound/webpack-asset-relocator-loader'*/,
 			options: {
 				outputAssetBase: 'native_modules',
 			},
@@ -83,4 +83,13 @@ module.exports = [
 			},
 		],
 	},
+	// {
+	// 	// rest of the webpack config
+	// 	resolve: {
+	// 		// ... rest of the resolve config
+	// 		fallback: {
+	// 			"fs": require.resolve('fs'),
+	// 		}
+	// 	},
+	// }
 ]
