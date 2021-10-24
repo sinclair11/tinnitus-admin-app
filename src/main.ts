@@ -1,8 +1,9 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
-import installExtension, {
-	REDUX_DEVTOOLS,
-	REACT_DEVELOPER_TOOLS,
-} from 'electron-devtools-installer';
+// import installExtension, {
+// 	REDUX_DEVTOOLS,
+// 	REACT_DEVELOPER_TOOLS,
+// } from 'electron-devtools-installer';
+import fs from 'fs';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -24,7 +25,9 @@ const createWindow = (): void => {
 		show: false,
 		autoHideMenuBar: true,
 		webPreferences: {
+			webSecurity: true,
 			nodeIntegration: true,
+			nodeIntegrationInWorker: true,
 			contextIsolation: false,
 			enableRemoteModule: true,
 			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -67,12 +70,23 @@ app.on('activate', async () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 app.whenReady().then(() => {
-	installExtension(REDUX_DEVTOOLS);
-	installExtension(REACT_DEVELOPER_TOOLS);
+	//installExtension(REDUX_DEVTOOLS);
+	//installExtension(REACT_DEVELOPER_TOOLS);
 
 	console.log(app.getPath('userData'));
 });
 
-ipcMain.on('eventFromRenderer', (event) => {
-	event.returnValue = app.getPath('userData');
+ipcMain.on('eventWriteJwt', (event, token) => {
+	fs.writeFileSync(
+		app.getPath('userData') + '/.sdjkvneriuhweiubkdshbcvds',
+		token,
+	);
+	event.returnValue = true;
+});
+
+ipcMain.on('eventReadJwt', (event) => {
+	const buffer = fs.readFileSync(
+		app.getPath('userData') + '/.sdjkvneriuhweiubkdshbcvds',
+	);
+	event.returnValue = buffer.toString('utf-8');
 });
