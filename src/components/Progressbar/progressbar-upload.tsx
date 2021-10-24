@@ -68,6 +68,7 @@ export const ProgressbarUpload: React.FC<ProgressProps> = (
 			isOpen={props.isOpen}
 			style={progressStyles}
 			contentLabel="Progressbar"
+			ariaHideApp={false}
 		>
 			<div className="ProgressContainer">
 				<ProgressBar

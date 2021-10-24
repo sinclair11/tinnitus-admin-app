@@ -15,20 +15,24 @@ type TableProps = {
 };
 
 export const ResourceTable: React.FC<TableProps> = (props: TableProps) => {
-	const columns: Array<Column<{ name: string; date: string }>> =
-		React.useMemo(
-			() => [
-				{
-					Header: 'Nume',
-					accessor: 'name',
-				},
-				{
-					Header: 'Data incarcare',
-					accessor: 'date',
-				},
-			],
-			[],
-		);
+	const columns: Array<
+		Column<{
+			name: string;
+			date: string;
+		}>
+	> = React.useMemo(
+		() => [
+			{
+				Header: 'Nume',
+				accessor: 'name',
+			},
+			{
+				Header: 'Data incarcare',
+				accessor: 'date',
+			},
+		],
+		[],
+	);
 	const data = props.elements;
 
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =

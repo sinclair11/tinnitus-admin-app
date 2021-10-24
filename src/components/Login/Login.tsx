@@ -3,9 +3,9 @@ import { InputGroup, FormControl, Button, Form } from 'react-bootstrap';
 import logo from '../../icons/logo.png';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import fs from 'fs';
 import { ipcRenderer } from 'electron';
 import { ResponseCodes } from '@src/utils/utils';
+import fs from 'fs';
 
 export const Login: React.FC = () => {
 	const [admin, setAdmin] = useState('');
@@ -15,14 +15,15 @@ export const Login: React.FC = () => {
 	const history = useHistory();
 
 	function storeToken(token: string): void {
-		fs.writeFile(
-			ipcRenderer.sendSync('eventFromRenderer') +
-				'/.sdjkvneriuhweiubkdshbcvds',
-			token,
-			() => {
-				history.push('/welcome');
-			},
-		);
+		//Notify main process to store received jwt
+		const result = ipcRenderer.sendSync('eventWriteJwt', token);
+		//Everything went as expected
+		if (result) {
+			history.push('/welcome');
+		} else {
+			//Error handling
+		}
+		// fs.readFileSync('/.sdjkvneriuhweiubkdshbcvds');
 	}
 
 	async function AuthAdmin(): Promise<void> {

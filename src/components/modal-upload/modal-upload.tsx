@@ -10,9 +10,9 @@ import {
 import electron, { ipcRenderer } from 'electron';
 import { ResponseCodes } from '../../utils/utils';
 import axios from 'axios';
+import crypto from 'crypto';
 import fs from 'fs';
 import { readChunk } from 'read-chunk';
-import crypto from 'crypto';
 
 let isAborted = false;
 
@@ -64,7 +64,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	let transactionToken = '';
 	//Progress of transaction
 	let progress = 0;
-	//How many responses
+	// //How many responses
 	let responsesProgress = 0;
 	let sentRequests = 0;
 
@@ -213,17 +213,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	}
 
 	async function getAuth(): Promise<any> {
-		try {
-			const secret = fs
-				.readFileSync(
-					ipcRenderer.sendSync('eventFromRenderer') +
-						'/.sdjkvneriuhweiubkdshbcvds',
-				)
-				.toString('utf-8');
-			return secret;
-		} catch (error) {
-			throw error;
-		}
+		return ipcRenderer.sendSync('eventReadJwt');
 	}
 
 	function uploadResData(event: any): void {
@@ -295,6 +285,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			});
 	}
 
+	/**
+	 * @function hand
+	 * @param event
+	 */
 	async function handleOnEdit(event: any): Promise<void> {
 		// eslint-disable-next-line prefer-const
 		let failedCounter = {
@@ -340,6 +334,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 * @function handleOnUpload
+	 * @param event
+	 */
 	async function handleOnUpload(event: any): Promise<void> {
 		// eslint-disable-next-line prefer-const
 		let failedCounter = {
@@ -408,6 +406,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 * @function handleSubmit
+	 * @param event
+	 */
 	async function handleSubmit(event: any): Promise<void> {
 		if (props.type === 'upload') {
 			handleOnUpload(event);
@@ -416,6 +418,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 * @function setErrorLog
+	 * @param status
+	 */
 	function setErrorLog(status: number): void {
 		props.setVariant('danger');
 		props.updateProgress(100);

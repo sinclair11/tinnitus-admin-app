@@ -44,8 +44,10 @@ async function getDescription(id: string, content: string): Promise<any> {
 		.then((response) => {
 			if (response.status === 200) {
 				const data: InfoData = response.data;
-				const packedData: Array<{ name: string; value: unknown }> =
-					PackInfoData(data);
+				const packedData: Array<{
+					name: string;
+					value: unknown;
+				}> = PackInfoData(data);
 				return packedData;
 			} else if (response.status === 404) {
 				throw 'Datele cerute nu sunt disponibile!';
@@ -67,8 +69,10 @@ async function getUsage(id: string, content: string): Promise<any> {
 		.then((response) => {
 			if (response.status === 200) {
 				const data: InfoUsage = response.data;
-				const packedData: Array<{ name: string; value: unknown }> =
-					PackUsageData(data);
+				const packedData: Array<{
+					name: string;
+					value: unknown;
+				}> = PackUsageData(data);
 				return packedData;
 			} else if (response.status === 404) {
 				throw 'Datele cerute nu sunt disponibile!';
@@ -164,16 +168,6 @@ export const ResponseCodes = new Map([
 		'Serverul nu mai are spatiu de stocare suficient pentru a inregistra resursa dorita.',
 	],
 ]);
-
-const algorithm = 'aes-256-ctr';
-const secretKey = 'S948vjpAirnvGp20S948vjpAirnvGp20';
-export const iv = crypto.randomBytes(16);
-
-export const encrypt = (text: string): string => {
-	const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
-	const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
-	return encrypted.toString('hex');
-};
 
 export function watchToken(counter: number): void {
 	setTimeout(() => {

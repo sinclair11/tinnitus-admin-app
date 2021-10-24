@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ToolbarIcons } from '../../utils/icons';
 import ReactTooltip from 'react-tooltip';
 import { UploadVideoModal } from '../upload/upload';
+import axios from 'axios';
+import { ResponseCodes } from '@src/utils/utils';
 
 type ToolbarProps = {
 	container: string;
@@ -10,8 +12,26 @@ type ToolbarProps = {
 export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 	const [modalIsOpen, setIsOpen] = useState(false);
 	const [modalType, setModalType] = useState('');
+	const [editData, setEditData] = useState({});
 
-	function openModal(type: string): void {
+	async function openModal(type: string): Promise<void> {
+		if (type === 'edit') {
+			// try {
+			// 	//First get the phase
+			// 	//Get info about resource from database
+			// 	axios({
+			// 		method: 'get',
+			// 		url: 'http://127.0.0.1:3000/api/admin/auth',
+			// 		headers: {
+			// 			'Content-Type': 'application/json',
+			// 			Authorization: `Bearer ${transactionToken}`,
+			// 		},
+			// 	});
+			// } catch (error) {
+			// 	//Info could not be retrieved from database
+			// 	const message = ResponseCodes.get(error.response.statusCode);
+			// }
+		}
 		setModalType(type);
 		setIsOpen(true);
 	}
@@ -28,13 +48,13 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 				data-tip="Incarca"
 				src={ToolbarIcons['UploadIcon']}
 				className="ActionIcon"
-				onClick={(): void => openModal('upload')}
+				onClick={(): Promise<void> => openModal('upload')}
 			/>
 			<img
 				data-tip="Editeaza"
 				src={ToolbarIcons['EditIcon']}
 				className="ActionIcon"
-				onClick={(): void => openModal('edit')}
+				onClick={(): Promise<void> => openModal('edit')}
 			/>
 			<img
 				data-tip="Sterge"

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import axios from 'axios';
 import crypto from 'crypto';
-import fs from 'fs';
 import { ResponseCodes } from '@src/utils/utils';
 import { Icons } from '@src/utils/icons';
 import { ipcRenderer } from 'electron';
@@ -118,12 +117,7 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
 	 * @description Callback function which aquires resource general and usage information
 	 */
 	async function getResourceData(): Promise<void> {
-		const secret = fs
-			.readFileSync(
-				ipcRenderer.sendSync('eventFromRenderer') +
-					'/.sdjkvneriuhweiubkdshbcvds',
-			)
-			.toString('utf-8');
+		const secret = ipcRenderer.sendSync('eventReadJwt');
 		const id = crypto
 			.createHash('sha256')
 			.update(searchVal)
@@ -190,13 +184,7 @@ export const SearchBar: React.FC<SearchbarProps> = (props: SearchbarProps) => {
 	}
 
 	async function getListOfResources(): Promise<void> {
-		const secret = fs
-			.readFileSync(
-				ipcRenderer.sendSync('eventFromRenderer') +
-					'/.sdjkvneriuhweiubkdshbcvds',
-			)
-			.toString('utf-8');
-
+		const secret = ipcRenderer.sendSync('eventReadJwt');
 		//Show loading modal
 		props.setIsOpen(true);
 		//Get a list with all uploaded videosnm
