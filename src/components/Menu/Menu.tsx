@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { slide as ScaleMenu } from 'react-burger-menu';
-import Logo from '../../icons/logo.png';
-import useWindowDimensions from '../../hooks/use-window-dimensions';
-import { Icons } from '../../utils/icons';
+import Logo from '@icons/logo.png';
+import useWindowDimensions from '@src/hooks/use-window-dimensions';
+import { Icons } from '@utils/icons';
 
 export const Menu: React.FC<{ page: string; outer: string }> = (props) => {
 	const [menuWidth, setMenuWidth] = useState('25%');

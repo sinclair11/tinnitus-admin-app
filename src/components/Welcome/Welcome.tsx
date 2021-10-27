@@ -1,8 +1,8 @@
 import React from 'react';
 import { ButtonGroup, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-import logoIcon from '../../icons/logo.png';
-import { Icons } from '../../utils/icons';
+import logoIcon from '@icons/logo.png';
+import { Icons } from '@utils/icons';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const Welcome: React.FC = () => {

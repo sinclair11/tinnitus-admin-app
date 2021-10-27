@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 import { Button } from 'react-bootstrap';
 import { tableStyles } from '@src/styles/styles';
-import { Icons } from '@src/utils/icons';
+import { Icons } from '@utils/icons';
 import { Column, useTable } from 'react-table';
 
 type TableProps = {

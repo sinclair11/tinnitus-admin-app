@@ -8,7 +8,7 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
-import { ToolbarIcons } from '../../utils/icons';
+import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
 
 type GraphProps = {

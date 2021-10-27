@@ -8,7 +8,7 @@ import {
 	Form,
 } from 'react-bootstrap';
 import electron, { ipcRenderer } from 'electron';
-import { ResponseCodes } from '../../utils/utils';
+import { ResponseCodes } from '@utils/utils';
 import axios from 'axios';
 import crypto from 'crypto';
 import fs from 'fs';

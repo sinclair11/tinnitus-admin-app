@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Menu, MenuMemo } from '../menu/menu';
+import { MenuMemo } from '@components/menu/menu';
 import { Container, Row, Col } from 'react-bootstrap';
-import { SearchBar } from '../searchbar/searchbar';
-import { InfoFile } from '../infofile/infofile';
-import { Toolbar } from '../toolbar/toolbar';
-import { Graph } from '@src/components/graph/graph';
+import { SearchBar } from '@components/searchbar/searchbar';
+import { InfoFile } from '@components/infofile/infofile';
+import { Toolbar } from '@components/toolbar/toolbar';
+import { Graph } from '@components/graph/graph';
 import ReactPlayer from 'react-player';
-import { Icons } from '../../utils/icons';
+import { Icons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
-import { Feedback } from '../feedback/feedback';
-import { ModalSearch } from '@src/components/modal-search/modal-search';
-import { Dialog } from '../dialog/dialog';
-import { ResourceTable } from '../table/table';
+import { Feedback } from '@components/feedback/feedback';
+import { ModalSearch } from '@components/modal-search/modal-search';
+import { Dialog } from '@components/dialog/dialog';
+import { ResourceTable } from '@components/table/table';
 
 export const Videos: React.FC = () => {
 	const [isVisible, setIsVisible] = useState(true);

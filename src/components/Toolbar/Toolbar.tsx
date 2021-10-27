@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { ToolbarIcons } from '../../utils/icons';
+import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
-import { UploadVideoModal } from '../upload/upload';
-import axios from 'axios';
-import { ResponseCodes } from '@src/utils/utils';
+import { UploadVideoModal } from '@components/upload/upload';
 
 type ToolbarProps = {
 	container: string;

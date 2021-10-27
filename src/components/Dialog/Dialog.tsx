@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 import { dialogStyles } from '@src/styles/styles';
 import { Button } from 'react-bootstrap';
-import { Icons } from '@src/utils/icons';
+import { Icons } from '@utils/icons';
 
 type DialogProps = {
 	isOpen: boolean;

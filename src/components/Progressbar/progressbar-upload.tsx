@@ -3,9 +3,9 @@ import './progressbar.css';
 import Modal from 'react-modal';
 import { progressStyles } from '@src/styles/styles';
 import { ProgressBar, Button } from 'react-bootstrap';
-import { Icons } from '@src/utils/icons';
-import { InfoLog } from '@src/components/infolog/infolog';
-import { setAbort } from '@src/components/modal-upload/modal-upload';
+import { Icons } from '@utils/icons';
+import { InfoLog } from '@components/infolog/infolog';
+import { setAbort } from '@components/modal-upload/modal-upload';
 
 type ProgressProps = {
 	isOpen?: boolean;

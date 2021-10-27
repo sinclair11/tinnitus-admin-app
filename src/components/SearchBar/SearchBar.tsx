@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import axios from 'axios';
 import crypto from 'crypto';
-import { ResponseCodes } from '@src/utils/utils';
-import { Icons } from '@src/utils/icons';
+import { ResponseCodes } from '@utils/utils';
+import { Icons } from '@utils/icons';
 import { ipcRenderer } from 'electron';
 
 /**

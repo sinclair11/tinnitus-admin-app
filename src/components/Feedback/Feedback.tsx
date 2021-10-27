@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons, ToolbarIcons } from '../../utils/icons';
+import { Icons, ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
 import Modal from 'react-modal';
 import { Button } from 'react-bootstrap';

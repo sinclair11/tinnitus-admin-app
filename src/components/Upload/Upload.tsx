@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Icons } from '@src/utils/icons';
-import { modalStyle } from '../../styles/styles';
+import { modalStyle } from '@src/styles/styles';
 import Modal from 'react-modal';
-import { UploadForm } from '../modal-upload/modal-upload';
-import { ProgressbarUpload } from '@src/components/progressbar/progressbar-upload';
+import { UploadForm } from '@components/modal-upload/modal-upload';
+import { ProgressbarUpload } from '@components/progressbar/progressbar-upload';
 
 type UploadModalProps = {
 	modalIsOpen: boolean;
