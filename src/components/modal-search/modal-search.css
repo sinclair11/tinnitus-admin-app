@@ -1,21 +1,8 @@
-/* * {
-	border: 0;
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-} */
 :root {
 	--bg: #e3e4e8;
 	--fg: #C2B280;
 	--primary: aqua;
 }
-/* body {
-	background: var(--bg);
-	display: grid;
-	font: 1em/1.5 sans-serif;
-	height: 100vh;
-	place-items: center;
-} */
 
 .hourglass, .hourglass:before, .hourglass:after {
 	animation-duration: 5s;

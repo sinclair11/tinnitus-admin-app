@@ -9,7 +9,7 @@ const Welcome: React.FC = () => {
 	return (
 		<div className="Stack">
 			<img src={logoIcon} className="Logo fade linear" />
-			<GridActions />
+			<GridActionsMemo />
 			<p style={{ color: 'black' }}>© 2021 Tinnitus Sounds</p>
 		</div>
 	);
@@ -60,5 +60,7 @@ const GridActions: React.FC = () => {
 		</div>
 	);
 };
+
+const GridActionsMemo = React.memo(GridActions);
 
 export default Welcome;

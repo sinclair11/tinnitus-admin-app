@@ -17,6 +17,7 @@
       "@src/*": ["./src/*"],
 	  "@assets/*": ["./assets/*"],
 	  "@components": ["./src/components/*"],
+	  "@store": ["./src/store/*"],
     },
     "typeRoots": [
       "node_modules/@types"

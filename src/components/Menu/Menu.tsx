@@ -80,3 +80,5 @@ export const Menu: React.FC<{ page: string; outer: string }> = (props) => {
 		</ScaleMenu>
 	);
 };
+
+export const MenuMemo = React.memo(Menu);

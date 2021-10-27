@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu } from '../menu/menu';
+import { Menu, MenuMemo } from '../menu/menu';
 import { Container, Row, Col } from 'react-bootstrap';
 import { SearchBar } from '../searchbar/searchbar';
 import { InfoFile } from '../infofile/infofile';
@@ -127,7 +127,7 @@ export const Videos: React.FC = () => {
 					effect="float"
 					delayShow={500}
 				/>
-				<Menu page="Page" outer="View" />
+				<MenuMemo page="Page" outer="View" />
 				<div id="Page">
 					{isVisible && (
 						<div className="SearchBarDiv">
