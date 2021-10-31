@@ -1,12 +1,9 @@
 import React from 'react';
-import Modal from 'react-modal';
 import { Button } from 'react-bootstrap';
-import { tableStyles } from '@src/styles/styles';
 import { Icons } from '@utils/icons';
 import { Column, useTable } from 'react-table';
 
 type TableProps = {
-	isOpen?: boolean;
 	setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 	elements: Array<{ name: string; date: string }>;
 	setElements?: React.Dispatch<
@@ -52,7 +49,7 @@ export const ResourceTable: React.FC<TableProps> = (props: TableProps) => {
 	}
 
 	return (
-		<Modal style={tableStyles} isOpen={props.isOpen} ariaHideApp={false}>
+		<>
 			<div className="DialogHeader">
 				<p style={{ margin: '4px' }}>Lista video</p>
 			</div>
@@ -61,7 +58,6 @@ export const ResourceTable: React.FC<TableProps> = (props: TableProps) => {
 				className="CancelIcon"
 				onClick={onCancel}
 			/>
-
 			<table {...getTableProps()} className="ResTable">
 				<thead>
 					{headerGroups.map((headerGroup) => (
@@ -101,6 +97,6 @@ export const ResourceTable: React.FC<TableProps> = (props: TableProps) => {
 			>
 				OK
 			</Button>
-		</Modal>
+		</>
 	);
 };
