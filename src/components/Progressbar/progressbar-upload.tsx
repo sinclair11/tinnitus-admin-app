@@ -6,11 +6,12 @@ import { ProgressBar, Button } from 'react-bootstrap';
 import { Icons } from '@utils/icons';
 import { InfoLog } from '@components/infolog/infolog';
 import { setAbort } from '@components/modal-upload/modal-upload';
+import { useSelector, useDispatch } from 'react-redux';
+import { CombinedStates } from '@store/reducers/custom';
 
 type ProgressProps = {
 	isOpen?: boolean;
 	setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-	jobDone?: boolean;
 	progress?: number;
 	messages?: Array<{ type: string; value: unknown }>;
 	updateConsoleLog?: React.Dispatch<
@@ -24,11 +25,27 @@ type ProgressProps = {
 export const ProgressbarUpload: React.FC<ProgressProps> = (
 	props: ProgressProps,
 ) => {
+	const dispatch = useDispatch();
 	const [continueOpac, setContinueOpac] = useState(0.5);
 	const [abortOpac, setAbortOpac] = useState(1);
+	const isOpen = useSelector<CombinedStates>(
+		(state) => state.progressReducer.open,
+	) as boolean;
+	const progress = useSelector<CombinedStates>(
+		(state) => state.progressReducer.progress,
+	) as number;
+	const variant = useSelector<CombinedStates>(
+		(state) => state.progressReducer.variant,
+	) as string;
+	const log = useSelector<CombinedStates>(
+		(state) => state.progressReducer.log,
+	) as Array<{ type: string; value: unknown }>;
+	// const abort = useSelector<CombinedStates>(
+	// 	(state) => state.progressReducer.abort,
+	// ) as boolean;
 
 	useEffect(() => {
-		if (props.progress === 100) {
+		if (progress === 100) {
 			setAbortOpac(0.5);
 			setContinueOpac(1);
 		} else {
@@ -38,48 +55,46 @@ export const ProgressbarUpload: React.FC<ProgressProps> = (
 	});
 
 	function resetProgress(): void {
-		props.updateProgress(0);
-		props.updateConsoleLog([]);
-		props.updateVariant('success');
-		props.setOpen(false);
+		dispatch({ type: 'progress/clean', payload: null });
 	}
 
 	function closeModal(): void {
-		if (props.progress < 100) {
-			abortJob();
-		}
-		resetProgress();
+		// if (progress < 100) {
+		// 	abortJob();
+		// }
+		dispatch({ type: 'progress/open', payload: false });
 	}
 
 	function continueModal(): void {
-		if (props.progress === 100) {
+		if (progress === 100) {
 			resetProgress();
 		}
+		dispatch({ type: 'progress/open', payload: false });
 	}
 
 	function abortJob(): void {
-		if (props.progress < 100) {
+		if (progress < 100) {
 			setAbort(true);
 		}
 	}
 
 	return (
 		<Modal
-			isOpen={props.isOpen}
+			isOpen={isOpen}
 			style={progressStyles}
 			contentLabel="Progressbar"
 			ariaHideApp={false}
 		>
 			<div className="ProgressContainer">
 				<ProgressBar
-					variant={props.variant}
+					variant={variant}
 					className="ProgressBar"
 					animated
-					now={props.progress}
-					label={`${props.progress}%`}
+					now={progress}
+					label={`${progress}%`}
 				/>
 			</div>
-			<InfoLog messages={props.messages} />
+			<InfoLog messages={log} />
 			<p className="ModalTitle">Upload</p>
 			<img
 				src={Icons['CancelIcon']}

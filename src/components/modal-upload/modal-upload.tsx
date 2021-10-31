@@ -13,6 +13,8 @@ import axios from 'axios';
 import crypto from 'crypto';
 import fs from 'fs';
 import { readChunk } from 'read-chunk';
+import { useDispatch } from 'react-redux';
+import { store } from '@store/store';
 
 let isAborted = false;
 
@@ -33,19 +35,12 @@ type TransactionData = {
 };
 
 type UploadProps = {
-	formModal?: React.Dispatch<React.SetStateAction<boolean>>;
-	progressModal?: React.Dispatch<React.SetStateAction<boolean>>;
-	updateConsoleLog?: React.Dispatch<
-		React.SetStateAction<Array<{ type: string; value: unknown }>>
-	>;
-	updateProgress?: React.Dispatch<React.SetStateAction<number>>;
-	setVariant?: React.Dispatch<React.SetStateAction<string>>;
+	formModal: React.Dispatch<React.SetStateAction<boolean>>;
 	type: string;
-	editData?: TransactionData;
-	rowClass?: string;
 };
 
 export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
+	const dispatch = useDispatch();
 	//States for inputs
 	const [filePath, setFilePath] = useState('');
 	const [thmbPath, setThmbPath] = useState('');
@@ -68,13 +63,17 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	let responsesProgress = 0;
 	let sentRequests = 0;
 
-	useEffect((): void => {
+	useEffect(() => {
 		if (props.type === 'edit') {
 			//Request data to edit and set it to input fields
 		} else if (props.type === 'upload') {
 		}
-	});
+	}, []);
 
+	/**
+	 *
+	 * @returns
+	 */
 	function createPathElements(): JSX.Element {
 		if (props.type === 'upload') {
 			return (
@@ -142,6 +141,12 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 *
+	 * @param value
+	 * @param setState
+	 * @param result
+	 */
 	function verifyEmptyInput(
 		value: string,
 		setState: React.Dispatch<React.SetStateAction<unknown>>,
@@ -156,6 +161,12 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 *
+	 * @param value
+	 * @param setState
+	 * @param result
+	 */
 	function verifyDateInput(
 		value: string,
 		setState: React.Dispatch<React.SetStateAction<unknown>>,
@@ -176,6 +187,12 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 *
+	 * @param value
+	 * @param setState
+	 * @param result
+	 */
 	function verifyLengthInput(
 		value: string,
 		setState: React.Dispatch<React.SetStateAction<unknown>>,
@@ -194,6 +211,12 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 *
+	 * @param value
+	 * @param setState
+	 * @param result
+	 */
 	function verifyPathInput(
 		value: string,
 		setState: React.Dispatch<React.SetStateAction<unknown>>,
@@ -212,10 +235,18 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 *
+	 * @returns
+	 */
 	async function getAuth(): Promise<any> {
 		return ipcRenderer.sendSync('eventReadJwt');
 	}
 
+	/**
+	 *
+	 * @param event
+	 */
 	function uploadResData(event: any): void {
 		//Generate unique id
 		const resourceId = crypto
@@ -239,6 +270,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		storeVideo(transactionData);
 	}
 
+	/**
+	 *
+	 * @param event
+	 */
 	function editResData(event: any): void {
 		//Generate signature
 		const resourceId = crypto
@@ -265,23 +300,24 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			},
 		})
 			.then((response) => {
-				props.updateProgress(100);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{
+				// props.updateProgress(100);
+				dispatch({ type: 'progress/update', payload: 100 });
+				dispatch({
+					type: 'progress/log',
+					payload: {
 						type: 'green',
 						value: 'Informatiile au fost editate cu succes',
 					},
-				]);
+				});
 			})
 			.catch((error) => {
-				console.log(error);
-				props.setVariant('danger');
-				props.updateProgress(100);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{ type: 'red', value: 'Operatiunea de editare a esuat' },
-				]);
+				dispatch({
+					type: 'progress/fail',
+					payload: {
+						type: 'red',
+						value: 'Operatiunea de editare a esuat',
+					},
+				});
 			});
 	}
 
@@ -311,17 +347,21 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		if (failedCounter.value == 0) {
 			//Hide form and show progress bar
 			props.formModal(false);
-			props.progressModal(true);
+			// props.progressModal(true);
+			dispatch({ type: 'progress/open', payload: true });
 			//First get authorization permission
 			try {
 				//JWT
 				const secret = await getAuth();
 				//First step completed
-				props.updateProgress(10);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{ type: 'blue', value: 'Tranzactia a fost autorizata' },
-				]);
+				dispatch({ type: 'progress/update', payload: 10 });
+				dispatch({
+					type: 'progress/log',
+					payload: {
+						type: 'blue',
+						value: 'Tranzactia a fost autorizata',
+					},
+				});
 				transactionToken = secret;
 				//Edit or upload data
 				editResData(event);
@@ -369,18 +409,23 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		if (failedCounter.value == 0) {
 			//Hide form and show progress bar
 			props.formModal(false);
-			props.progressModal(true);
+			// props.progressModal(true);
+			dispatch({ type: 'progress/open', payload: true });
 			//First get authorization permission
 			try {
 				//JWT
 				const secret = await getAuth();
 				//First step completed
 				progress += 5;
-				props.updateProgress(progress);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{ type: 'blue', value: 'Tranzactia a fost autorizata' },
-				]);
+				// props.updateProgress(progress);
+				dispatch({ type: 'progress/update', payload: progress });
+				dispatch({
+					type: 'progress/log',
+					payload: {
+						type: 'blue',
+						value: 'Tranzactia a fost autorizata',
+					},
+				});
 				transactionToken = secret;
 				//Upload resource with data
 				uploadResData(event);
@@ -389,15 +434,13 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				// console.error(error);
 				const status = error.response.status;
 				if (status === 401) {
-					props.setVariant('danger');
-					props.updateProgress(100);
-					props.updateConsoleLog((arr) => [
-						...arr,
-						{
+					dispatch({
+						type: 'progress/fail',
+						payload: {
 							type: 'red',
 							value: 'Tranzactia nu a fost autorizata',
 						},
-					]);
+					});
 				} else {
 					setErrorLog(error.response.status);
 				}
@@ -423,12 +466,13 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	 * @param status
 	 */
 	function setErrorLog(status: number): void {
-		props.setVariant('danger');
-		props.updateProgress(100);
-		props.updateConsoleLog((arr) => [
-			...arr,
-			{ type: 'red', value: ResponseCodes.get(status) },
-		]);
+		dispatch({
+			type: 'progress/fail',
+			payload: {
+				type: 'red',
+				value: ResponseCodes.get(status),
+			},
+		});
 	}
 
 	/**
@@ -462,29 +506,37 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				fs.closeSync(fd);
 				//Update progress
 				progress += 5;
-				props.updateProgress(progress);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{ type: 'black', value: response.data },
-				]);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{ type: 'black', value: 'Se incarca fisierul video...' },
-				]);
-				//Try sending the video in chunks
+				// props.updateProgress(progress);
+				dispatch({ type: 'progress/update', payload: progress });
+				dispatch({
+					type: 'progress/log',
+					payload: { type: 'black', value: response.data },
+				});
+				dispatch({
+					type: 'progress/log',
+					payload: {
+						type: 'black',
+						value: 'Se incarca fisierul video...',
+					},
+				});
 				sendVideoInChunks(transactionData, 0);
 			})
 			.catch((error) => {
-				//Could not upload vide
-				props.setVariant('danger');
-				props.updateProgress(100);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{ type: 'red', value: error.response.data },
-				]);
+				//Could not upload video
+				dispatch({
+					type: 'progress/fail',
+					payload: {
+						type: 'red',
+						value: error.response.data,
+					},
+				});
 			});
 	}
 
+	/**
+	 *
+	 * @param transactionData
+	 */
 	async function storeThumbnail(
 		transactionData: TransactionData,
 	): Promise<void> {
@@ -526,40 +578,39 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					});
 					if (response.status == 201) {
 						//Thumbnail was stored
-						props.updateProgress(90);
-						props.updateConsoleLog((arr) => [
-							...arr,
-							{
+						// props.updateProgress(90);
+						dispatch({ type: 'progress/update', payload: 90 });
+						dispatch({
+							type: 'progress/log',
+							payload: {
 								type: 'green',
 								value: 'Coperta a fost incarcata cu succes',
 							},
-						]);
+						});
 						done = true;
 					}
 				} catch (error) {
-					props.setVariant('danger');
-					props.updateProgress(100);
-					props.updateConsoleLog((arr) => [
-						...arr,
-						{
-							type: 'red',
+					dispatch({
+						type: 'progress/fail',
+						payload: {
+							type: 'green',
 							value: 'Coperta nu a putut fi incarcata',
 						},
-					]);
-					props.updateConsoleLog((arr) => [
-						...arr,
-						{ type: 'red', value: 'Tranzactie incheiata' },
-					]);
+					});
+					dispatch({
+						type: 'progress/log',
+						payload: { type: 'red', value: 'Tranzactie incheiata' },
+					});
 					break;
 				}
 			} else {
 				//Update progress
-				props.setVariant('danger');
-				props.updateProgress(100);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{ type: 'red', value: 'Tranzactia a fost intrerupta' },
-				]);
+				// props.setVariant('danger');
+				// props.updateProgress(100);
+				// props.updateConsoleLog((arr) => [
+				// 	...arr,
+				// 	{ type: 'red', value: 'Tranzactia a fost intrerupta' },
+				// ]);
 				//Abort transaction
 				axios({
 					method: 'post',
@@ -584,6 +635,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 *
+	 * @param transactionData
+	 */
 	async function storeInfoInDb(
 		transactionData: TransactionData,
 	): Promise<void> {
@@ -607,33 +662,37 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				},
 			});
 			if (response.status === 200) {
-				props.updateProgress(100);
-				props.updateConsoleLog((arr) => [
-					...arr,
-					{
+				// props.updateProgress(100);
+				dispatch({ type: 'progress/update', payload: 100 });
+				dispatch({
+					type: 'progress/log',
+					payload: {
 						type: 'green',
 						value: 'Informatiile au fost ingresitrate in baza de date',
 					},
-				]);
+				});
 			}
 		} catch (err) {
 			//Update progress
-			props.setVariant('danger');
-			props.updateProgress(100);
-			props.updateConsoleLog((arr) => [
-				...arr,
-				{
+			dispatch({
+				type: 'progress/fail',
+				payload: {
 					type: 'red',
-					value: 'Informatiile nu au putut fi inregistrare',
+					value: 'Informatiile nu au putut fi inregistrate',
 				},
-			]);
-			props.updateConsoleLog((arr) => [
-				...arr,
-				{ type: 'red', value: 'Tranzactia a esuat' },
-			]);
+			});
+			dispatch({
+				type: 'progress/log',
+				payload: { type: 'red', value: 'Tranzactia a esuat' },
+			});
 		}
 	}
 
+	/**
+	 *
+	 * @param transactionData
+	 * @param startPosition
+	 */
 	async function sendVideoInChunks(
 		transactionData: TransactionData,
 		startPosition: number,
@@ -683,7 +742,11 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 						if (sentRequests >= responsesProgress) {
 							sentRequests = 0;
 							progress += 1;
-							props.updateProgress(progress);
+							// props.updateProgress(progress);
+							dispatch({
+								type: 'progress/update',
+								payload: progress,
+							});
 						}
 						//Send next chunk
 						sendVideoInChunks(transactionData, startPosition);
@@ -691,14 +754,13 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					//Resource created -> send thumbnail
 					else if (response.status === 201) {
 						//Update progress and prepare to send thumbnail
-						props.updateProgress(60);
-						props.updateConsoleLog((arr) => [
-							...arr,
-							{
+						dispatch({
+							type: 'progress/log',
+							payload: {
 								type: 'green',
 								value: 'Fisierul video a fost incarcat cu succes',
 							},
-						]);
+						});
 						storeThumbnail(transactionData);
 					}
 					//Something went wrong
@@ -710,13 +772,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					setErrorLog(err.response.status);
 				});
 		} else if (isAborted == true) {
-			//Update progress
-			props.setVariant('danger');
-			props.updateProgress(100);
-			props.updateConsoleLog((arr) => [
-				...arr,
-				{ type: 'red', value: 'Tranzactia a fost intrerupta' },
-			]);
 			//Abort transaction
 			axios({
 				method: 'delete',
@@ -735,6 +790,9 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 *
+	 */
 	function browseFile(): void {
 		// let dialog: Dialog
 		electron.remote.dialog
@@ -759,6 +817,9 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			});
 	}
 
+	/**
+	 * @function
+	 */
 	function browseThumbnail(): void {
 		// let dialog: Dialog
 		electron.remote.dialog

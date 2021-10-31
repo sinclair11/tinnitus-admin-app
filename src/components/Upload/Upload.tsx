@@ -6,20 +6,14 @@ import { UploadForm } from '@components/modal-upload/modal-upload';
 import { ProgressbarUpload } from '@components/progressbar/progressbar-upload';
 
 type UploadModalProps = {
-	modalIsOpen: boolean;
-	setModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	setDone?: React.Dispatch<React.SetStateAction<boolean>>;
-	type: string;
+	modalIsOpen?: boolean;
+	setModalIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+	type?: string;
 };
 
 export const UploadVideoModal: React.FC<UploadModalProps> = (
 	props: UploadModalProps,
 ) => {
-	const [progressOpen, setProgressOpen] = useState(false);
-	const [progress, setProgress] = useState(0);
-	const [messages, setMessages] = useState([]);
-	const [variant, setVariant] = useState('success');
-
 	function closeModal(): void {
 		props.setModalIsOpen(false);
 	}
@@ -35,14 +29,7 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (
 				<div className="UploadFormContainer">
 					<UploadForm
 						formModal={props.setModalIsOpen}
-						progressModal={setProgressOpen}
-						updateProgress={setProgress}
-						updateConsoleLog={setMessages}
-						setVariant={setVariant}
 						type={props.type}
-						rowClass={
-							props.type === 'upload' ? 'UploadType' : 'EditType'
-						}
 					/>
 				</div>
 
@@ -55,16 +42,7 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (
 					onClick={closeModal}
 				/>
 			</Modal>
-			<ProgressbarUpload
-				isOpen={progressOpen}
-				setOpen={setProgressOpen}
-				progress={progress}
-				messages={messages}
-				updateConsoleLog={setMessages}
-				updateProgress={setProgress}
-				variant={variant}
-				updateVariant={setVariant}
-			/>
+			<ProgressbarUpload />
 		</div>
 	);
 };
