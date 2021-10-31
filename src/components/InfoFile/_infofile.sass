@@ -2,10 +2,9 @@
 @use '../../styles/custom'
 
 .InfoPlaceholder
+  display: flex
+  flex-direction: column
   background-color: colors.$section
-  display: inline-block
-  justify-content: center
-  align-items: center
   border-radius: 5px
   width: 70%
   height: 30%
@@ -13,6 +12,7 @@
   box-shadow: custom.$boxshadow
   border-bottom-left-radius: 0px
   border-bottom-right-radius: 0px
+  margin-bottom: 50px
 
 .ListDiv
   display: inline-block
@@ -48,3 +48,8 @@
 
   &>h4
     font-weight: 400
+    font-size: 14px
+
+.NoSelected
+  @include custom.flexCenter($direction: column)
+  height: 100%
