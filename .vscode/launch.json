@@ -27,16 +27,6 @@
       "webRoot": "${workspaceRoot}",
       "timeout": 30000
     },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Electron MainForge",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-nix",
-      // runtimeArgs will be passed directly to your Electron application
-      "runtimeArgs": [
-      ],
-      "cwd": "${workspaceFolder}"
-    }
   ],
   "compounds": [
     {

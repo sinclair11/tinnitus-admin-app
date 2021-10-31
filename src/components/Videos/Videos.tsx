@@ -1,134 +1,141 @@
-import React, { useEffect, useState, useRef } from 'react';
-import "./video.css"
-import { Menu } from '../Menu/Menu'
+import React, { useState, useEffect } from 'react';
+import { MenuMemo } from '@components/menu/menu';
 import { Container, Row, Col } from 'react-bootstrap';
-import { SearchBar } from '../SearchBar/SearchBar'
-import { InfoFile } from '../InfoFile/InfoFile'
-import { InfoFileList, InfoUsageList } from '../../utils/info'
-import { Toolbar } from '../Toolbar/Toolbar'
-import { Graph } from '../Graph/Graph'
+import { SearchBar } from '@components/searchbar/searchbar';
+import { InfoFile } from '@components/infofile/infofile';
+import { Toolbar } from '@components/toolbar/toolbar';
+import { Graph } from '@components/graph/graph';
 import ReactPlayer from 'react-player';
-import { Icons } from '../../utils/icons'
+import { Icons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
-import { Feedback } from '../Feedback/Feedback'
+import { Feedback } from '@components/feedback/feedback';
+import '@components/modal-search/modal-search.css';
+import { useDispatch } from 'react-redux';
 
 export const Videos: React.FC = () => {
+	const [isVisible, setIsVisible] = useState(true);
+	const dispatch = useDispatch();
 
-  const [isVisible, setIsVisible] = useState(true);
-  const [info, setInfo] = useState([{
-    name: 'Nume',
-    value: 'N/A'
-  },
-  {
-    name: 'Lungime',
-    value: 'N/A'
-  },
-  {
-    name: 'Data creare',
-    value: 'N/A'
-  },
-  {
-    name: 'Data incarcare',
-    value: 'N/A'
-  },
-  {
-    name: 'Tags',
-    value: 'N/A'
-  },
-  {
-    name: 'Descriere',
-    value: 'N/A'
-  },]);
-  const [usage, setUsage] = useState([{
-    name: 'Total durata vizionari',
-    value: 'N/A'
-  },
-  {
-    name: 'Total vizionari',
-    value: 'N/A'
-  },
-  {
-    name: 'Durata per utilizator',
-    value: 'N/A'
-  },
-  {
-    name: 'Aprecieri',
-    value: 'N/A'
-  },
-  {
-    name: 'Favorizari',
-    value: 'N/A'
-  },
-  {
-    name: 'Feedback-uri',
-    value: 'N/A'
-  },]);
+	useEffect(() => {
+		dispatch({ type: 'resdata/selected', payload: '' });
+	}, []);
 
-  function moveToFeedback() {
-    setIsVisible(!isVisible)
-    ReactTooltip.hide()
-  }
+	/**
+	 * @function moveToFeedback
+	 */
+	function moveToFeedback(): void {
+		setIsVisible(!isVisible);
+		ReactTooltip.hide();
+	}
 
-  function changeBtnTip(): string {
-    if (!isVisible) {
-      return 'Pagina principala'
-    }
-    else {
-      return 'Feedback-uri'
-    }
-  }
+	/**
+	 * @function changeBtnTip
+	 * @returns
+	 */
+	function changeBtnTip(): string {
+		if (!isVisible) {
+			return 'Pagina principala';
+		} else {
+			return 'Feedback-uri';
+		}
+	}
 
-  return (
-    <div>
-      <div id="View">
-        <ReactTooltip place="top" type="dark" effect="float" delayShow={500} />
-        <Menu page="Page" outer="View" />
-        <div id="Page">
-          {isVisible && <div className="SearchBarDiv">
-            <SearchBar
-              updateInfo={setInfo}
-              updateUsage={setUsage}
-            />
-          </div>}
-          {isVisible && <Container id="content" className="ContentPlaceholder">
-            <Row className="Row">
-              <Col className="Col">
-                <Toolbar container='Toolbar' />
-                {/* <div className="VideoPlaceholder">
-                            </div> */}
-                <ReactPlayer
-                  className='react-player'
-                  url='https://youtu.be/T-4ACR94U4M'
-                  width="100%"
-                  height="40%"
-                  controls={true}
-                />
-                <Graph container='Graph' />
-              </Col>
-              <Col className="ColInfo">
-                <InfoFile
-                  title="Informatii video"
-                  className=""
-                  elements={info} />
-                <InfoFile
-                  title="Informatii utilizare"
-                  className="InfoFilePos"
-                  elements={usage} />
-              </Col>
-            </Row>
-          </Container>}
-          {!isVisible && <div id="feedback" style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Feedback />
-          </div>}
-          <img data-tip={changeBtnTip()}
-            src={Icons['SwitchIcon']}
-            className="SwitchIcon"
-            onClick={() => moveToFeedback()}
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
+	/**
+	 * @function playerOrPlaceholder
+	 * @returns
+	 */
+	function playerOrPlaceholder(): JSX.Element {
+		//Check if a resource was selected
+		if (0) {
+			return (
+				<ReactPlayer
+					className="react-player"
+					url="https://youtu.be/T-4ACR94U4M"
+					width="100%"
+					height="40%"
+					controls={true}
+				/>
+			);
+		}
+		//Display functionality N/A
+		else {
+			return (
+				<div
+					style={{
+						display: 'flex',
+						justifyContent: 'center',
+						alignItems: 'center',
+						width: '100%',
+						height: '40%',
+						background: '#004687',
+						boxShadow: '-3px 5px 4px -1px rgba(0,0,0,0.66)',
+					}}
+				>
+					<p>Functia de redare video nu este disponibila momentan.</p>
+				</div>
+			);
+		}
+	}
 
-
+	return (
+		<div>
+			<div id="View">
+				<ReactTooltip
+					place="top"
+					type="dark"
+					effect="float"
+					delayShow={1000}
+				/>
+				<MenuMemo page="Page" outer="View" />
+				<div id="Page">
+					{isVisible && (
+						<div className="SearchBarDiv">
+							<SearchBar />
+						</div>
+					)}
+					{isVisible && (
+						<Container id="content" className="ContentPlaceholder">
+							<Row className="Row">
+								<Col className="Col">
+									<Toolbar container="Toolbar" />
+									{playerOrPlaceholder()}
+									<Graph container="Graph" />
+								</Col>
+								<Col className="ColInfo">
+									<InfoFile
+										title="Informatii generale"
+										type={'general'}
+									/>
+									<InfoFile
+										title="Informatii utilizare"
+										type={'usage'}
+									/>
+								</Col>
+							</Row>
+						</Container>
+					)}
+					{!isVisible && (
+						<div
+							id="feedback"
+							style={{
+								height: '100%',
+								width: '100%',
+								display: 'flex',
+								justifyContent: 'center',
+								alignItems: 'center',
+							}}
+						>
+							<Feedback />
+						</div>
+					)}
+					<img
+						data-tip={changeBtnTip()}
+						src={Icons['SwitchIcon']}
+						className="SwitchIcon"
+						onClick={(): void => moveToFeedback()}
+					/>
+				</div>
+			</div>
+		</div>
+	);
+};

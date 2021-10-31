@@ -7,6 +7,10 @@ module.exports = {
   packagerConfig: {
     // Create asar archive for main, renderer process files
     asar: true,
+    // Set executable name
+    executableName: 'TinnitusAdmin',
+    // Set application copyright
+    appCopyright: 'Copyright (C) 2021 Tinnitus Sounds',
   },
   // Forge Makers
   makers: [
@@ -45,8 +49,10 @@ module.exports = {
       // process and support for multiple renderers.
       '@electron-forge/plugin-webpack',
       {
+        // fix content-security-policy error when image or video src isn't same origin
+        devContentSecurityPolicy: "",
         // Ports
-        port: 3000, // Webpack Dev Server port
+        port: 8080, // Webpack Dev Server port
         loggerPort: 9000, // Logger port
         // Main process webpack configuration
         mainConfig: path.join(rootDir, 'tools/webpack/webpack.main.js'),
@@ -71,6 +77,9 @@ module.exports = {
               },
             },
           ],
+        },
+        devServer: {
+          liveReload: false,
         },
       },
     ],
