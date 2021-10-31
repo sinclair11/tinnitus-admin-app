@@ -18,8 +18,8 @@
 	  "@assets/*": ["./assets/*"],
 	  "@components/*": ["./src/components/*"],
 	  "@utils/*": ["./src/utils/*"],
-	  "@store/*": ["./src/store/*"],
 	  "@icons/*": ["./src/icons/*"],
+	  "@store/*": ["./src/store/*"],
     },
     "typeRoots": [
       "node_modules/@types"
