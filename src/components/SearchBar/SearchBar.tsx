@@ -7,7 +7,7 @@ import { Icons } from '@utils/icons';
 import { ipcRenderer } from 'electron';
 import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';
 import Modal from 'react-modal';
-import { Dialog } from '@components/dialog/dialog';
+import { Dialog } from '@components/dialog/Dialog';
 import { ResourceTable } from '@components/table/table';
 import { useDispatch } from 'react-redux';
 
