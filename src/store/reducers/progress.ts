@@ -68,6 +68,7 @@ export function progressReducer(
 		case 'progress/clean':
 			return {
 				...state,
+				open: false,
 				progress: 0,
 				variant: 'success',
 				log: Array<{ type: string; value: unknown }>(),
