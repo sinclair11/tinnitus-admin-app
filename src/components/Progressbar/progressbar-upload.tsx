@@ -5,26 +5,10 @@ import { progressStyles } from '@src/styles/styles';
 import { ProgressBar, Button } from 'react-bootstrap';
 import { Icons } from '@utils/icons';
 import { InfoLog } from '@components/infolog/infolog';
-import { setAbort } from '@components/modal-upload/modal-upload';
 import { useSelector, useDispatch } from 'react-redux';
 import { CombinedStates } from '@store/reducers/custom';
 
-type ProgressProps = {
-	isOpen?: boolean;
-	setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-	progress?: number;
-	messages?: Array<{ type: string; value: unknown }>;
-	updateConsoleLog?: React.Dispatch<
-		React.SetStateAction<Array<{ type: string; value: unknown }>>
-	>;
-	updateProgress?: React.Dispatch<React.SetStateAction<number>>;
-	variant?: string;
-	updateVariant?: React.Dispatch<React.SetStateAction<string>>;
-};
-
-export const ProgressbarUpload: React.FC<ProgressProps> = (
-	props: ProgressProps,
-) => {
+export const ProgressbarUpload: React.FC = () => {
 	const dispatch = useDispatch();
 	const [continueOpac, setContinueOpac] = useState(0.5);
 	const [abortOpac, setAbortOpac] = useState(1);
@@ -40,9 +24,6 @@ export const ProgressbarUpload: React.FC<ProgressProps> = (
 	const log = useSelector<CombinedStates>(
 		(state) => state.progressReducer.log,
 	) as Array<{ type: string; value: unknown }>;
-	// const abort = useSelector<CombinedStates>(
-	// 	(state) => state.progressReducer.abort,
-	// ) as boolean;
 
 	useEffect(() => {
 		if (progress === 100) {
@@ -54,27 +35,50 @@ export const ProgressbarUpload: React.FC<ProgressProps> = (
 		}
 	});
 
-	function resetProgress(): void {
-		dispatch({ type: 'progress/clean', payload: null });
+	/**
+	 * @function deleteRes
+	 */
+	async function deleteRes(): Promise<any> {
+		//
 	}
 
-	function closeModal(): void {
-		// if (progress < 100) {
-		// 	abortJob();
-		// }
-		dispatch({ type: 'progress/open', payload: false });
-	}
+	/**
+	 * @function close
+	 * @param action
+	 */
+	function close(action: string): void {
+		switch (action) {
+			case 'cancel':
+				//Request server to delete unfinished resource
+				if (progress < 100) {
+				}
+				dispatch({ type: 'progress/clean', payload: null });
+				deleteRes();
+				break;
 
-	function continueModal(): void {
-		if (progress === 100) {
-			resetProgress();
-		}
-		dispatch({ type: 'progress/open', payload: false });
-	}
+			case 'abort':
+				//Abort upload process and request deletion of unfinished resource
+				dispatch({ type: 'progress/progress', payload: 100 });
+				dispatch({ type: 'progress/variant', payload: 'danger' });
+				dispatch({
+					type: 'progress/log',
+					payload: {
+						type: 'red',
+						value: 'Tranzactia a fost intrerupta',
+					},
+				});
+				deleteRes();
+				break;
 
-	function abortJob(): void {
-		if (progress < 100) {
-			setAbort(true);
+			case 'continue':
+				//Reset the state of progressbar component
+				if (progress === 100) {
+					dispatch({ type: 'progress/clean', payload: null });
+				}
+				break;
+
+			default:
+				break;
 		}
 	}
 
@@ -99,19 +103,19 @@ export const ProgressbarUpload: React.FC<ProgressProps> = (
 			<img
 				src={Icons['CancelIcon']}
 				className="CancelIcon"
-				onClick={(): void => closeModal()}
+				onClick={(): void => close('cancel')}
 			/>
 			<Button
 				className="BtnProgress"
 				style={{ opacity: abortOpac }}
-				onClick={abortJob}
+				onClick={(): void => close('abort')}
 			>
 				<p className="BtnProgressTxt">Abort</p>
 			</Button>
 			<Button
 				className="BtnProgress"
 				style={{ right: '95px', opacity: continueOpac }}
-				onClick={continueModal}
+				onClick={(): void => close('continue')}
 			>
 				<p className="BtnProgressTxt">Continue</p>
 			</Button>
