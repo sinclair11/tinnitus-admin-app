@@ -4,7 +4,8 @@ import logo from '@icons/logo.png';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import { ResponseCodes } from '@utils/utils';
+import { ResponseCodes, watchToken } from '@utils/utils';
+import { useDispatch } from 'react-redux';
 
 export const Login: React.FC = () => {
 	const [admin, setAdmin] = useState('');
@@ -12,12 +13,16 @@ export const Login: React.FC = () => {
 	const [adminInvalid, setAdminInvalid] = useState('');
 	const [passwInvalid, setPasswInvalid] = useState('');
 	const history = useHistory();
+	const dispatch = useDispatch();
 
 	function storeToken(token: string): void {
 		//Notify main process to store received jwt
 		const result = ipcRenderer.sendSync('eventWriteJwt', token);
 		//Everything went as expected
 		if (result) {
+			watchToken();
+			dispatch({ type: 'general/set-admin', payload: admin });
+			dispatch({ type: 'general/set-password', payload: passw });
 			history.push('/welcome');
 		} else {
 			//Error handling
