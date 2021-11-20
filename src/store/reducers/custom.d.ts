@@ -14,14 +14,17 @@ export type ResdataState = {
 	usage: { name: string; value: unknown }[];
 };
 
-export type ModalState = {
-	uploadVisible: boolean;
-	type: string;
+export type GeneralState = {
+	token: string;
+	isTokenExpired: boolean;
+	admin: string;
+	password: string;
 };
 
 export type CombinedStates = {
 	resdataReducer: ResdataState;
 	progressReducer: ProgState;
+	generalReducer: GeneralState;
 };
 
 export type action = {
