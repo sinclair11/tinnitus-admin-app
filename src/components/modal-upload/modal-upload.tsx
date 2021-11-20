@@ -271,7 +271,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	}
 
 	/**
-	 *
+	 * @function editResData
 	 * @param event
 	 */
 	function editResData(event: any): void {
@@ -292,17 +292,25 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			},
 		})
 			.then((response) => {
-				// props.updateProgress(100);
-				dispatch({ type: 'progress/update', payload: 100 });
-				dispatch({
-					type: 'progress/log',
-					payload: {
-						type: 'green',
-						value: 'Informatiile au fost editate cu succes',
-					},
-				});
+				//Check response
+				if (response.status === 200) {
+					//Edit action completed successfully
+					dispatch({ type: 'progress/update', payload: 100 });
+					dispatch({
+						type: 'progress/log',
+						payload: {
+							type: 'green',
+							value: 'Informatiile au fost editate cu succes',
+						},
+					});
+				}
 			})
 			.catch((error) => {
+				/**
+				 * @todo log error in db specific document
+				 */
+				console.log(error);
+				//Notify user that edit action failed
 				dispatch({
 					type: 'progress/fail',
 					payload: {
@@ -322,10 +330,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		let failedCounter = {
 			value: 0,
 		};
-
 		event.preventDefault();
 		isAborted = false;
 
+		//Verify name and description (always mandatory)
 		verifyEmptyInput(event.target[0].value, setNameInvalid, failedCounter);
 		verifyEmptyInput(event.target[2].value, setDescInvalid, failedCounter);
 
@@ -352,10 +360,13 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				editResData(event);
 			} catch (error) {
 				//Problem sending authorization request or receiving response
+				/**
+				 * @todo log error in db specific document
+				 */
 				console.log(error);
 			}
 		} else {
-			//Exit
+			//Exit -> user already notified via input mandatory fields
 		}
 	}
 
@@ -416,7 +427,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				uploadResData(event);
 			} catch (error) {
 				//Problem sending authorization request or received response
-				// console.error(error);
+				/**
+				 * @todo log error in db specific document
+				 */
+				console.error(error);
 				const status = error.response.status;
 				if (status === 401) {
 					dispatch({
@@ -431,6 +445,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				}
 			}
 		} else {
+			//Exit -> user already notified via input mandatory fields
 		}
 	}
 
@@ -446,10 +461,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
-	/**
-	 * @function setErrorLog
-	 * @param status
-	 */
 	function setErrorLog(status: number): void {
 		dispatch({
 			type: 'progress/fail',

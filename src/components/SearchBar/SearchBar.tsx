@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import axios from 'axios';
-import crypto from 'crypto';
 import { ResponseCodes } from '@utils/utils';
 import { Icons } from '@utils/icons';
 import { ipcRenderer } from 'electron';
@@ -10,6 +9,7 @@ import Modal from 'react-modal';
 import { Dialog } from '@components/dialog/Dialog';
 import { ResourceTable } from '@components/table/table';
 import { useDispatch } from 'react-redux';
+import { store } from '@src/store/store';
 
 export const SearchBar: React.FC = () => {
 	const [searchVal, setSearchVal] = useState('');
@@ -67,12 +67,8 @@ export const SearchBar: React.FC = () => {
 	 * @description Callback function which aquires resource general and usage information
 	 */
 	async function getResourceData(): Promise<void> {
+		//Token
 		const secret = ipcRenderer.sendSync('eventReadJwt');
-		const id = crypto
-			.createHash('sha256')
-			.update(searchVal)
-			.digest('hex')
-			.toString();
 		let dataInfo = [];
 		let dataUsage = [];
 
@@ -82,7 +78,7 @@ export const SearchBar: React.FC = () => {
 		try {
 			const response = await axios({
 				method: 'get',
-				url: `http://127.0.0.1:3000/api/admin/videos/infodb/general?id=${id}`,
+				url: `http://127.0.0.1:3000/api/admin/videos/infodb/general?id=${searchVal}`,
 				headers: {
 					Authorization: `Bearer ${secret}`,
 				},
@@ -99,7 +95,7 @@ export const SearchBar: React.FC = () => {
 				try {
 					const response = await axios({
 						method: 'get',
-						url: `http://127.0.0.1:3000/api/admin/videos/infodb/usage?id=${id}`,
+						url: `http://127.0.0.1:3000/api/admin/videos/infodb/usage?id=${searchVal}`,
 						headers: {
 							Authorization: `Bearer ${secret}`,
 						},
@@ -138,6 +134,10 @@ export const SearchBar: React.FC = () => {
 		}
 	}
 
+	/**
+	 * @callback
+	 * @description
+	 */
 	async function getListOfResources(): Promise<void> {
 		const secret = ipcRenderer.sendSync('eventReadJwt');
 		//Show loading modal
