@@ -14,10 +14,13 @@ const initialState: ProgState = {
  * @param action Event triggered for state
  * @returns Global state of app
  * @description Available actions regarding progressbar state are:
+ * - progress/open
  * - progress/update
  * - progress/log
- * - progress/change
- * - progress/show
+ * - progress/variant
+ * - progress/abort
+ * - progress/fail
+ * - progress/clean
  */
 export function progressReducer(
 	state: ProgState = initialState,

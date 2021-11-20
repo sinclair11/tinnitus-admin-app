@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import crypto from 'crypto';
+import { store } from '@store/store';
+import { useDispatch } from 'react-redux';
+import { ipcRenderer } from 'electron';
 
 type InfoData = {
 	name: string;
@@ -33,118 +35,6 @@ export class Err {
 	}
 }
 
-type ChartData = {
-	data: Array<{ day: string; value: unknown }>;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getDescription(id: string, content: string): Promise<any> {
-	return axios
-		.get(`/api/admin/${content}?${id}`)
-		.then((response) => {
-			if (response.status === 200) {
-				const data: InfoData = response.data;
-				const packedData: Array<{
-					name: string;
-					value: unknown;
-				}> = PackInfoData(data);
-				return packedData;
-			} else if (response.status === 404) {
-				throw 'Datele cerute nu sunt disponibile!';
-			} else if (response.status === 401) {
-				throw 'Nu suntenti autentificat in sistem!';
-			} else if (response.status === 403) {
-				throw 'Accesul interzis! Nu aveti drepturi autorizate asupra acestor date!';
-			}
-		})
-		.catch((err) => {
-			throw err;
-		});
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getUsage(id: string, content: string): Promise<any> {
-	return axios
-		.get(`/api/admin/${content}?${id}`)
-		.then((response) => {
-			if (response.status === 200) {
-				const data: InfoUsage = response.data;
-				const packedData: Array<{
-					name: string;
-					value: unknown;
-				}> = PackUsageData(data);
-				return packedData;
-			} else if (response.status === 404) {
-				throw 'Datele cerute nu sunt disponibile!';
-			} else if (response.status === 401) {
-				throw 'Nu suntenti autentificat in sistem!';
-			} else if (response.status === 403) {
-				throw 'Accesul interzis! Nu aveti drepturi autorizate asupra acestor date!';
-			}
-		})
-		.catch((err) => {
-			throw err;
-		});
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getChartData(
-	content: string,
-	year: string,
-	month: string,
-	day?: string,
-): Promise<any> {
-	let subpath = `/api/admin/statistics/${content}?year=${year}&month=${month}`;
-
-	if (day != '') {
-		subpath += `&day=${day}`;
-	}
-
-	return axios
-		.get(subpath)
-		.then((response) => {
-			if (response.status === 200) {
-				const data: ChartData = response.data;
-				return data;
-			} else if (response.status === 404) {
-				throw 'Datele cerute nu sunt disponibile!';
-			} else if (response.status === 401) {
-				throw 'Nu suntenti autentificat in sistem!';
-			} else if (response.status === 403) {
-				throw 'Accesul interzis! Nu aveti drepturi autorizate asupra acestor date!';
-			}
-		})
-		.catch((err) => {
-			throw err;
-		});
-}
-
-function PackInfoData(data: InfoData): Array<{ name: string; value: unknown }> {
-	let pack: Array<{ name: string; value: unknown }>;
-	pack.push({ name: 'Nume', value: data['name'] });
-	pack.push({ name: 'Lungime', value: data['length'] });
-	pack.push({ name: 'Data creare', value: data['creation'] });
-	pack.push({ name: 'Data incarcare', value: data['upload'] });
-	pack.push({ name: 'Tags', value: data['tags'] });
-	pack.push({ name: 'Descriere', value: data['description'] });
-
-	return pack;
-}
-
-function PackUsageData(
-	data: InfoUsage,
-): Array<{ name: string; value: unknown }> {
-	let pack: Array<{ name: string; value: unknown }>;
-	pack.push({ name: 'Total durata vizionari', value: data['duration'] });
-	pack.push({ name: 'Total vizionari', value: data['views'] });
-	pack.push({ name: 'Durata per utilizator', value: data['peruser'] });
-	pack.push({ name: 'Aprecieri', value: data['likes'] });
-	pack.push({ name: 'Favorizari', value: data['favs'] });
-	pack.push({ name: 'Feedback-uri', value: data['feedbacks'] });
-
-	return pack;
-}
-
 export const ResponseCodes = new Map([
 	[200, 'Cererea a fost efectuata cu succes.'],
 	[201, 'Resursa a fost creata.'],
@@ -169,8 +59,39 @@ export const ResponseCodes = new Map([
 	],
 ]);
 
-export function watchToken(counter: number): void {
-	setTimeout(() => {
-		/**/
-	}, counter);
+export function watchToken(): void {
+	setTimeout(async () => {
+		try {
+			console.error('Token expired');
+			const token = await refreshToken();
+			//Notify main process to store received jwt
+			const result = ipcRenderer.sendSync('eventWriteJwt', token);
+			if (result) {
+				watchToken();
+			} else {
+				//Error handling
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}, 3600000);
+}
+
+export async function refreshToken(): Promise<string> {
+	try {
+		const response = await axios({
+			method: 'post',
+			url: `http://127.0.0.1:3000/api/admin/login`,
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			data: {
+				user: store.getState().generalReducer.admin,
+				passw: store.getState().generalReducer.password,
+			},
+		});
+		return response.data.token;
+	} catch (error) {
+		throw error;
+	}
 }
