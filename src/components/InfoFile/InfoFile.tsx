@@ -17,11 +17,11 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
 					(state) => state.resdataReducer.usage,
 			  ) as { name: string; value: unknown }[]);
 
-	function initialInfo(): JSX.Element {
-		const selected = useSelector<CombinedStates>(
-			(state) => state.resdataReducer.selected,
-		) as string;
+	const selected = useSelector<CombinedStates>(
+		(state) => state.resdataReducer.selected,
+	) as string;
 
+	function initialInfo(): JSX.Element {
 		if (selected === '') {
 			return (
 				<div className="NoSelected">
@@ -51,15 +51,6 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
 			<div className="InfoTitle">
 				<h4>{props.title}</h4>
 			</div>
-			{/* <div className="ListDiv">
-				<ul className="InfoList">
-					{props.elements.map((item, index) => (
-						<li key={index}>
-							{item.name}: <b>{item.value}</b>
-						</li>
-					))}
-				</ul>
-			</div> */}
 			{initialInfo()}
 		</div>
 	);

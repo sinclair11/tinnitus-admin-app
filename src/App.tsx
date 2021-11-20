@@ -1,10 +1,10 @@
 import React from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
-import Welcome from './components/welcome/welcome';
-import { Videos } from './components/videos/videos';
+import Welcome from '@components/welcome/Welcome';
+import { Videos } from '@components/videos/Videos';
 import './app.sass';
-import { Login } from './components/login/login';
+import { Login } from '@components/login/Login';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const App: React.FC<{ title: string; version: string }> = (props: {

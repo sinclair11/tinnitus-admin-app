@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
-import { UploadVideoModal } from '@components/upload/upload';
-import { store } from '@src/store/store';
+import { UploadVideoModal } from '@components/upload/Upload';
 
 type ToolbarProps = {
 	container: string;

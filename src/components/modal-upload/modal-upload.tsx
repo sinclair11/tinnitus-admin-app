@@ -271,15 +271,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	}
 
 	/**
-	 *
+	 * @function editResData
 	 * @param event
 	 */
 	function editResData(event: any): void {
-		//Generate signature
-		const resourceId = crypto
-			.createHash('sha256')
-			.update(event.target[0].value)
-			.digest('hex');
 		// Try editing info
 		axios({
 			method: 'post',
@@ -290,27 +285,32 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			},
 			data: {
 				action: 'edit',
-				id: resourceId,
+				oldname: store.getState().resdataReducer.editSelected,
 				name: event.target[0].value,
-				length: event.target[2].value,
-				creation: event.target[1].value,
-				upload: event.target[3].value,
-				description: event.target[5].value,
-				tags: event.target[4].value,
+				description: event.target[2].value,
+				tags: event.target[1].value,
 			},
 		})
 			.then((response) => {
-				// props.updateProgress(100);
-				dispatch({ type: 'progress/update', payload: 100 });
-				dispatch({
-					type: 'progress/log',
-					payload: {
-						type: 'green',
-						value: 'Informatiile au fost editate cu succes',
-					},
-				});
+				//Check response
+				if (response.status === 200) {
+					//Edit action completed successfully
+					dispatch({ type: 'progress/update', payload: 100 });
+					dispatch({
+						type: 'progress/log',
+						payload: {
+							type: 'green',
+							value: 'Informatiile au fost editate cu succes',
+						},
+					});
+				}
 			})
 			.catch((error) => {
+				/**
+				 * @todo log error in db specific document
+				 */
+				console.log(error);
+				//Notify user that edit action failed
 				dispatch({
 					type: 'progress/fail',
 					payload: {
@@ -322,7 +322,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	}
 
 	/**
-	 * @function hand
+	 * @function handleOnEdit
 	 * @param event
 	 */
 	async function handleOnEdit(event: any): Promise<void> {
@@ -330,19 +330,12 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		let failedCounter = {
 			value: 0,
 		};
-
 		event.preventDefault();
 		isAborted = false;
 
+		//Verify name and description (always mandatory)
 		verifyEmptyInput(event.target[0].value, setNameInvalid, failedCounter);
-		verifyDateInput(event.target[1].value, setCrDateInvalid, failedCounter);
-		verifyLengthInput(
-			event.target[2].value,
-			setLengthInvalid,
-			failedCounter,
-		);
-		verifyDateInput(event.target[3].value, setUpDateInvalid, failedCounter);
-		verifyEmptyInput(event.target[5].value, setDescInvalid, failedCounter);
+		verifyEmptyInput(event.target[2].value, setDescInvalid, failedCounter);
 
 		if (failedCounter.value == 0) {
 			//Hide form and show progress bar
@@ -363,14 +356,17 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					},
 				});
 				transactionToken = secret;
-				//Edit or upload data
+				//Upload edited data
 				editResData(event);
 			} catch (error) {
 				//Problem sending authorization request or receiving response
+				/**
+				 * @todo log error in db specific document
+				 */
 				console.log(error);
 			}
 		} else {
-			//Exit
+			//Exit -> user already notified via input mandatory fields
 		}
 	}
 
@@ -431,7 +427,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				uploadResData(event);
 			} catch (error) {
 				//Problem sending authorization request or received response
-				// console.error(error);
+				/**
+				 * @todo log error in db specific document
+				 */
+				console.error(error);
 				const status = error.response.status;
 				if (status === 401) {
 					dispatch({
@@ -446,6 +445,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				}
 			}
 		} else {
+			//Exit -> user already notified via input mandatory fields
 		}
 	}
 
@@ -461,10 +461,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
-	/**
-	 * @function setErrorLog
-	 * @param status
-	 */
 	function setErrorLog(status: number): void {
 		dispatch({
 			type: 'progress/fail',
@@ -503,10 +499,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					fs.statSync(transactionData.pathVideo).size / (1000 * 100),
 				);
 				responsesProgress = Math.round((totalRequests * 2) / 100);
+				//Close file after operation
 				fs.closeSync(fd);
-				//Update progress
+				//Update progress and log
 				progress += 5;
-				// props.updateProgress(progress);
 				dispatch({ type: 'progress/update', payload: progress });
 				dispatch({
 					type: 'progress/log',
@@ -791,7 +787,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	}
 
 	/**
-	 *
+	 *	@function browseFile
 	 */
 	function browseFile(): void {
 		// let dialog: Dialog
@@ -861,59 +857,62 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 							</InputGroup>
 							<p className="InvalidField">{nameInvalid}</p>
 						</div>
-
-						<div className="Section SectionInput">
-							<InputGroup
-								className="InputInfoGroup"
-								hasValidation
-							>
-								<InputGroup.Text className="LabelDate">
-									Data creare
-								</InputGroup.Text>
-								<FormControl
-									className="InputText"
-									placeholder="dd/mm/yyyy"
-									required
-								/>
-							</InputGroup>
-							<p className="InvalidField">{crDateInvalid}</p>
-						</div>
+						{props.type === 'upload' && (
+							<div className="Section SectionInput">
+								<InputGroup
+									className="InputInfoGroup"
+									hasValidation
+								>
+									<InputGroup.Text className="LabelDate">
+										Data creare
+									</InputGroup.Text>
+									<FormControl
+										className="InputText"
+										placeholder="dd/mm/yyyy"
+										required
+									/>
+								</InputGroup>
+								<p className="InvalidField">{crDateInvalid}</p>
+							</div>
+						)}
 					</Col>
-					<Col className="ColInfo">
-						<div className="Section SectionInput">
-							<InputGroup
-								className="InputInfoGroup"
-								hasValidation
-							>
-								<InputGroup.Text className="Label">
-									Lungime
-								</InputGroup.Text>
-								<FormControl
-									className="InputText"
-									placeholder="hh:mm:ss"
-									required
-								/>
-							</InputGroup>
-							<p className="InvalidField">{lengthInvalid}</p>
-						</div>
+					{props.type === 'upload' && (
+						<Col className="ColInfo">
+							<div className="Section SectionInput">
+								<InputGroup
+									className="InputInfoGroup"
+									hasValidation
+								>
+									<InputGroup.Text className="Label">
+										Lungime
+									</InputGroup.Text>
+									<FormControl
+										className="InputText"
+										placeholder="hh:mm:ss"
+										required
+									/>
+								</InputGroup>
+								<p className="InvalidField">{lengthInvalid}</p>
+							</div>
 
-						<div className="Section SectionInput">
-							<InputGroup
-								className="InputInfoGroup"
-								hasValidation
-							>
-								<InputGroup.Text className="LabelDate">
-									Data incarcare
-								</InputGroup.Text>
-								<FormControl
-									className="InputText"
-									placeholder="dd/mm/yyyy"
-									required
-								/>
-							</InputGroup>
-							<p className="InvalidField">{upDateInvalid}</p>
-						</div>
-					</Col>
+							<div className="Section SectionInput">
+								<InputGroup
+									className="InputInfoGroup"
+									hasValidation
+								>
+									<InputGroup.Text className="LabelDate">
+										Data incarcare
+									</InputGroup.Text>
+									<FormControl
+										className="InputText"
+										placeholder="dd/mm/yyyy"
+										required
+									/>
+								</InputGroup>
+								<p className="InvalidField">{upDateInvalid}</p>
+							</div>
+						</Col>
+					)}
 				</Row>
 
 				<Row className={'IRow'}>

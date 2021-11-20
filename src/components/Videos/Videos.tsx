@@ -1,23 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { MenuMemo } from '@components/menu/menu';
+import { MenuMemo } from '@components/menu/Menu';
 import { Container, Row, Col } from 'react-bootstrap';
-import { SearchBar } from '@components/searchbar/searchbar';
-import { InfoFile } from '@components/infofile/infofile';
-import { Toolbar } from '@components/toolbar/toolbar';
-import { Graph } from '@components/graph/graph';
+import { SearchBar } from '@components/searchbar/SearchBar';
+import { InfoFile } from '@components/infofile/InfoFile';
+import { Toolbar } from '@components/toolbar/Toolbar';
+import { Graph } from '@components/graph/Graph';
 import ReactPlayer from 'react-player';
 import { Icons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
-import { Feedback } from '@components/feedback/feedback';
+import { Feedback } from '@components/feedback/Feedback';
 import '@components/modal-search/modal-search.css';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { CombinedStates } from '@src/store/reducers/custom';
 
-export const Videos: React.FC = () => {
+type ResProps = {
+	resourceType: string;
+};
+
+export const Videos: React.FC<ResProps> = (props: ResProps) => {
 	const [isVisible, setIsVisible] = useState(true);
 	const dispatch = useDispatch();
+	const selected = useSelector<CombinedStates>(
+		(state) => state.resdataReducer.selected,
+	) as string;
 
 	useEffect(() => {
+		//No resource data on first rendering
 		dispatch({ type: 'resdata/selected', payload: '' });
+		dispatch({ type: 'resdata/edit', payload: '' });
+		dispatch({ type: 'resdata/delete', payload: '' });
 	}, []);
 
 	/**
@@ -29,35 +40,28 @@ export const Videos: React.FC = () => {
 	}
 
 	/**
-	 * @function changeBtnTip
-	 * @returns
-	 */
-	function changeBtnTip(): string {
-		if (!isVisible) {
-			return 'Pagina principala';
-		} else {
-			return 'Feedback-uri';
-		}
-	}
-
-	/**
 	 * @function playerOrPlaceholder
 	 * @returns
 	 */
 	function playerOrPlaceholder(): JSX.Element {
 		//Check if a resource was selected
-		if (0) {
-			return (
-				<ReactPlayer
-					className="react-player"
-					url="https://youtu.be/T-4ACR94U4M"
-					width="100%"
-					height="40%"
-					controls={true}
-				/>
-			);
+		if (false /*selected !== ''*/) {
+			//Insert video player
+			if (props.resourceType === 'video') {
+				return (
+					<ReactPlayer
+						className="react-player"
+						url="https://youtu.be/T-4ACR94U4M"
+						width="100%"
+						height="40%"
+						controls={true}
+					/>
+				);
+			} else if (props.resourceType === 'audio') {
+				//Insert audio player
+			}
 		}
-		//Display functionality N/A
+		//Functionality N/A
 		else {
 			return (
 				<div
@@ -129,7 +133,6 @@ export const Videos: React.FC = () => {
 						</div>
 					)}
 					<img
-						data-tip={changeBtnTip()}
 						src={Icons['SwitchIcon']}
 						className="SwitchIcon"
 						onClick={(): void => moveToFeedback()}

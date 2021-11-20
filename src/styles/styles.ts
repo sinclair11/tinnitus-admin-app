@@ -23,7 +23,7 @@ export function modalStyle(type: string): unknown {
 export const dialogStyles = {
 	content: {
 		width: '300px',
-		height: '130px',
+		height: '150px',
 		display: 'inline-block',
 		justifyContent: 'center',
 		alignItems: 'center',
