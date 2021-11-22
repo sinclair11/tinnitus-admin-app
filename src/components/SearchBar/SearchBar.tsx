@@ -23,6 +23,8 @@ export const SearchBar: React.FC = () => {
 	const [tableElements, setTableElements] = useState([]);
 	//Table modal state
 	const [tableOpen, setTableOpen] = useState(false);
+	//Selected resource
+	const [selected, setSelected] = useState('');
 
 	const dispatch = useDispatch();
 
@@ -194,9 +196,22 @@ export const SearchBar: React.FC = () => {
 		}
 	}
 
-	function closeListView(): void {
+	function clearListModal(): void {
 		setTableOpen(false);
 		setTableElements([]);
+	}
+
+	function closeListView(): void {
+		clearListModal();
+	}
+
+	function cancelList(): void {
+		clearListModal();
+	}
+
+	function okList(): void {
+		clearListModal();
+		setSearchVal(selected);
 	}
 
 	return (
@@ -232,13 +247,19 @@ export const SearchBar: React.FC = () => {
 				<Dialog setIsOpen={setDialogOpen} message={message} />
 			</Modal>
 			<Modal style={tableStyles} isOpen={tableOpen} ariaHideApp={false}>
-				<Reslist entries={tableElements} />
+				<Reslist entries={tableElements} selectFromList={setSelected} />
 				<p className="ModalTitle">Lista video</p>
 				<img
 					src={Icons['CancelIcon']}
 					className="CancelIcon"
 					onClick={closeListView}
 				/>
+				<Button className="ListOk" onClick={okList}>
+					OK
+				</Button>
+				<Button className="ListCancel" onClick={cancelList}>
+					Cancel
+				</Button>
 			</Modal>
 		</InputGroup>
 	);
