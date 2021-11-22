@@ -7,7 +7,7 @@ import { ipcRenderer } from 'electron';
 import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';
 import Modal from 'react-modal';
 import { Dialog } from '@components/dialog/Dialog';
-import { ResourceTable } from '@components/table/table';
+import { Reslist } from '@components/reslist/reslist';
 import { useDispatch } from 'react-redux';
 import { store } from '@src/store/store';
 
@@ -114,9 +114,11 @@ export const SearchBar: React.FC = () => {
 					} else {
 						message = ResponseCodes.get(err.response.status);
 					}
-					/* Notify user about error */
+					//Notify user about error
 					setMessage(message);
+					//Hide loading screen
 					setIsOpen(false);
+					//Show dialog with error message
 					setDialogOpen(true);
 				}
 			}
@@ -142,7 +144,7 @@ export const SearchBar: React.FC = () => {
 		const secret = ipcRenderer.sendSync('eventReadJwt');
 		//Show loading modal
 		setIsOpen(true);
-		//Get a list with all uploaded videosnm
+		//Get a list with all uploaded videos
 		try {
 			const response = await axios({
 				method: 'get',
@@ -151,17 +153,28 @@ export const SearchBar: React.FC = () => {
 					Authorization: `Bearer ${secret}`,
 				},
 			});
+			//Get all required data [name, thumbnail, creation date, upload date]
 			const names = response.data['names'];
-			const dates = response.data['dates'];
+			const thumbs = response.data['thumbs'];
+			const creations = response.data['creations'];
+			const uploads = response.data['uploads'];
+			//Total number of entries
 			const length = names.length;
 			//Data containing the records name and upload date
 			for (let i = 0; i < length; i++) {
 				setTableElements((arr) => [
 					...arr,
-					{ name: names[i], date: dates[i] },
+					{
+						name: names[i],
+						data: {
+							thumb: thumbs[i],
+							creation: creations[i],
+							upload: uploads[i],
+						},
+					},
 				]);
 			}
-			//Hide hourglass modal
+			//Hide loading screen
 			setIsOpen(false);
 			//Display table with data
 			setTableOpen(true);
@@ -172,11 +185,18 @@ export const SearchBar: React.FC = () => {
 			} else {
 				message = ResponseCodes.get(err.response.status);
 			}
-			/* Notify user about error */
+			//Notify user about error
 			setMessage(message);
+			//Hide loading screen
 			setIsOpen(false);
+			//Show dialog message with error
 			setDialogOpen(true);
 		}
+	}
+
+	function closeListView(): void {
+		setTableOpen(false);
+		setTableElements([]);
 	}
 
 	return (
@@ -212,10 +232,12 @@ export const SearchBar: React.FC = () => {
 				<Dialog setIsOpen={setDialogOpen} message={message} />
 			</Modal>
 			<Modal style={tableStyles} isOpen={tableOpen} ariaHideApp={false}>
-				<ResourceTable
-					setIsOpen={setTableOpen}
-					elements={tableElements}
-					setElements={setTableElements}
+				<Reslist entries={tableElements} />
+				<p className="ModalTitle">Lista video</p>
+				<img
+					src={Icons['CancelIcon']}
+					className="CancelIcon"
+					onClick={closeListView}
 				/>
 			</Modal>
 		</InputGroup>

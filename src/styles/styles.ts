@@ -83,7 +83,7 @@ export const hourglassStyle = {
 export const tableStyles = {
 	content: {
 		width: '580px',
-		height: '600px',
+		height: '700px',
 		display: 'inline-block',
 		justifyContent: 'center',
 		alignItems: 'center',
