@@ -1,0 +1,48 @@
+@use '../../styles/colors'
+@use '../../styles/custom'
+
+.ListView
+	display: flex
+	flex-direction: column
+	@include custom.paddings($top: 10px, $bottom: 10px, $left: 20px, $right: 20px)
+	@include custom.margins($top: 40px, $bottom: 10px, $left: 10px, $right: 10px)
+	width: 89%
+	height: 85%
+	overflow: auto
+	border: 1px solid colors.$border
+
+	li:hover
+		opacity: 0.7
+
+	li:focus
+		opacity: 0.3
+
+
+.ListItem
+	display: flex
+	justify-content: flex-start
+	align-items: flex-start
+	width: 100%
+	height: 100px
+	margin-bottom: 10px
+	border: 1px solid colors.$border
+
+.ListItemThumb
+	height: 100%
+	width: 25%
+	background: black
+
+.ListItemInfo
+	display: flex
+	flex-direction: column
+	margin-left: 20px
+	height: 50px
+	width: 70%
+
+	h4
+		color: white
+
+	p
+		color: white
+
+
