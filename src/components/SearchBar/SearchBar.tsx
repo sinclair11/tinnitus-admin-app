@@ -226,14 +226,14 @@ export const SearchBar: React.FC = () => {
 				onChange={(e: any): void => setSearchVal(e.target.value)}
 			/>
 			<Button
-				data-tip="Cauta"
+				// data-tip="Cauta"
 				className="SearchButton"
 				onClick={getResourceData}
 			>
 				<img src={Icons['MagnifierIcon']} className="SearchIcon"></img>
 			</Button>
 			<Button
-				data-tip="Lista video"
+				// data-tip="Lista video"
 				className="SearchButton"
 				style={{ marginLeft: '5px' }}
 				onClick={getListOfResources}
