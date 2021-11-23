@@ -2,15 +2,8 @@ import React from 'react';
 import './_reslist.sass';
 
 type ReslistProps = {
-	entries?: { name: string; data: Resitem }[];
+	entries?: { name: string; data: any }[];
 	selectFromList?: any;
-};
-
-type Resitem = {
-	name: string;
-	thumbnail: any;
-	upload: string;
-	creation: string;
 };
 
 export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
@@ -34,9 +27,7 @@ export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
 					onClick={(): void => itemSelected(item.name)}
 				>
 					<div className="ListItem">
-						<div className="ListItemThumb">
-							<img src={item.data.thumbnail} />
-						</div>
+							<img src={`data:image/png;base64,${item.data.thumb}`} className="ListItemThumb"/>
 						<div className="ListItemInfo">
 							<h4>{item.name}</h4>
 							<p>
