@@ -248,15 +248,9 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	 * @param event
 	 */
 	function uploadResData(event: any): void {
-		//Generate unique id
-		const resourceId = crypto
-			.createHash('sha256')
-			.update(event.target[4].value)
-			.digest('hex');
-
 		//Create an instance with transaction data
 		const transactionData = {
-			id: resourceId,
+			id: '',
 			pathVideo: event.target[0].value,
 			pathThumbnail: event.target[2].value,
 			name: event.target[4].value,
@@ -266,8 +260,8 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			description: event.target[9].value,
 			tags: event.target[8].value,
 		};
-		// Try sending the video
-		storeVideo(transactionData);
+		//First store resource data in firestore
+		storeInfoInDb(transactionData);
 	}
 
 	/**
@@ -575,7 +569,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					if (response.status == 201) {
 						//Thumbnail was stored
 						// props.updateProgress(90);
-						dispatch({ type: 'progress/update', payload: 90 });
+						dispatch({ type: 'progress/update', payload: 100 });
 						dispatch({
 							type: 'progress/log',
 							payload: {
@@ -657,17 +651,18 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					tags: transactionData.tags,
 				},
 			});
-			if (response.status === 200) {
-				// props.updateProgress(100);
-				dispatch({ type: 'progress/update', payload: 100 });
-				dispatch({
-					type: 'progress/log',
-					payload: {
-						type: 'green',
-						value: 'Informatiile au fost ingresitrate in baza de date',
-					},
-				});
-			}
+			//Update progress
+			dispatch({ type: 'progress/update', payload: 10 });
+			dispatch({
+				type: 'progress/log',
+				payload: {
+					type: 'green',
+					value: 'Informatiile au fost ingresitrate in baza de date',
+				},
+			});
+			//Start sending video file
+			transactionData.id = response.data.id;
+			storeVideo(transactionData);
 		} catch (err) {
 			//Update progress
 			dispatch({
