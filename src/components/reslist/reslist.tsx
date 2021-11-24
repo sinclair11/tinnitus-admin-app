@@ -27,7 +27,10 @@ export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
 					onClick={(): void => itemSelected(item.name)}
 				>
 					<div className="ListItem">
-							<img src={`data:image/png;base64,${item.data.thumb}`} className="ListItemThumb"/>
+						<img
+							src={`data:image/png;base64,${item.data.thumb}`}
+							className="ListItemThumb"
+						/>
 						<div className="ListItemInfo">
 							<h4>{item.name}</h4>
 							<p>

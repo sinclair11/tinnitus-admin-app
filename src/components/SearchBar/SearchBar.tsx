@@ -196,19 +196,31 @@ export const SearchBar: React.FC = () => {
 		}
 	}
 
+	/**
+	 *
+	 */
 	function clearListModal(): void {
 		setTableOpen(false);
 		setTableElements([]);
 	}
 
+	/**
+	 *
+	 */
 	function closeListView(): void {
 		clearListModal();
 	}
 
+	/**
+	 *
+	 */
 	function cancelList(): void {
 		clearListModal();
 	}
 
+	/**
+	 *
+	 */
 	function okList(): void {
 		clearListModal();
 		setSearchVal(selected);
