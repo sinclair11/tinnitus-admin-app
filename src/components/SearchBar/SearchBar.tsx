@@ -6,10 +6,9 @@ import { Icons } from '@utils/icons';
 import { ipcRenderer } from 'electron';
 import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';
 import Modal from 'react-modal';
-import { Dialog } from '@components/dialog/Dialog';
+import { MessageBox } from '@src/components/messagebox/messagebox';
 import { Reslist } from '@components/reslist/reslist';
 import { useDispatch } from 'react-redux';
-import { store } from '@src/store/store';
 
 export const SearchBar: React.FC = () => {
 	const [searchVal, setSearchVal] = useState('');
@@ -256,7 +255,7 @@ export const SearchBar: React.FC = () => {
 				<div className="hourglass"></div>
 			</Modal>
 			<Modal style={dialogStyles} isOpen={dialogOpen} ariaHideApp={false}>
-				<Dialog setIsOpen={setDialogOpen} message={message} />
+				<MessageBox setIsOpen={setDialogOpen} message={message} />
 			</Modal>
 			<Modal style={tableStyles} isOpen={tableOpen} ariaHideApp={false}>
 				<Reslist entries={tableElements} selectFromList={setSelected} />
