@@ -10,11 +10,11 @@ import {
 import electron, { ipcRenderer } from 'electron';
 import { ResponseCodes } from '@utils/utils';
 import axios from 'axios';
-import crypto from 'crypto';
 import fs from 'fs';
 import { readChunk } from 'read-chunk';
 import { useDispatch } from 'react-redux';
 import { store } from '@store/store';
+import { getAuth } from '@src/utils/utils';
 
 let isAborted = false;
 
@@ -37,11 +37,12 @@ type TransactionData = {
 type UploadProps = {
 	formModal: React.Dispatch<React.SetStateAction<boolean>>;
 	type: string;
+	data?: { name: string; tags: string; description: string };
 };
 
 export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	const dispatch = useDispatch();
-	//States for inputs
+	//States for inputs validation
 	const [filePath, setFilePath] = useState('');
 	const [thmbPath, setThmbPath] = useState('');
 	const [filePathInvalid, setFilePathInvalid] = useState('');
@@ -51,6 +52,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	const [crDateInvalid, setCrDateInvalid] = useState('');
 	const [upDateInvalid, setUpDateInvalid] = useState('');
 	const [descInvalid, setDescInvalid] = useState('');
+	//States for editable data
+	const [name, setName] = useState('');
+	const [tags, setTags] = useState('');
+	const [desc, setDesc] = useState('');
 	//Error messages
 	const fieldEmpty = 'Acest camp este obligatoriu';
 	const formatInvalid = 'Formatul acestui camp este invalid';
@@ -64,11 +69,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	let sentRequests = 0;
 
 	useEffect(() => {
-		if (props.type === 'edit') {
-			//Request data to edit and set it to input fields
-		} else if (props.type === 'upload') {
-		}
-	}, []);
+		setName(props.data.name);
+		setTags(props.data.tags);
+		setDesc(props.data.description);
+	}, [props.data]);
 
 	/**
 	 *
@@ -237,14 +241,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 
 	/**
 	 *
-	 * @returns
-	 */
-	async function getAuth(): Promise<any> {
-		return ipcRenderer.sendSync('eventReadJwt');
-	}
-
-	/**
-	 *
 	 * @param event
 	 */
 	function uploadResData(event: any): void {
@@ -279,7 +275,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			},
 			data: {
 				action: 'edit',
-				oldname: store.getState().resdataReducer.editSelected,
+				oldname: store.getState().resdataReducer.selected,
 				name: event.target[0].value,
 				description: event.target[2].value,
 				tags: event.target[1].value,
@@ -848,7 +844,15 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 								<InputGroup.Text className="Label">
 									Nume
 								</InputGroup.Text>
-								<FormControl className="InputText" required />
+								<FormControl
+									className="InputText"
+									required
+									value={name}
+									// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+									onChange={(event) =>
+										setName(event.target.value)
+									}
+								/>
 							</InputGroup>
 							<p className="InvalidField">{nameInvalid}</p>
 						</div>
@@ -920,6 +924,11 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 								className="InputArea"
 								as="textarea"
 								placeholder="#tag1 #tag2 #tag3"
+								value={tags}
+								// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+								onChange={(event) =>
+									setTags(event.target.value)
+								}
 							/>
 						</InputGroup>
 					</Col>
@@ -934,6 +943,11 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 								className="InputArea"
 								as="textarea"
 								required
+								value={desc}
+								// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+								onChange={(event) =>
+									setDesc(event.target.value)
+								}
 							/>
 						</InputGroup>
 						<p className="InvalidField">{descInvalid}</p>

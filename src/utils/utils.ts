@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import { store } from '@store/store';
-import { useDispatch } from 'react-redux';
 import { ipcRenderer } from 'electron';
 
 type InfoData = {
@@ -94,4 +93,12 @@ export async function refreshToken(): Promise<string> {
 	} catch (error) {
 		throw error;
 	}
+}
+
+/**
+ *
+ * @returns
+ */
+export async function getAuth(): Promise<any> {
+	return ipcRenderer.sendSync('eventReadJwt');
 }

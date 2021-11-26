@@ -2,15 +2,17 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 import { Icons } from '@utils/icons';
 
-type DialogProps = {
+type MessageboxProps = {
 	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	message: string;
 };
 
-export const Dialog: React.FC<DialogProps> = (props: DialogProps) => {
+export const MessageBox: React.FC<MessageboxProps> = (
+	props: MessageboxProps,
+) => {
 	return (
 		<>
-			<div className="DialogHeader">
+			<div className="MessageHeader">
 				<p style={{ margin: '4px' }}>Message</p>
 			</div>
 			<p style={{ marginLeft: '10px' }}>{props.message}</p>
