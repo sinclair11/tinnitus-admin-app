@@ -10,8 +10,7 @@ import { Icons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
 import { Feedback } from '@components/feedback/Feedback';
 import '@components/modal-search/modal-search.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { CombinedStates } from '@src/store/reducers/custom';
+import { useDispatch } from 'react-redux';
 
 type ResProps = {
 	resourceType: string;
@@ -20,9 +19,6 @@ type ResProps = {
 export const Videos: React.FC<ResProps> = (props: ResProps) => {
 	const [isVisible, setIsVisible] = useState(true);
 	const dispatch = useDispatch();
-	const selected = useSelector<CombinedStates>(
-		(state) => state.resdataReducer.selected,
-	) as string;
 
 	useEffect(() => {
 		//No resource data on first rendering

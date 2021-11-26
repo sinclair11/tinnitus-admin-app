@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { ResponseCodes } from '@utils/utils';
@@ -8,7 +8,8 @@ import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';
 import Modal from 'react-modal';
 import { MessageBox } from '@src/components/messagebox/messagebox';
 import { Reslist } from '@components/reslist/reslist';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { CombinedStates } from '@src/store/reducers/custom';
 
 export const SearchBar: React.FC = () => {
 	const [searchVal, setSearchVal] = useState('');
@@ -24,8 +25,21 @@ export const SearchBar: React.FC = () => {
 	const [tableOpen, setTableOpen] = useState(false);
 	//Selected resource
 	const [selected, setSelected] = useState('');
-
+	//Redux
 	const dispatch = useDispatch();
+	const selectedRes = useSelector<CombinedStates>(
+		(state) => state.resdataReducer.selected,
+	) as string;
+
+	//* Use effect to change or reset searchbar value
+	useEffect(() => {
+		//Reset searchbar value if no resourse is selected
+		if (selectedRes === '') {
+			setSearchVal('');
+		} else {
+			setSearchVal(selectedRes);
+		}
+	}, [selectedRes]);
 
 	/**
 	 * @function updateInfoData
@@ -57,10 +71,14 @@ export const SearchBar: React.FC = () => {
 			{ name: 'Favorizari', value: dataUsage['favs'] },
 			{ name: 'Feedback-uri', value: dataUsage['nr_feedback'] },
 		];
-		//Store resource general information in redux
+		//* Store resource general information in redux
 		dispatch({ type: 'resdata/info', payload: arrInfo });
-		//Store resource usage ingormation in redux
 		dispatch({ type: 'resdata/usage', payload: arrUsage });
+		//* Store resource usage ingormation in redux
+		dispatch({
+			type: 'resdata/selected',
+			payload: searchVal,
+		});
 	}
 
 	/**
@@ -88,10 +106,6 @@ export const SearchBar: React.FC = () => {
 				//Update information about resource
 				dataInfo = response.data;
 				//Store in redux selected resource
-				dispatch({
-					type: 'resdata/selected',
-					payload: dataInfo['name'],
-				});
 				//Get usage information about resource
 				try {
 					const response = await axios({

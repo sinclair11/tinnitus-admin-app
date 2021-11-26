@@ -7,7 +7,7 @@ import {
 	Col,
 	Form,
 } from 'react-bootstrap';
-import electron, { ipcRenderer } from 'electron';
+import electron from 'electron';
 import { ResponseCodes } from '@utils/utils';
 import axios from 'axios';
 import fs from 'fs';
@@ -265,6 +265,14 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	 * @param event
 	 */
 	function editResData(event: any): void {
+		const data = {
+			action: 'edit',
+			oldname: store.getState().resdataReducer.selected,
+			name: event.target[0].value,
+			description: event.target[2].value,
+			tags: event.target[1].value,
+		};
+
 		// Try editing info
 		axios({
 			method: 'post',
@@ -273,13 +281,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${transactionToken}`,
 			},
-			data: {
-				action: 'edit',
-				oldname: store.getState().resdataReducer.selected,
-				name: event.target[0].value,
-				description: event.target[2].value,
-				tags: event.target[1].value,
-			},
+			data: data,
 		})
 			.then((response) => {
 				//Check response
@@ -293,13 +295,12 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 							value: 'Informatiile au fost editate cu succes',
 						},
 					});
+					//Update info in panels
+					updatePanelsOnEdit(data);
 				}
 			})
 			.catch((error) => {
-				/**
-				 * @todo log error in db specific document
-				 */
-				console.log(error);
+				// TODO: Log error in db specific document
 				//Notify user that edit action failed
 				dispatch({
 					type: 'progress/fail',
@@ -309,6 +310,33 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					},
 				});
 			});
+	}
+
+	/**
+	 *
+	 *
+	 * @param data
+	 */
+	async function updatePanelsOnEdit(data: any): Promise<void> {
+		//Get already displayed data
+		const generalInfo = store.getState().resdataReducer.info;
+		//Update edited data on corresponding panel
+		dispatch({
+			type: 'resdata/info',
+			payload: [
+				{ name: 'Nume', value: data.name },
+				generalInfo[1],
+				generalInfo[2],
+				generalInfo[3],
+				{ name: 'Tags', value: data.tags },
+				{ name: 'Descriere', value: data.description },
+			],
+		});
+		//Update selected value
+		dispatch({
+			type: 'resdata/selected',
+			payload: data.name,
+		});
 	}
 
 	/**
@@ -451,6 +479,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		}
 	}
 
+	/**
+	 *
+	 * @param status
+	 */
 	function setErrorLog(status: number): void {
 		dispatch({
 			type: 'progress/fail',
@@ -469,6 +501,8 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		//First register asset and create path
 		axios({
 			method: 'post',
+			timeout: 30000,
+			timeoutErrorMessage: 'timeout',
 			url: 'http://127.0.0.1:3000/api/admin/videos',
 			headers: {
 				'Content-Type': 'application/json',
@@ -508,12 +542,23 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				sendVideoInChunks(transactionData, 0);
 			})
 			.catch((error) => {
+				let errorMessage = '';
+				if (error.message === 'timeout') {
+					//Timeout reached
+					errorMessage =
+						'Serverul intarzie sa raspunda, cerere anulata';
+				} else {
+					//Internal server error
+					errorMessage = error.response.data;
+				}
+				//Request deletion
+				requestDeleteOnFail(transactionData.name);
 				//Could not upload video
 				dispatch({
 					type: 'progress/fail',
 					payload: {
 						type: 'red',
-						value: error.response.data,
+						value: errorMessage,
 					},
 				});
 			});
@@ -533,92 +578,88 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 
 		while (done === false) {
 			let packet = '';
-			if (isAborted == false) {
-				const chunk = await readChunk(transactionData.pathThumbnail, {
-					length: bytesToRead,
-					startPosition: startPosition,
-				});
-				for (let i = 0; i < chunk.length; i++) {
-					packet += String.fromCharCode(chunk[i]);
+			//Read chunk
+			const chunk = await readChunk(transactionData.pathThumbnail, {
+				length: bytesToRead,
+				startPosition: startPosition,
+			});
+			//Iterate through all bytes of data
+			for (let i = 0; i < chunk.length; i++) {
+				packet += String.fromCharCode(chunk[i]);
+			}
+			//Increment to next position
+			startPosition += bytesToRead;
+			try {
+				//Check if we sent all chunks
+				if (packet.length === 0) {
+					finished = true;
 				}
-				//Increment to next position
-				startPosition += bytesToRead;
-				try {
-					//Check if we sent all chunks
-					if (packet.length === 0) {
-						finished = true;
-					}
-					const response = await axios({
-						method: 'post',
-						url: 'http://127.0.0.1:3000/api/admin/videos/thumbnail',
-						headers: {
-							'Content-Type': 'application/json',
-							Authorization: `Bearer ${transactionToken}`,
-						},
-						data: {
-							action: 'upload',
-							id: transactionData.id,
-							packet: packet,
-							finished: finished,
-						},
-					});
-					if (response.status == 201) {
-						//Thumbnail was stored
-						// props.updateProgress(90);
-						dispatch({ type: 'progress/update', payload: 100 });
-						dispatch({
-							type: 'progress/log',
-							payload: {
-								type: 'green',
-								value: 'Coperta a fost incarcata cu succes',
-							},
-						});
-						done = true;
-					}
-				} catch (error) {
-					dispatch({
-						type: 'progress/fail',
-						payload: {
-							type: 'green',
-							value: 'Coperta nu a putut fi incarcata',
-						},
-					});
-					dispatch({
-						type: 'progress/log',
-						payload: { type: 'red', value: 'Tranzactie incheiata' },
-					});
-					break;
-				}
-			} else {
-				//Update progress
-				// props.setVariant('danger');
-				// props.updateProgress(100);
-				// props.updateConsoleLog((arr) => [
-				// 	...arr,
-				// 	{ type: 'red', value: 'Tranzactia a fost intrerupta' },
-				// ]);
-				//Abort transaction
-				axios({
+				//Send thumbnail in chunks
+				const response = await axios({
 					method: 'post',
+					timeout: 30000,
+					timeoutErrorMessage: 'timeout',
 					url: 'http://127.0.0.1:3000/api/admin/videos/thumbnail',
 					headers: {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${transactionToken}`,
 					},
 					data: {
-						action: 'delete',
+						action: 'upload',
 						id: transactionData.id,
-						packet: '',
+						packet: packet,
 						finished: finished,
 					},
+				});
+				if (response.status == 201) {
+					//Thumbnail was stored
+					//Update progress
+					dispatch({ type: 'progress/update', payload: 100 });
+					//Update console log
+					dispatch({
+						type: 'progress/log',
+						payload: {
+							type: 'green',
+							value: 'Coperta a fost incarcata cu succes',
+						},
+					});
+					done = true;
+				}
+			} catch (error) {
+				//If operation failed then request resource deletion
+				requestDeleteOnFail(transactionData.name);
+				//Update console log
+				dispatch({
+					type: 'progress/fail',
+					payload: {
+						type: 'green',
+						value: 'Coperta nu a putut fi incarcata',
+					},
+				});
+				//Update progress to failed
+				dispatch({
+					type: 'progress/log',
+					payload: { type: 'red', value: 'Tranzactie incheiata' },
 				});
 				break;
 			}
 		}
-		//Store resource info in firebase
-		if (done === true) {
-			storeInfoInDb(transactionData);
-		}
+	}
+
+	/**
+	 *
+	 * @param name
+	 */
+	function requestDeleteOnFail(name: string): void {
+		//If somehow fails then request deletion
+		axios({
+			method: 'delete',
+			url: `http://127.0.0.1:3000/api/admin/videos/thumbnail?id=${name}`,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${transactionToken}`,
+			},
+		});
 	}
 
 	/**
