@@ -8,6 +8,7 @@ type InfoProps = {
 };
 
 export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
+	// Choose which type of info to be displayed
 	const info =
 		props.type === 'general'
 			? (useSelector<CombinedStates>(
@@ -21,7 +22,12 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
 		(state) => state.resdataReducer.selected,
 	) as string;
 
-	function initialInfo(): JSX.Element {
+	/**
+	 * @function displayInfo Display corresponding info or a message if info does not exist
+	 * @returns What to be displayed
+	 */
+	function displayInfo(): JSX.Element {
+		//Display a message to indicate that no resource was selected
 		if (selected === '') {
 			return (
 				<div className="NoSelected">
@@ -31,7 +37,9 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
 					</p>
 				</div>
 			);
-		} else {
+		}
+		//Display corresponding info
+		else {
 			return (
 				<div className="ListDiv">
 					<ul className="InfoList">
@@ -51,7 +59,7 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
 			<div className="InfoTitle">
 				<h4>{props.title}</h4>
 			</div>
-			{initialInfo()}
+			{displayInfo()}
 		</div>
 	);
 };

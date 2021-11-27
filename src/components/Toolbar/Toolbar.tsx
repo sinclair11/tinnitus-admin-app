@@ -65,7 +65,6 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 					});
 					//Close loading screen
 					setLoading(false);
-					console.log(response.data);
 					//Open edit modal and pass editable data of this resource
 					setModalType(type);
 					setIsOpen(true);
@@ -133,7 +132,6 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 		//First check if a resource was selected
 		if (store.getState().resdataReducer.selected != '') {
 			setDialogbox(true);
-			console.log(store.getState().resdataReducer.selected);
 		} else {
 			//Notify user that he must select a resource first
 			setMessageboxMsg('Selectati o resursa intai!');
