@@ -9,7 +9,7 @@ import axios from 'axios';
 import { getAuth, ResponseCodes } from '@src/utils/utils';
 import { MessageBox } from '../messagebox/messagebox';
 import { DialogBox } from '../dialogbox/dialogbox';
-import { dialogStyles } from '@src/styles/styles';
+import { dialogStyles, hourglassStyle } from '@src/styles/styles';
 
 type FeedbackProps = {
 	type: string;
@@ -39,6 +39,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 	const [actionAccepted, setAcctionAccepted] = useState(false);
 	const [id, setId] = useState('');
 	const [viewMsg, setViewMsg] = useState('');
+	const [loading, setLoading] = useState(false);
 
 	//* Use effect to update feedbacks when a resource is selected
 	useEffect(() => {
@@ -62,21 +63,23 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 	 */
 	async function buildFeedbackMap(): Promise<void> {
 		try {
-			const secret = getAuth();
+			//Show loading screen
+			setLoading(true);
+			const secret = await getAuth();
 			//Request feedback data
 			const response = await axios({
 				method: 'get',
 				timeout: 30000,
 				timeoutErrorMessage: 'timeout',
-				url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks`,
+				url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks?id=${selected}`,
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${secret}`,
 				},
 			});
 			//Construct dictionary with feedbacks
-			if (response.data.message === 'filled') {
-				const feedbacksData = response.data.payload;
+			if (response.data.length > 0) {
+				const feedbacksData = response.data;
 				const feedbackMap = new Map<string, FeedbackData>();
 				//Dispatch received feedbacks
 				for (const feedback of feedbacksData) {
@@ -88,11 +91,15 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 				}
 				//Display feedbacks
 				setFeedbacks(feedbackMap);
-			} else if (response.data.message === 'empty') {
+				//Hide loading screen
+				setLoading(false);
+			} else {
 				//No feedbacks for this resource
 				setFeedbacks(new Map<string, FeedbackData>());
 				setViewMsg('Aceasta resursa nu are niciun feedback momentan');
 			}
+			//Hide loading screen
+			setLoading(false);
 		} catch (error) {
 			if (error.message === 'timeout') {
 				//! Timeout reached
@@ -101,6 +108,8 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 				//! Could not retrieve feedbacks from server
 				setError(ResponseCodes.get(error.response.status));
 			}
+			//Hide loading screen
+			setLoading(false);
 			//Notify user about the error (set in message box)
 			setMessageOpen(true);
 			//In case of server error do not display a message on view
@@ -129,16 +138,38 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 		}
 	}
 
+	function onDeleteClick(id: string): void {
+		//Show prompt for deletion
+		setDialogOpen(true);
+		//Set id of resource
+		setId(id);
+	}
+
 	function displayFeedbacks(): JSX.Element {
+		//* Check if a resource was selected
 		if (selected != '') {
+			//* Check if there are any feedbacks for this resource
 			if (feedbacks.size > 0) {
+				const arr = [];
+				//Convert to array to use map()
+				for (const [key, value] of feedbacks.entries()) {
+					arr.push({ id: key, value: value });
+				}
 				return (
-					<ul>
-						{Object.entries(feedbacks).map((item) => {
-							<li>
-								<FeedbackComment></FeedbackComment>
-							</li>;
-						})}
+					<ul className="FeedbackList">
+						{arr.map((item, index) => (
+							<li key={index}>
+								<FeedbackItem
+									data={{
+										id: item.id,
+										email: item.value.email,
+										comment: item.value.comment,
+										date: item.value.date,
+									}}
+									onDelete={onDeleteClick}
+								></FeedbackItem>
+							</li>
+						))}
 					</ul>
 				);
 			} else {
@@ -162,101 +193,38 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 					setAccepted={setAcctionAccepted}
 				/>
 			</Modal>
+			<Modal isOpen={loading} style={hourglassStyle} ariaHideApp={false}>
+				<div className="hourglass"></div>
+			</Modal>
 		</div>
 	);
 };
 
-export const FeedbackComment: React.FC = () => {
-	const [modalIsOpen, setIsOpen] = React.useState(false);
-
-	const customStyles = {
-		content: {
-			display: 'block',
-			justifyContent: 'center',
-			alignItems: 'center',
-			backgroundColor: '#0b537c',
-			top: '50%',
-			left: '50%',
-			right: 'auto',
-			bottom: 'auto',
-			marginRight: '-50%',
-			transform: 'translate(-50%, -50%)',
-			borderRadius: '10px',
-			border: '1px solid aqua',
-			padding: '0px',
-		},
-	};
-
-	function closeModal(): void {
-		setIsOpen(false);
-	}
-
+export const FeedbackItem: React.FC<FeedbackItemProps> = (
+	props: FeedbackItemProps,
+) => {
 	return (
 		<div className="Fback">
 			<ReactTooltip
 				place="top"
 				type="dark"
 				effect="float"
-				delayShow={500}
+				delayShow={1000}
 			/>
 			<div className="FbackHeader">
 				<div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-					<p className="FbackMail">useremail@gmail.com </p>
-					<p className="FbackDate">3 Aug 2021 </p>
+					<p className="FbackMail">{props.data.email}</p>
+					<p className="FbackDate">{props.data.date}</p>
 				</div>
 				<img
 					src={ToolbarIcons['DeleteIcon']}
 					className="DeleteFback"
 					data-tip="Sterge comentariu"
-					onClick={(): void => setIsOpen(true)}
+					onClick={(): void => props.onDelete(props.data.id)}
 				/>
-				<Modal
-					isOpen={modalIsOpen}
-					style={customStyles}
-					contentLabel="Example Modal"
-					ariaHideApp={false}
-				>
-					<div className="DialogHeader">
-						<p style={{ margin: '5px' }}>Message</p>
-					</div>
-					<div style={{ padding: '10px' }}>
-						<div>
-							<p
-								style={{
-									color: 'white',
-									fontWeight: 300,
-									fontSize: 16,
-								}}
-							>
-								{' '}
-								Esti sigur ca vrei sa stergi acest obiect ?
-							</p>
-						</div>
-						<div
-							style={{
-								display: 'flex',
-								justifyContent: 'flex-end',
-								marginTop: '10%',
-							}}
-						>
-							<Button onClick={closeModal} className="ModalBtn">
-								OK
-							</Button>
-							<Button onClick={closeModal} className="ModalBtn">
-								Cancel
-							</Button>
-						</div>
-					</div>
-
-					<img
-						src={Icons['CancelIcon']}
-						className="CancelIcon"
-						onClick={closeModal}
-					/>
-				</Modal>
 			</div>
 			<div className="FbackTextDiv">
-				<p className="FbackText">Feedback review</p>
+				<p className="FbackText">{props.data.comment}</p>
 			</div>
 		</div>
 	);
