@@ -7,8 +7,15 @@ import { Icons } from '@utils/icons';
 import { InfoLog } from '@components/infolog/infolog';
 import { useSelector, useDispatch } from 'react-redux';
 import { CombinedStates } from '@store/reducers/custom';
+import { CancelTokenSource } from 'axios';
 
-export const ProgressbarUpload: React.FC = () => {
+type ProgressProps = {
+	cancelation: CancelTokenSource;
+};
+
+export const ProgressbarUpload: React.FC<ProgressProps> = (
+	props: ProgressProps,
+) => {
 	const dispatch = useDispatch();
 	const [continueOpac, setContinueOpac] = useState(0.5);
 	const [abortOpac, setAbortOpac] = useState(1);
@@ -36,13 +43,6 @@ export const ProgressbarUpload: React.FC = () => {
 	});
 
 	/**
-	 * @function deleteRes
-	 */
-	async function deleteRes(): Promise<any> {
-		//
-	}
-
-	/**
 	 * @function close
 	 * @param action
 	 */
@@ -50,14 +50,14 @@ export const ProgressbarUpload: React.FC = () => {
 		switch (action) {
 			case 'cancel':
 				//Request server to delete unfinished resource
-				if (progress < 100) {
-				}
+				props.cancelation.cancel('Tranzactia a fost intrerupta');
 				dispatch({ type: 'progress/clean', payload: null });
-				deleteRes();
 				break;
 
 			case 'abort':
 				//Abort upload process and request deletion of unfinished resource
+				props.cancelation.cancel('Tranzactia a fost intrerupta');
+				//Modify progressbar states
 				dispatch({ type: 'progress/progress', payload: 100 });
 				dispatch({ type: 'progress/variant', payload: 'danger' });
 				dispatch({
@@ -67,7 +67,6 @@ export const ProgressbarUpload: React.FC = () => {
 						value: 'Tranzactia a fost intrerupta',
 					},
 				});
-				deleteRes();
 				break;
 
 			case 'continue':

@@ -4,6 +4,7 @@ import { modalStyle } from '@src/styles/styles';
 import Modal from 'react-modal';
 import { UploadForm } from '@components/modal-upload/modal-upload';
 import { ProgressbarUpload } from '@components/progressbar/progressbar-upload';
+import axios from 'axios';
 
 type UploadModalProps = {
 	modalIsOpen?: boolean;
@@ -15,6 +16,10 @@ type UploadModalProps = {
 export const UploadVideoModal: React.FC<UploadModalProps> = (
 	props: UploadModalProps,
 ) => {
+	//Cancel token for abort operation
+	const CancelToken = axios.CancelToken;
+	const source = CancelToken.source();
+
 	function closeModal(): void {
 		props.setModalIsOpen(false);
 	}
@@ -32,6 +37,7 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (
 						formModal={props.setModalIsOpen}
 						type={props.type}
 						data={props.editable}
+						cancelation={source}
 					/>
 				</div>
 
@@ -44,7 +50,7 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (
 					onClick={closeModal}
 				/>
 			</Modal>
-			<ProgressbarUpload />
+			<ProgressbarUpload cancelation={source} />
 		</div>
 	);
 };

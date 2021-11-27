@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap';
 import electron from 'electron';
 import { ResponseCodes } from '@utils/utils';
-import axios from 'axios';
+import axios, { CancelTokenSource } from 'axios';
 import fs from 'fs';
 import { readChunk } from 'read-chunk';
 import { useDispatch } from 'react-redux';
@@ -38,6 +38,7 @@ type UploadProps = {
 	formModal: React.Dispatch<React.SetStateAction<boolean>>;
 	type: string;
 	data?: { name: string; tags: string; description: string };
+	cancelation: CancelTokenSource;
 };
 
 export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
@@ -64,7 +65,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	let transactionToken = '';
 	//Progress of transaction
 	let progress = 0;
-	// //How many responses
+	//How many responses
 	let responsesProgress = 0;
 	let sentRequests = 0;
 
@@ -472,6 +473,12 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	 * @param event
 	 */
 	async function handleSubmit(event: any): Promise<void> {
+		//* First clear progressbar if needed
+		dispatch({
+			type: 'progress/clean',
+			payload: null,
+		});
+		//Verify submit type
 		if (props.type === 'upload') {
 			handleOnUpload(event);
 		} else if (props.type === 'edit') {
@@ -503,6 +510,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			method: 'post',
 			timeout: 30000,
 			timeoutErrorMessage: 'timeout',
+			cancelToken: props.cancelation.token,
 			url: 'http://127.0.0.1:3000/api/admin/videos',
 			headers: {
 				'Content-Type': 'application/json',
@@ -544,11 +552,14 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			.catch((error) => {
 				let errorMessage = '';
 				if (error.message === 'timeout') {
-					//Timeout reached
+					//! Timeout reached
 					errorMessage =
 						'Serverul intarzie sa raspunda, cerere anulata';
+				} else if (axios.isCancel(error)) {
+					//! User aborted the operation
+					errorMessage = 'Tranzactia a fost intrerupta';
 				} else {
-					//Internal server error
+					//! Internal server error
 					errorMessage = error.response.data;
 				}
 				//Request deletion
