@@ -125,7 +125,7 @@ export const Videos: React.FC<ResProps> = (props: ResProps) => {
 								alignItems: 'center',
 							}}
 						>
-							<Feedback />
+							<Feedback type="videos" />
 						</div>
 					)}
 					<img

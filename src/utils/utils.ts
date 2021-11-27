@@ -41,7 +41,7 @@ export const ResponseCodes = new Map([
 	[400, 'Cererea trimisa este invalida.'],
 	[401, 'Nu esti autorizat in sistem.'],
 	[403, 'Nu ai drepturi pentru a accesa resursa ceruta.'],
-	[404, 'Resursa ceruta nu a fost gasita.'],
+	[404, 'Resursa sau serviciul cerut nu este disponibil sau nu exista.'],
 	[405, 'Metoda pentru aceasta cerere nu este permisa.'],
 	[408, 'Timpul de asteptare pentru cererea trimisa a expirat.'],
 	[413, 'Cererea trimisa are o dimensiune prea mare.'],
