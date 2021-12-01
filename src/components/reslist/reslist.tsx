@@ -18,8 +18,13 @@ export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
 		}
 	}
 
+	/**
+	 *
+	 * @returns
+	 */
 	function displayList(): JSX.Element {
 		if (props.entries.length > 0) {
+			//Return a list of resources for this category
 			return (
 				<ul className="ListView">
 					{props.entries.map((item, index) => (
@@ -48,7 +53,9 @@ export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
 					))}
 				</ul>
 			);
-		} else {
+		}
+		//Let user know that there is no resource for this category
+		else {
 			return (
 				<p>
 					Nu exista nicio resursa inregistrata pentru aceasta

@@ -46,7 +46,9 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 		if (selected != '') {
 			buildFeedbackMap();
 		} else {
-			setViewMsg('Selectati o resursa intai pentru a vedea feedback-uri');
+			setViewMsg(
+				'Selectati o resursa intai pentru a vedea feedback-uri.',
+			);
 		}
 	}, [selected]);
 
@@ -71,7 +73,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 				method: 'get',
 				timeout: 30000,
 				timeoutErrorMessage: 'timeout',
-				url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks?id=${selected}`,
+				url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks?id=${selected}&month=dec&year=2021`,
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${secret}`,
@@ -96,7 +98,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 			} else {
 				//No feedbacks for this resource
 				setFeedbacks(new Map<string, FeedbackData>());
-				setViewMsg('Aceasta resursa nu are niciun feedback momentan');
+				setViewMsg('Aceasta resursa nu are niciun feedback momentan.');
 			}
 			//Hide loading screen
 			setLoading(false);
