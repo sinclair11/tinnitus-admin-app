@@ -58,6 +58,21 @@ export const ResponseCodes = new Map([
 	],
 ]);
 
+export const MonthsMap = new Map([
+	['Ianuarie', { number: 1, text: 'jan' }],
+	['Februarie', { number: 2, text: 'feb' }],
+	['Martie', { number: 3, text: 'mar' }],
+	['Aprilie', { number: 4, text: 'apr' }],
+	['Mai', { number: 5, text: 'may' }],
+	['Iunie', { number: 6, text: 'jun' }],
+	['Iulie', { number: 7, text: 'jul' }],
+	['August', { number: 8, text: 'aug' }],
+	['Septembrie', { number: 9, text: 'sep' }],
+	['Octombrie', { number: 10, text: 'oct' }],
+	['Noiembrie', { number: 11, text: 'nov' }],
+	['Decembrie', { number: 12, text: 'dec' }],
+]);
+
 export function watchToken(): void {
 	setTimeout(async () => {
 		try {
