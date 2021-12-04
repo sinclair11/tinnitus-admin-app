@@ -12,6 +12,7 @@ export type ResdataState = {
 	deleteSelected: string;
 	info: { name: string; value: unknown }[];
 	usage: { name: string; value: unknown }[];
+	checks: unknown;
 };
 
 export type GeneralState = {
