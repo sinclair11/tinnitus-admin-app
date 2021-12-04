@@ -6,6 +6,7 @@ const initialState: ResdataState = {
 	deleteSelected: '',
 	info: [],
 	usage: [],
+	checks: {},
 };
 
 export function resdataReducer(
@@ -41,6 +42,12 @@ export function resdataReducer(
 			return {
 				...state,
 				usage: action.payload as { name: string; value: unknown }[],
+			};
+		}
+		case 'resdata/checks': {
+			return {
+				...state,
+				checks: action.payload,
 			};
 		}
 		default:

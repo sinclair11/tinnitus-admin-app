@@ -169,22 +169,19 @@ export const SearchBar: React.FC = () => {
 				},
 			});
 			//Get all required data [name, thumbnail, creation date, upload date]
-			const names = response.data['names'];
-			const thumbs = response.data['thumbs'];
-			const creations = response.data['creations'];
-			const uploads = response.data['uploads'];
+			const videos = response.data.videos;
 			//Total number of entries
-			const length = names.length;
+			const length = videos.length;
 			//Data containing the records name and upload date
 			for (let i = 0; i < length; i++) {
 				setTableElements((arr) => [
 					...arr,
 					{
-						name: names[i],
+						name: videos[i].name,
 						data: {
-							thumb: thumbs[i],
-							creation: creations[i],
-							upload: uploads[i],
+							thumb: videos[i].thumbnail,
+							creation: videos[i].creation,
+							upload: videos[i].upload,
 						},
 					},
 				]);

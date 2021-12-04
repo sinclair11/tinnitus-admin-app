@@ -41,7 +41,7 @@ export const ResponseCodes = new Map([
 	[400, 'Cererea trimisa este invalida.'],
 	[401, 'Nu esti autorizat in sistem.'],
 	[403, 'Nu ai drepturi pentru a accesa resursa ceruta.'],
-	[404, 'Resursa ceruta nu a fost gasita.'],
+	[404, 'Resursa sau serviciul cerut nu este disponibil sau nu exista.'],
 	[405, 'Metoda pentru aceasta cerere nu este permisa.'],
 	[408, 'Timpul de asteptare pentru cererea trimisa a expirat.'],
 	[413, 'Cererea trimisa are o dimensiune prea mare.'],
@@ -56,6 +56,21 @@ export const ResponseCodes = new Map([
 		507,
 		'Serverul nu mai are spatiu de stocare suficient pentru a inregistra resursa dorita.',
 	],
+]);
+
+export const MonthsMap = new Map([
+	['Ianuarie', { number: 1, text: 'jan' }],
+	['Februarie', { number: 2, text: 'feb' }],
+	['Martie', { number: 3, text: 'mar' }],
+	['Aprilie', { number: 4, text: 'apr' }],
+	['Mai', { number: 5, text: 'may' }],
+	['Iunie', { number: 6, text: 'jun' }],
+	['Iulie', { number: 7, text: 'jul' }],
+	['August', { number: 8, text: 'aug' }],
+	['Septembrie', { number: 9, text: 'sep' }],
+	['Octombrie', { number: 10, text: 'oct' }],
+	['Noiembrie', { number: 11, text: 'nov' }],
+	['Decembrie', { number: 12, text: 'dec' }],
 ]);
 
 export function watchToken(): void {
