@@ -107,7 +107,7 @@ export const SearchBar: React.FC = () => {
 				//Store in redux selected resource
 				//Get usage information about resource
 				try {
-					const response = await axios({
+					let response = await axios({
 						method: 'get',
 						url: `http://127.0.0.1:3000/api/admin/videos/infodb/usage?id=${searchVal}`,
 						headers: {
@@ -119,6 +119,17 @@ export const SearchBar: React.FC = () => {
 						dataUsage = response.data;
 						//Update view with info from firestore
 						updateInfoData(dataInfo, dataUsage);
+						//Get image thumbnail
+						response = await axios({
+							method: 'get',
+							url: `http://127.0.0.1:3000/api/admin/videos/thumbnail?id=${searchVal}`,
+						});
+						console.log(response);
+						//Update thumbnail image
+						dispatch({
+							type: 'resdata/thumbnail',
+							payload: response.data,
+						});
 						setIsOpen(false);
 					}
 				} catch (err) {

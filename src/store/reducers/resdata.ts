@@ -6,9 +6,16 @@ const initialState: ResdataState = {
 	deleteSelected: '',
 	info: [],
 	usage: [],
+	thumbnail: '',
 	checks: {},
 };
 
+/**
+ *
+ * @param state
+ * @param action
+ * @returns
+ */
 export function resdataReducer(
 	state: ResdataState = initialState,
 	action: { type: string; payload: unknown },
@@ -48,6 +55,12 @@ export function resdataReducer(
 			return {
 				...state,
 				checks: action.payload,
+			};
+		}
+		case 'resdata/thumbnail': {
+			return {
+				...state,
+				thumbnail: action.payload as string,
 			};
 		}
 		default:
