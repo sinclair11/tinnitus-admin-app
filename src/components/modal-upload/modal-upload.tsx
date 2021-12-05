@@ -28,8 +28,6 @@ type TransactionData = {
 	pathThumbnail: string;
 	name: string;
 	length: number;
-	creation: string;
-	upload: string;
 	description: string;
 	tags: string;
 };
@@ -251,11 +249,9 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			pathVideo: event.target[0].value,
 			pathThumbnail: event.target[2].value,
 			name: event.target[4].value,
-			length: event.target[6].value,
-			creation: event.target[5].value,
-			upload: event.target[7].value,
-			description: event.target[9].value,
-			tags: event.target[8].value,
+			length: event.target[5].value,
+			description: event.target[7].value,
+			tags: event.target[6].value,
 		};
 		//First store resource data in firestore
 		storeInfoInDb(transactionData);
@@ -413,13 +409,11 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		);
 		verifyEmptyInput(event.target[4].value, setNameInvalid, failedCounter);
 		verifyLengthInput(
-			event.target[6].value,
+			event.target[5].value,
 			setLengthInvalid,
 			failedCounter,
 		);
-		verifyDateInput(event.target[5].value, setCrDateInvalid, failedCounter);
-		verifyDateInput(event.target[7].value, setUpDateInvalid, failedCounter);
-		verifyEmptyInput(event.target[9].value, setDescInvalid, failedCounter);
+		verifyEmptyInput(event.target[7].value, setDescInvalid, failedCounter);
 
 		if (failedCounter.value == 0) {
 			//Hide form and show progress bar
@@ -693,8 +687,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					id: transactionData.id,
 					name: transactionData.name,
 					length: transactionData.length,
-					creation: transactionData.creation,
-					upload: transactionData.upload,
 					description: transactionData.description,
 					tags: transactionData.tags,
 				},
@@ -908,24 +900,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 							</InputGroup>
 							<p className="InvalidField">{nameInvalid}</p>
 						</div>
-						{props.type === 'upload' && (
-							<div className="Section SectionInput">
-								<InputGroup
-									className="InputInfoGroup"
-									hasValidation
-								>
-									<InputGroup.Text className="LabelDate">
-										Data creare
-									</InputGroup.Text>
-									<FormControl
-										className="InputText"
-										placeholder="dd/mm/yyyy"
-										required
-									/>
-								</InputGroup>
-								<p className="InvalidField">{crDateInvalid}</p>
-							</div>
-						)}
 					</Col>
 					{props.type === 'upload' && (
 						<Col className="ColInfo">
@@ -944,23 +918,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 									/>
 								</InputGroup>
 								<p className="InvalidField">{lengthInvalid}</p>
-							</div>
-
-							<div className="Section SectionInput">
-								<InputGroup
-									className="InputInfoGroup"
-									hasValidation
-								>
-									<InputGroup.Text className="LabelDate">
-										Data incarcare
-									</InputGroup.Text>
-									<FormControl
-										className="InputText"
-										placeholder="dd/mm/yyyy"
-										required
-									/>
-								</InputGroup>
-								<p className="InvalidField">{upDateInvalid}</p>
 							</div>
 						</Col>
 					)}
