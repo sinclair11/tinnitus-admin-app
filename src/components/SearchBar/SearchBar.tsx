@@ -72,8 +72,11 @@ export const SearchBar: React.FC = () => {
 		];
 		//* Store resource general information in redux
 		dispatch({ type: 'resdata/info', payload: arrInfo });
-		dispatch({ type: 'resdata/usage', payload: arrUsage });
 		//* Store resource usage ingormation in redux
+		dispatch({ type: 'resdata/usage', payload: arrUsage });
+		//* Store general information as raw data in redux
+		dispatch({ type: 'resdata/infodata', payload: dataInfo });
+		//* Store name of selected resource
 		dispatch({
 			type: 'resdata/selected',
 			payload: searchVal,

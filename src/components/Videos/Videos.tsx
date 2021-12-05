@@ -26,8 +26,6 @@ export const Videos: React.FC = () => {
 	useEffect(() => {
 		//No resource data on first rendering
 		dispatch({ type: 'resdata/selected', payload: '' });
-		dispatch({ type: 'resdata/edit', payload: '' });
-		dispatch({ type: 'resdata/delete', payload: '' });
 	}, []);
 
 	/**

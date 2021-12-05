@@ -2,10 +2,9 @@ import { ResdataState } from './custom';
 
 const initialState: ResdataState = {
 	selected: '',
-	editSelected: '',
-	deleteSelected: '',
 	info: [],
 	usage: [],
+	infoData: {},
 	thumbnail: '',
 	checks: {},
 };
@@ -27,18 +26,6 @@ export function resdataReducer(
 				selected: action.payload as string,
 			};
 		}
-		case 'resdata/edit': {
-			return {
-				...state,
-				editSelected: action.payload as string,
-			};
-		}
-		case 'resdata/delete': {
-			return {
-				...state,
-				deleteSelected: action.payload as string,
-			};
-		}
 		case 'resdata/info': {
 			return {
 				...state,
@@ -49,6 +36,12 @@ export function resdataReducer(
 			return {
 				...state,
 				usage: action.payload as { name: string; value: unknown }[],
+			};
+		}
+		case 'resdata/infodata': {
+			return {
+				...state,
+				infoData: action.payload,
 			};
 		}
 		case 'resdata/checks': {

@@ -48,8 +48,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	const [thmbPathInvalid, setThmbPathInvalid] = useState('');
 	const [nameInvalid, setNameInvalid] = useState('');
 	const [lengthInvalid, setLengthInvalid] = useState('');
-	const [crDateInvalid, setCrDateInvalid] = useState('');
-	const [upDateInvalid, setUpDateInvalid] = useState('');
 	const [descInvalid, setDescInvalid] = useState('');
 	//States for editable data
 	const [name, setName] = useState('');
@@ -67,6 +65,9 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	let responsesProgress = 0;
 	let sentRequests = 0;
 
+	/**
+	 * @description Only for edit modal type
+	 */
 	useEffect(() => {
 		setName(props.data.name);
 		setTags(props.data.tags);
