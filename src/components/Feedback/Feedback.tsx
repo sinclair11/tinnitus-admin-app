@@ -125,6 +125,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 			} else {
 				//No feedbacks for this resource
 				setFeedbacks(new Map<string, FeedbackData>());
+				dispatch({ type: 'resdata/checks', payload: {} });
 				setViewMsg(
 					'Aceasta resursa nu are niciun feedback pentru perioada selectata.',
 				);
@@ -343,23 +344,29 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 		//Get an array of id:string; value:boolean
 		const entries = Object.entries(store.getState().resdataReducer.checks);
 		const temp: any = {};
-		if (checkType.current) {
-			//Mark all as selected
-			for (const [key] of entries) {
-				temp[key] = true;
+		//Check if there are any feedbacks
+		if (entries.length > 0) {
+			if (checkType.current) {
+				//Mark all as selected
+				for (const [key] of entries) {
+					temp[key] = true;
+				}
+				setSelectText('Deselecteaza toate');
+			} else {
+				//Mark all as unselected
+				for (const [key] of entries) {
+					temp[key] = false;
+				}
+				setSelectText('Selecteaza toate');
 			}
-			setSelectText('Deselecteaza toate');
+			//Update check state
+			dispatch({ type: 'resdata/checks', payload: temp });
+			//Change to opposite
+			checkType.current = !checkType.current;
 		} else {
-			//Mark all as unselected
-			for (const [key] of entries) {
-				temp[key] = false;
-			}
-			setSelectText('Selecteaza toate');
+			props.setMessage('Resursa nu are niciun feedback!');
+			props.showMessagebox(true);
 		}
-		//Update check state
-		dispatch({ type: 'resdata/checks', payload: temp });
-		//Change to opposite
-		checkType.current = !checkType.current;
 	}
 
 	/**
