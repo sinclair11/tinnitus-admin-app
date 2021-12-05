@@ -9,10 +9,11 @@ import Modal from 'react-modal';
 import { MessageBox } from '../messagebox/messagebox';
 import { DialogBox } from '../dialogbox/dialogbox';
 import { dialogStyles, hourglassStyle } from '@src/styles/styles';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { CombinedStates } from '@src/store/reducers/custom';
 
 type ToolbarProps = {
-	container: string;
+	container?: string;
 };
 
 export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
@@ -29,6 +30,9 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 	const [dialogbox, setDialogbox] = useState(false);
 	const [accept, setAccept] = useState(false);
 	const dispatch = useDispatch();
+	const selected = useSelector<CombinedStates>(
+		(state) => state.resdataReducer.selected,
+	) as string;
 
 	useEffect(() => {
 		if (accept == true) {
@@ -49,8 +53,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 					//Get info about resource from database
 					const response = await axios({
 						method: 'get',
-						url: `http://127.0.0.1:3000/api/admin/videos/infodb/general?id=${
-							store.getState().resdataReducer.selected
+						url: `http://127.0.0.1:3000/api/admin/videos/infodb/general?id=${store.getState().resdataReducer.selected
 						}`,
 						headers: {
 							'Content-Type': 'application/json',
@@ -105,8 +108,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 			//Request deletion of resource
 			await axios({
 				method: 'delete',
-				url: `http://127.0.0.1:3000/api/admin/videos?id=${
-					store.getState().resdataReducer.selected
+				url: `http://127.0.0.1:3000/api/admin/videos?id=${store.getState().resdataReducer.selected
 				}`,
 				headers: {
 					'Content-Type': 'application/json',
@@ -140,13 +142,16 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 	}
 
 	return (
-		<div className={props.container + ' Container'}>
+		<div className={props.container + ' ToolbarContainer '}>
 			<ReactTooltip
 				place="top"
 				type="dark"
 				effect="float"
 				delayShow={500}
 			/>
+			<div className="TitleDiv">
+				<p className="TitleSelected">{selected}</p>
+			</div>
 			<img
 				data-tip="Incarca"
 				src={ToolbarIcons['UploadIcon']}

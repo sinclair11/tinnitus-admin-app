@@ -100,9 +100,9 @@ export const Videos: React.FC = () => {
 					)}
 					{isVisible && (
 						<Container id="content" className="ContentPlaceholder">
+							<Toolbar />
 							<Row className="Row">
 								<Col className="Col">
-									<Toolbar container="Toolbar" />
 									{playerOrPlaceholder()}
 									<Graph container="Graph" />
 								</Col>
