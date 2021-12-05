@@ -532,10 +532,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				dispatch({ type: 'progress/update', payload: progress });
 				dispatch({
 					type: 'progress/log',
-					payload: { type: 'black', value: response.data },
-				});
-				dispatch({
-					type: 'progress/log',
 					payload: {
 						type: 'black',
 						value: 'Se incarca fisierul video...',
