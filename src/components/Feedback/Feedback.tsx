@@ -21,7 +21,6 @@ type FeedbackProps = {
 type FeedbackItemProps = {
 	id?: string;
 	data: FeedbackData;
-	onDelete: unknown;
 };
 
 type FeedbackData = {
@@ -49,8 +48,6 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 	const [messageOpen, setMessageOpen] = useState(false);
 	const [error, setError] = useState('');
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const [actionAccepted, setAcctionAccepted] = useState(false);
-	const [id, setId] = useState('');
 	const [viewMsg, setViewMsg] = useState('');
 	const [loading, setLoading] = useState(false);
 	const feedbackItems = useRef(
@@ -67,13 +64,6 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 			);
 		}
 	}, [selected]);
-
-	//* Use effect to execute delete action if it was accepted
-	useEffect(() => {
-		if (actionAccepted === true) {
-			deleteFeedback(id);
-		}
-	}, [actionAccepted]);
 
 	/**
 	 * @function buildFeedbackMap
@@ -149,34 +139,6 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 		}
 	}
 
-	/**
-	 * @function deleteFeedback
-	 * @param feedbackId
-	 */
-	async function deleteFeedback(feedbackId: string): Promise<void> {
-		try {
-			// TODO: Request feedback deletion
-			// TODO: Refresh locally saved feedbacks map
-		} catch (error) {
-			if (error.message === 'timeout') {
-				//! Timeout reached
-				setError('Serverul intarzie sa raspunda. Tranzactie inchisa.');
-			} else {
-				//! Could not retrieve feedbacks from server
-				setError(ResponseCodes.get(error.response.status));
-			}
-			//Notify user about the error (set in message box)
-			setMessageOpen(true);
-		}
-	}
-
-	function onDeleteClick(id: string): void {
-		//Show prompt for deletion
-		setDialogOpen(true);
-		//Set id of resource
-		setId(id);
-	}
-
 	function displayFeedbacks(): JSX.Element {
 		//* Check if a resource was selected
 		if (selected != '') {
@@ -208,7 +170,6 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 											comment: item.value.comment,
 											date: item.value.date,
 										}}
-										onDelete={onDeleteClick}
 									></FeedbackItem>
 								</li>
 							))}
@@ -245,13 +206,6 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 				ariaHideApp={false}
 			>
 				<MessageBox setIsOpen={setMessageOpen} message={error} />
-			</Modal>
-			<Modal isOpen={dialogOpen} style={dialogStyles} ariaHideApp={false}>
-				<DialogBox
-					setIsOpen={setDialogOpen}
-					message="Esti sigur ca vrei sa stergi acest feedback?"
-					setAccepted={setAcctionAccepted}
-				/>
 			</Modal>
 			<Modal isOpen={loading} style={hourglassStyle} ariaHideApp={false}>
 				<div className="hourglass"></div>
@@ -332,10 +286,19 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 	const [selectText, setSelectText] = useState('Selecteaza toate');
 	const month = useRef(months[0]);
 	const year = useRef(years[0]);
+	const [dialogOpen, setDialogOpen] = useState(false);
+	const [actionAccepted, setActionAccepted] = useState(false);
+	const selectedFbacks = useRef(null);
 
 	useEffect(() => {
 		displayFeedbacks();
 	}, []);
+
+	useEffect(() => {
+		if (actionAccepted) {
+			onRequestDelete();
+		}
+	}, [actionAccepted]);
 
 	/**
 	 *
@@ -389,45 +352,8 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 
 		//Check if there was at least one feedback selected
 		if (counter > 0) {
-			// TODO: Delete all selected feedbacks
-			//Show loading screen
-			props.setLoading(true);
-			const secret = await getAuth();
-			//Request deletion of selected feedbacks
-			try {
-				await axios({
-					method: 'delete',
-					timeout: 30000,
-					timeoutErrorMessage: 'timeout',
-					url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks`,
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${secret}`,
-					},
-					data: {
-						videoId: store.getState().resdataReducer.selected,
-						feedbackIds: fbacksToDelete,
-					},
-				});
-				//Render remained feedbacks
-				displayFeedbacks();
-				//Notify user that request was handled successfully
-				props.setMessage('Feedback-urile au fost sterse cu succes!');
-				props.showMessagebox(true);
-			} catch (error) {
-				if (error.message === 'timeout') {
-					//Timeout for response
-					props.setMessage(
-						'Serverul intarzie sa raspunda. Tranzactie inchisa.',
-					);
-				} else {
-					//Firestore service is not available
-					props.setMessage(ResponseCodes.get(error.response.status));
-				}
-				props.setLoading(false);
-				//Notify user
-				props.showMessagebox(true);
-			}
+			selectedFbacks.current = fbacksToDelete;
+			setDialogOpen(true);
 		} else {
 			//Notify user that he musts select a feedback first
 			props.setMessage('Selectati cel putin un feedback!');
@@ -441,6 +367,52 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 	 */
 	function displayFeedbacks(): void {
 		props.display(MonthsMap.get(month.current).text, year.current);
+	}
+
+	/**
+	 *
+	 */
+	async function onRequestDelete(): Promise<void> {
+		//Show loading screen
+		props.setLoading(true);
+		const secret = await getAuth();
+		//Request deletion of selected feedbacks
+		try {
+			await axios({
+				method: 'delete',
+				timeout: 30000,
+				timeoutErrorMessage: 'timeout',
+				url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks`,
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${secret}`,
+				},
+				data: {
+					videoId: store.getState().resdataReducer.selected,
+					feedbackIds: selectedFbacks.current,
+				},
+			});
+			//Render remained feedbacks
+			displayFeedbacks();
+			//Hide loading screen
+			props.setLoading(false);
+			//Notify user that request was handled successfully
+			props.setMessage('Feedback-urile au fost sterse cu succes!');
+			props.showMessagebox(true);
+		} catch (error) {
+			if (error.message === 'timeout') {
+				//Timeout for response
+				props.setMessage(
+					'Serverul intarzie sa raspunda. Tranzactie inchisa.',
+				);
+			} else {
+				//Firestore service is not available
+				props.setMessage(ResponseCodes.get(error.response.status));
+			}
+			props.setLoading(false);
+			//Notify user
+			props.showMessagebox(true);
+		}
 	}
 
 	return (
@@ -480,6 +452,13 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 				data-tip="Sterge comentariu"
 				onClick={deleteSelected}
 			/>
+			<Modal isOpen={dialogOpen} style={dialogStyles} ariaHideApp={false}>
+				<DialogBox
+					setIsOpen={setDialogOpen}
+					message="Esti sigur ca vrei sa stergi feedback-urile selectate?"
+					setAccepted={setActionAccepted}
+				/>
+			</Modal>
 		</div>
 	);
 };
