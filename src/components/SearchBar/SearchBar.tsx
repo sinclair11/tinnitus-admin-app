@@ -52,8 +52,7 @@ export const SearchBar: React.FC = () => {
 		const arrInfo = [
 			{ name: 'Nume', value: dataInfo['name'] },
 			{ name: 'Lungime', value: dataInfo['length'] },
-			{ name: 'Data creare', value: dataInfo['creation'] },
-			{ name: 'Data incarcare', value: dataInfo['upload'] },
+			{ name: 'Data upload', value: dataInfo['upload'] },
 			{ name: 'Tags', value: dataInfo['tags'] },
 			{ name: 'Descriere', value: dataInfo['description'] },
 		];
