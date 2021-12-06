@@ -10,7 +10,7 @@ export type ResdataState = {
 	selected: string;
 	info: { name: string; value: unknown }[];
 	usage: { name: string; value: unknown }[];
-	infoData: unknown;
+	infoData: any;
 	thumbnail: string;
 	checks: unknown;
 };

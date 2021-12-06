@@ -53,7 +53,8 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 					//Get info about resource from database
 					const response = await axios({
 						method: 'get',
-						url: `http://127.0.0.1:3000/api/admin/videos/infodb/general?id=${store.getState().resdataReducer.selected
+						url: `http://127.0.0.1:3000/api/admin/videos/infodb/general?id=${
+							store.getState().resdataReducer.selected
 						}`,
 						headers: {
 							'Content-Type': 'application/json',
@@ -108,7 +109,8 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 			//Request deletion of resource
 			await axios({
 				method: 'delete',
-				url: `http://127.0.0.1:3000/api/admin/videos?id=${store.getState().resdataReducer.selected
+				url: `http://127.0.0.1:3000/api/admin/videos?id=${
+					store.getState().resdataReducer.selected
 				}`,
 				headers: {
 					'Content-Type': 'application/json',

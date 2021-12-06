@@ -291,7 +291,28 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 	const selectedFbacks = useRef(null);
 
 	useEffect(() => {
-		displayFeedbacks();
+		//Get date for selected resource
+		const date = store.getState().resdataReducer.infoData['upload'];
+		//Extract month
+		const m = date.slice(4, 7).toLowerCase();
+		//Extract year
+		const y = date.slice(11, 15);
+		//Set current year to resource upload date
+		for (let i = 0; i < years.length; i++) {
+			if (years[i] === y) {
+				year.current = years[i];
+				break;
+			}
+		}
+		//Set current month to resource upload date
+		const entries = MonthsMap.entries();
+		for (const [_, value] of entries) {
+			if (value.text === m) {
+				month.current = months[value.number - 1];
+			}
+		}
+		//Display all feedbakcs
+		displayFeedbacks(m, y);
 	}, []);
 
 	useEffect(() => {
@@ -301,6 +322,7 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 	}, [actionAccepted]);
 
 	/**
+	 *
 	 *
 	 */
 	function selectAll(): void {
@@ -365,8 +387,8 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 	/**
 	 *
 	 */
-	function displayFeedbacks(): void {
-		props.display(MonthsMap.get(month.current).text, year.current);
+	function displayFeedbacks(month: string, year: string): void {
+		props.display(month, year);
 	}
 
 	/**
@@ -393,7 +415,7 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 				},
 			});
 			//Render remained feedbacks
-			displayFeedbacks();
+			displayFeedbacks(month.current, year.current);
 			//Hide loading screen
 			props.setLoading(false);
 			//Notify user that request was handled successfully
@@ -421,7 +443,7 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 				options={months}
 				placeholder="Luna"
 				className="FbackToolbarMonth"
-				value={months[0]}
+				value={month.current}
 				// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 				onChange={(event) => {
 					month.current = event.value;
@@ -431,7 +453,7 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 				options={years}
 				placeholder="An"
 				className="FbackToolbarYear"
-				value={years[0]}
+				value={year.current}
 				// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 				onChange={(event) => {
 					year.current = event.value;
@@ -439,7 +461,12 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 			/>
 			<Button
 				className="FbackToolbarBtnDisplay"
-				onClick={displayFeedbacks}
+				onClick={(): void =>
+					displayFeedbacks(
+						MonthsMap.get(month.current).text,
+						year.current,
+					)
+				}
 			>
 				Afiseaza
 			</Button>

@@ -3,23 +3,6 @@ import axios from 'axios';
 import { store } from '@store/store';
 import { ipcRenderer } from 'electron';
 
-type InfoData = {
-	name: string;
-	length: number;
-	creation: string;
-	upload: string;
-	tags: string;
-	description: string;
-};
-
-type InfoUsage = {
-	duration: number;
-	views: number;
-	peruser: number;
-	likes: number;
-	favs: number;
-	feedbacks: number;
-};
 export class Err {
 	code: number;
 	message: string;
