@@ -8,10 +8,10 @@ export type ProgState = {
 
 export type ResdataState = {
 	selected: string;
-	editSelected: string;
-	deleteSelected: string;
 	info: { name: string; value: unknown }[];
 	usage: { name: string; value: unknown }[];
+	infoData: any;
+	thumbnail: string;
 	checks: unknown;
 };
 

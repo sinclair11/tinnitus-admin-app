@@ -40,13 +40,7 @@ export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
 								/>
 								<div className="ListItemInfo">
 									<h4>{item.name}</h4>
-									<p>
-										{'Creare: ' +
-											item.data.creation +
-											' ' +
-											'Upload: ' +
-											item.data.upload}
-									</p>
+									<p>{'Upload: ' + item.data.upload}</p>
 								</div>
 							</div>
 						</li>

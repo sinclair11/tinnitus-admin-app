@@ -1,18 +1,39 @@
 @use '../../styles/colors'
 
-.Container
+.ToolbarContainer
 	display: flex
 	justify-content: flex-start
 	align-items: center
 	border-radius: 8px
 	border: 1px solid colors.$border
 	background-color: #B2FFFF
+	width: 84%
+	margin-left: 5%
+	margin-bottom: 20px
+	height: 40px
 
 .ActionIcon
 	width: 32px
 	height: 32px
-	margin-left: 10px
+	margin-left: 5px
 
 	&:hover
 		transform: scale(1.2)
 
+.TitleDiv
+	display: flex
+	justify-content: center
+	align-items: center
+	background-color: colors.$section
+	border-right: 2px solid colors.$border
+	height: 100%
+	border-radius: 7px
+	border-bottom-right-radius: 0px
+	border-top-right-radius: 0px
+
+.TitleSelected
+	margin: 0px
+	color: aqua
+	font-weight: 400
+	margin-right: 10px
+	margin-left: 5px

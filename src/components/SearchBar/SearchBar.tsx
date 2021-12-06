@@ -72,8 +72,11 @@ export const SearchBar: React.FC = () => {
 		];
 		//* Store resource general information in redux
 		dispatch({ type: 'resdata/info', payload: arrInfo });
-		dispatch({ type: 'resdata/usage', payload: arrUsage });
 		//* Store resource usage ingormation in redux
+		dispatch({ type: 'resdata/usage', payload: arrUsage });
+		//* Store general information as raw data in redux
+		dispatch({ type: 'resdata/infodata', payload: dataInfo });
+		//* Store name of selected resource
 		dispatch({
 			type: 'resdata/selected',
 			payload: searchVal,
@@ -107,7 +110,7 @@ export const SearchBar: React.FC = () => {
 				//Store in redux selected resource
 				//Get usage information about resource
 				try {
-					const response = await axios({
+					let response = await axios({
 						method: 'get',
 						url: `http://127.0.0.1:3000/api/admin/videos/infodb/usage?id=${searchVal}`,
 						headers: {
@@ -119,6 +122,17 @@ export const SearchBar: React.FC = () => {
 						dataUsage = response.data;
 						//Update view with info from firestore
 						updateInfoData(dataInfo, dataUsage);
+						//Get image thumbnail
+						response = await axios({
+							method: 'get',
+							url: `http://127.0.0.1:3000/api/admin/videos/thumbnail?id=${searchVal}`,
+						});
+						console.log(response);
+						//Update thumbnail image
+						dispatch({
+							type: 'resdata/thumbnail',
+							payload: response.data,
+						});
 						setIsOpen(false);
 					}
 				} catch (err) {

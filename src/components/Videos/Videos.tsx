@@ -10,21 +10,22 @@ import { Icons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
 import { Feedback } from '@components/feedback/Feedback';
 import '@components/modal-search/modal-search.css';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { CombinedStates } from '@src/store/reducers/custom';
 
-type ResProps = {
-	resourceType: string;
-};
-
-export const Videos: React.FC<ResProps> = (props: ResProps) => {
+export const Videos: React.FC = () => {
 	const [isVisible, setIsVisible] = useState(true);
 	const dispatch = useDispatch();
+	const selected = useSelector<CombinedStates>(
+		(state) => state.resdataReducer.selected,
+	) as string;
+	const thumbnail = useSelector<CombinedStates>(
+		(state) => state.resdataReducer.thumbnail,
+	) as string;
 
 	useEffect(() => {
 		//No resource data on first rendering
 		dispatch({ type: 'resdata/selected', payload: '' });
-		dispatch({ type: 'resdata/edit', payload: '' });
-		dispatch({ type: 'resdata/delete', payload: '' });
 	}, []);
 
 	/**
@@ -41,21 +42,23 @@ export const Videos: React.FC<ResProps> = (props: ResProps) => {
 	 */
 	function playerOrPlaceholder(): JSX.Element {
 		//Check if a resource was selected
-		if (false /*selected !== ''*/) {
+		if (selected !== '') {
 			//Insert video player
-			if (props.resourceType === 'video') {
-				return (
-					<ReactPlayer
-						className="react-player"
-						url="https://youtu.be/T-4ACR94U4M"
-						width="100%"
-						height="40%"
-						controls={true}
+			return (
+				// <ReactPlayer
+				// 	className="react-player"
+				// 	url="https://youtu.be/T-4ACR94U4M"
+				// 	width="100%"
+				// 	height="40%"
+				// 	controls={true}
+				// />
+				<div className="ThumbPlaceholder">
+					<img
+						src={`data:image/png;base64,${thumbnail}`}
+						className="ThumbImg"
 					/>
-				);
-			} else if (props.resourceType === 'audio') {
-				//Insert audio player
-			}
+				</div>
+			);
 		}
 		//Functionality N/A
 		else {
@@ -95,9 +98,9 @@ export const Videos: React.FC<ResProps> = (props: ResProps) => {
 					)}
 					{isVisible && (
 						<Container id="content" className="ContentPlaceholder">
+							<Toolbar />
 							<Row className="Row">
 								<Col className="Col">
-									<Toolbar container="Toolbar" />
 									{playerOrPlaceholder()}
 									<Graph container="Graph" />
 								</Col>
