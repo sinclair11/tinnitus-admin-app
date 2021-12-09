@@ -99,7 +99,7 @@ export const SearchBar: React.FC = () => {
 		try {
 			const response = await axios({
 				method: 'get',
-				url: `http://127.0.0.1:3000/api/admin/videos/infodb/general?id=${searchVal}`,
+				url: `http://127.0.0.1:3000/api/admin/video/infodb/general?id=${searchVal}`,
 				headers: {
 					Authorization: `Bearer ${secret}`,
 				},
@@ -112,7 +112,7 @@ export const SearchBar: React.FC = () => {
 				try {
 					let response = await axios({
 						method: 'get',
-						url: `http://127.0.0.1:3000/api/admin/videos/infodb/usage?id=${searchVal}`,
+						url: `http://127.0.0.1:3000/api/admin/video/infodb/usage?id=${searchVal}`,
 						headers: {
 							Authorization: `Bearer ${secret}`,
 						},
@@ -125,7 +125,7 @@ export const SearchBar: React.FC = () => {
 						//Get image thumbnail
 						response = await axios({
 							method: 'get',
-							url: `http://127.0.0.1:3000/api/admin/videos/thumbnail?id=${searchVal}`,
+							url: `http://127.0.0.1:3000/api/admin/video/thumbnail?id=${searchVal}`,
 						});
 						console.log(response);
 						//Update thumbnail image
@@ -176,7 +176,7 @@ export const SearchBar: React.FC = () => {
 		try {
 			const response = await axios({
 				method: 'get',
-				url: `http://127.0.0.1:3000/api/admin/videos/infodb/listofvideos`,
+				url: `http://127.0.0.1:3000/api/admin/video/infodb/listofvideos`,
 				headers: {
 					Authorization: `Bearer ${secret}`,
 				},

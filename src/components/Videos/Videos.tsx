@@ -128,7 +128,7 @@ export const Videos: React.FC = () => {
 								alignItems: 'center',
 							}}
 						>
-							<Feedback type="videos" />
+							<Feedback type="video" />
 						</div>
 					)}
 					<img

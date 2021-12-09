@@ -171,32 +171,6 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	 * @param setState
 	 * @param result
 	 */
-	function verifyDateInput(
-		value: string,
-		setState: React.Dispatch<React.SetStateAction<unknown>>,
-		result: any,
-	): void {
-		if (value === '') {
-			setState(fieldEmpty);
-			result.value++;
-		} else if (
-			!value.match(
-				/^(((0[1-9]|[12]\d|3[01])\/(0[13578]|1[02])\/((19|[2-9]\d)\d{2}))|((0[1-9]|[12]\d|30)\/(0[13456789]|1[012])\/((19|[2-9]\d)\d{2}))|((0[1-9]|1\d|2[0-8])\/02\/((19|[2-9]\d)\d{2}))|(29\/02\/((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|(([1][26]|[2468][048]|[3579][26])00))))$/g,
-			)
-		) {
-			setState(formatInvalid);
-			result.value++;
-		} else {
-			setState('');
-		}
-	}
-
-	/**
-	 *
-	 * @param value
-	 * @param setState
-	 * @param result
-	 */
 	function verifyLengthInput(
 		value: string,
 		setState: React.Dispatch<React.SetStateAction<unknown>>,
@@ -274,7 +248,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		// Try editing info
 		axios({
 			method: 'post',
-			url: 'http://127.0.0.1:3000/api/admin/videos/infodb',
+			url: 'http://127.0.0.1:3000/api/admin/video/infodb',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${transactionToken}`,
@@ -506,7 +480,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			timeout: 30000,
 			timeoutErrorMessage: 'timeout',
 			cancelToken: props.cancelation.token,
-			url: 'http://127.0.0.1:3000/api/admin/videos',
+			url: 'http://127.0.0.1:3000/api/admin/video',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${transactionToken}`,
@@ -601,7 +575,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					method: 'post',
 					timeout: 30000,
 					timeoutErrorMessage: 'timeout',
-					url: 'http://127.0.0.1:3000/api/admin/videos/thumbnail',
+					url: 'http://127.0.0.1:3000/api/admin/video/thumbnail',
 					headers: {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${transactionToken}`,
@@ -656,7 +630,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		//If somehow fails then request deletion
 		axios({
 			method: 'delete',
-			url: `http://127.0.0.1:3000/api/admin/videos/thumbnail?id=${name}`,
+			url: `http://127.0.0.1:3000/api/admin/video/thumbnail?id=${name}`,
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${transactionToken}`,
@@ -674,7 +648,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		try {
 			const response = await axios({
 				method: 'post',
-				url: 'http://127.0.0.1:3000/api/admin/videos/infodb',
+				url: 'http://127.0.0.1:3000/api/admin/video/infodb',
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${transactionToken}`,
@@ -748,7 +722,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			//Send video file in chunks
 			axios({
 				method: 'post',
-				url: 'http://127.0.0.1:3000/api/admin/videos',
+				url: 'http://127.0.0.1:3000/api/admin/video',
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${transactionToken}`,
@@ -803,7 +777,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			//Abort transaction
 			axios({
 				method: 'delete',
-				url: 'http://127.0.0.1:3000/api/admin/videos',
+				url: 'http://127.0.0.1:3000/api/admin/video',
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${transactionToken}`,
