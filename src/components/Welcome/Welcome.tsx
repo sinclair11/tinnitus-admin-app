@@ -27,12 +27,15 @@ const GridActions: React.FC = () => {
 			<ButtonGroup vertical className="ButtonGroup">
 				<Button
 					className="GridButton GridButtonText"
-					onClick={(): void => goToRoute('/videos')}
+					onClick={(): void => goToRoute('/video')}
 				>
 					<img src={Icons['VideoIcon']} className="ButtonIcon" />
 					Administreaza fisiere video
 				</Button>
-				<Button className="GridButton GridButtonText">
+				<Button
+					className="GridButton GridButtonText"
+					onClick={(): void => goToRoute('/audio')}
+				>
 					<img src={Icons['AudioIcon']} className="ButtonIcon" />
 					Administreaza fisiere audio
 				</Button>
