@@ -51,7 +51,7 @@ export const Login: React.FC = () => {
 			try {
 				const response = await axios({
 					method: 'post',
-					url: `http://127.0.0.1:3000/api/admin/login`,
+					url: `http://127.0.0.1:3000/api/admin/auth/login`,
 					headers: {
 						'Content-Type': 'application/json',
 					},

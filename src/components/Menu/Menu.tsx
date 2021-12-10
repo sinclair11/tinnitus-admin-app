@@ -38,13 +38,13 @@ export const Menu: React.FC<{ page: string; outer: string }> = (props) => {
 					<p className="LinkText">Home</p>
 				</div>
 			</Link>
-			<Link className="MenuLink" to="/videos">
+			<Link className="MenuLink" to="/video">
 				<div className="LinkPlaceholder">
 					<img src={Icons['VideoIcon']} className="MenuIcon" />
 					<p className="LinkText">Video</p>
 				</div>
 			</Link>
-			<Link className="MenuLink" to="/audios">
+			<Link className="MenuLink" to="/audio">
 				<div className="LinkPlaceholder">
 					<img src={Icons['AudioIcon']} className="MenuIcon" />
 					<p className="LinkText">Audio</p>

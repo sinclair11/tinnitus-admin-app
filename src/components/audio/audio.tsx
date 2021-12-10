@@ -13,7 +13,7 @@ import '@components/modal-search/modal-search.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 
-export const VideoView: React.FC = () => {
+export const AudioView: React.FC = () => {
 	const [isVisible, setIsVisible] = useState(true);
 	const dispatch = useDispatch();
 	const selected = useSelector<CombinedStates>(
@@ -74,7 +74,7 @@ export const VideoView: React.FC = () => {
 						boxShadow: '-3px 5px 4px -1px rgba(0,0,0,0.66)',
 					}}
 				>
-					<p>Functia de redare video nu este disponibila momentan.</p>
+					<p>Functia de redare audio nu este disponibila momentan.</p>
 				</div>
 			);
 		}
@@ -93,12 +93,12 @@ export const VideoView: React.FC = () => {
 				<div id="Page">
 					{isVisible && (
 						<div className="SearchBarDiv">
-							<SearchBar type="video" />
+							<SearchBar type="audio" />
 						</div>
 					)}
 					{isVisible && (
 						<Container id="content" className="ContentPlaceholder">
-							<Toolbar type="video" />
+							<Toolbar type="audio" />
 							<Row className="Row">
 								<Col className="Col">
 									{playerOrPlaceholder()}
@@ -128,7 +128,7 @@ export const VideoView: React.FC = () => {
 								alignItems: 'center',
 							}}
 						>
-							<Feedback type="video" />
+							<Feedback type="audio" />
 						</div>
 					)}
 					<img

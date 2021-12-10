@@ -47,7 +47,6 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 	const [feedbacks, setFeedbacks] = useState(new Map<string, FeedbackData>());
 	const [messageOpen, setMessageOpen] = useState(false);
 	const [error, setError] = useState('');
-	const [dialogOpen, setDialogOpen] = useState(false);
 	const [viewMsg, setViewMsg] = useState('');
 	const [loading, setLoading] = useState(false);
 	const feedbackItems = useRef(

@@ -9,7 +9,8 @@ import axios from 'axios';
 type UploadModalProps = {
 	modalIsOpen?: boolean;
 	setModalIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-	type?: string;
+	action: string;
+	type: string;
 	editable?: { name: string; tags: string; description: string };
 };
 
@@ -28,7 +29,7 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (
 		<div>
 			<Modal
 				isOpen={props.modalIsOpen}
-				style={modalStyle(props.type)}
+				style={modalStyle(props.action)}
 				contentLabel="Upload"
 				ariaHideApp={false}
 			>
@@ -36,13 +37,14 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (
 					<UploadForm
 						formModal={props.setModalIsOpen}
 						type={props.type}
+						action={props.action}
 						data={props.editable}
 						cancelation={source}
 					/>
 				</div>
 
 				<p className="ModalTitle">
-					{props.type === 'upload' ? 'Upload' : 'Edit'}
+					{props.action === 'upload' ? 'Upload' : 'Edit'}
 				</p>
 				<img
 					src={Icons['CancelIcon']}
