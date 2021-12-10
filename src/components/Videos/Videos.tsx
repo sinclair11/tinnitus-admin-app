@@ -13,7 +13,7 @@ import '@components/modal-search/modal-search.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 
-export const Videos: React.FC = () => {
+export const VideoView: React.FC = () => {
 	const [isVisible, setIsVisible] = useState(true);
 	const dispatch = useDispatch();
 	const selected = useSelector<CombinedStates>(
@@ -93,12 +93,12 @@ export const Videos: React.FC = () => {
 				<div id="Page">
 					{isVisible && (
 						<div className="SearchBarDiv">
-							<SearchBar />
+							<SearchBar type="video" />
 						</div>
 					)}
 					{isVisible && (
 						<Container id="content" className="ContentPlaceholder">
-							<Toolbar />
+							<Toolbar type="video" />
 							<Row className="Row">
 								<Col className="Col">
 									{playerOrPlaceholder()}

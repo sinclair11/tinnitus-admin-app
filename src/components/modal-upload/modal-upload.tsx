@@ -35,6 +35,7 @@ type TransactionData = {
 type UploadProps = {
 	formModal: React.Dispatch<React.SetStateAction<boolean>>;
 	type: string;
+	action: string;
 	data?: { name: string; tags: string; description: string };
 	cancelation: CancelTokenSource;
 };
@@ -79,7 +80,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	 * @returns
 	 */
 	function createPathElements(): JSX.Element {
-		if (props.type === 'upload') {
+		if (props.action === 'upload') {
 			return (
 				<Row className="IRow">
 					<Col className="ColPath">
@@ -248,7 +249,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		// Try editing info
 		axios({
 			method: 'post',
-			url: 'http://127.0.0.1:3000/api/admin/video/infodb',
+			url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb`,
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${transactionToken}`,
@@ -448,9 +449,9 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			payload: null,
 		});
 		//Verify submit type
-		if (props.type === 'upload') {
+		if (props.action === 'upload') {
 			handleOnUpload(event);
-		} else if (props.type === 'edit') {
+		} else if (props.action === 'edit') {
 			handleOnEdit(event);
 		}
 	}
@@ -480,7 +481,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			timeout: 30000,
 			timeoutErrorMessage: 'timeout',
 			cancelToken: props.cancelation.token,
-			url: 'http://127.0.0.1:3000/api/admin/video',
+			url: `http://127.0.0.1:3000/api/admin/${props.type}`,
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${transactionToken}`,
@@ -575,7 +576,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					method: 'post',
 					timeout: 30000,
 					timeoutErrorMessage: 'timeout',
-					url: 'http://127.0.0.1:3000/api/admin/video/thumbnail',
+					url: `http://127.0.0.1:3000/api/admin/${props.type}/thumbnail`,
 					headers: {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${transactionToken}`,
@@ -630,7 +631,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		//If somehow fails then request deletion
 		axios({
 			method: 'delete',
-			url: `http://127.0.0.1:3000/api/admin/video/thumbnail?id=${name}`,
+			url: `http://127.0.0.1:3000/api/admin/${props.type}/thumbnail?id=${name}`,
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${transactionToken}`,
@@ -648,7 +649,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 		try {
 			const response = await axios({
 				method: 'post',
-				url: 'http://127.0.0.1:3000/api/admin/video/infodb',
+				url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb`,
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${transactionToken}`,
@@ -722,7 +723,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			//Send video file in chunks
 			axios({
 				method: 'post',
-				url: 'http://127.0.0.1:3000/api/admin/video',
+				url: `http://127.0.0.1:3000/api/admin/${props.type}`,
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${transactionToken}`,
@@ -760,7 +761,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 							type: 'progress/log',
 							payload: {
 								type: 'green',
-								value: 'Fisierul video a fost incarcat cu succes',
+								value: `Fisierul ${props.type} a fost incarcat cu succes`,
 							},
 						});
 						storeThumbnail(transactionData);
@@ -777,7 +778,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			//Abort transaction
 			axios({
 				method: 'delete',
-				url: 'http://127.0.0.1:3000/api/admin/video',
+				url: `http://127.0.0.1:3000/api/admin/${props.type}`,
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${transactionToken}`,
@@ -796,6 +797,13 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	 *	@function browseFile
 	 */
 	function browseFile(): void {
+		let extensions: string[] = [];
+		//Depending on resource type(audio/video) chose extensions
+		if (props.type === 'video') {
+			extensions = ['mov', 'mkv', 'avi', 'mp4'];
+		} else if (props.type === 'audio') {
+			extensions = ['mp3'];
+		}
 		// let dialog: Dialog
 		electron.remote.dialog
 			.showOpenDialog({
@@ -803,7 +811,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				filters: [
 					{
 						name: 'Movies',
-						extensions: ['mov', 'mkv', 'avi', 'mp4'],
+						extensions: extensions,
 					},
 				],
 			})
@@ -872,7 +880,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 							<p className="InvalidField">{nameInvalid}</p>
 						</div>
 					</Col>
-					{props.type === 'upload' && (
+					{props.action === 'upload' && (
 						<Col className="ColInfo">
 							<div className="Section SectionInput">
 								<InputGroup

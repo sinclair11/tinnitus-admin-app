@@ -14,11 +14,12 @@ import { CombinedStates } from '@src/store/reducers/custom';
 
 type ToolbarProps = {
 	container?: string;
+	type: string;
 };
 
 export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 	const [modalIsOpen, setIsOpen] = useState(false);
-	const [modalType, setModalType] = useState('');
+	const [action, setAction] = useState('');
 	const [editData, setEditData] = useState({
 		name: '',
 		tags: '',
@@ -53,7 +54,9 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 					//Get info about resource from database
 					const response = await axios({
 						method: 'get',
-						url: `http://127.0.0.1:3000/api/admin/videos/infodb/general?id=${
+						url: `http://127.0.0.1:3000/api/admin/${
+							props.type
+						}/infodb/general?id=${
 							store.getState().resdataReducer.selected
 						}`,
 						headers: {
@@ -70,7 +73,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 					//Close loading screen
 					setLoading(false);
 					//Open edit modal and pass editable data of this resource
-					setModalType(type);
+					setAction(type);
 					setIsOpen(true);
 				} catch (error) {
 					//Close loading screen
@@ -94,7 +97,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 				description: '',
 			});
 			//Just open the upload modal
-			setModalType(type);
+			setAction(type);
 			setIsOpen(true);
 		}
 	}
@@ -106,12 +109,14 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 		//Activate loading screen
 		setLoading(true);
 		try {
+			const path = `http://127.0.0.1:3000/api/admin/${
+				props.type
+			}/del?id=${store.getState().resdataReducer.selected}`;
+			console.log(path);
 			//Request deletion of resource
 			await axios({
 				method: 'delete',
-				url: `http://127.0.0.1:3000/api/admin/videos?id=${
-					store.getState().resdataReducer.selected
-				}`,
+				url: path,
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${await getAuth()}`,
@@ -175,7 +180,8 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 			<UploadVideoModal
 				modalIsOpen={modalIsOpen}
 				setModalIsOpen={setIsOpen}
-				type={modalType}
+				action={action}
+				type={props.type}
 				editable={editData}
 			/>
 			<Modal

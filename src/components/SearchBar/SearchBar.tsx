@@ -11,7 +11,11 @@ import { Reslist } from '@components/reslist/reslist';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 
-export const SearchBar: React.FC = () => {
+type SearchProps = {
+	type: string;
+};
+
+export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
 	const [searchVal, setSearchVal] = useState('');
 	//Hourglass modal state
 	const [isOpen, setIsOpen] = useState(false);
@@ -99,7 +103,7 @@ export const SearchBar: React.FC = () => {
 		try {
 			const response = await axios({
 				method: 'get',
-				url: `http://127.0.0.1:3000/api/admin/video/infodb/general?id=${searchVal}`,
+				url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/general?id=${searchVal}`,
 				headers: {
 					Authorization: `Bearer ${secret}`,
 				},
@@ -112,7 +116,7 @@ export const SearchBar: React.FC = () => {
 				try {
 					let response = await axios({
 						method: 'get',
-						url: `http://127.0.0.1:3000/api/admin/video/infodb/usage?id=${searchVal}`,
+						url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/usage?id=${searchVal}`,
 						headers: {
 							Authorization: `Bearer ${secret}`,
 						},
@@ -125,7 +129,7 @@ export const SearchBar: React.FC = () => {
 						//Get image thumbnail
 						response = await axios({
 							method: 'get',
-							url: `http://127.0.0.1:3000/api/admin/video/thumbnail?id=${searchVal}`,
+							url: `http://127.0.0.1:3000/api/admin/${props.type}/thumbnail?id=${searchVal}`,
 						});
 						console.log(response);
 						//Update thumbnail image
@@ -176,25 +180,25 @@ export const SearchBar: React.FC = () => {
 		try {
 			const response = await axios({
 				method: 'get',
-				url: `http://127.0.0.1:3000/api/admin/video/infodb/listofvideos`,
+				url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/list`,
 				headers: {
 					Authorization: `Bearer ${secret}`,
 				},
 			});
 			//Get all required data [name, thumbnail, creation date, upload date]
-			const videos = response.data.videos;
+			const files = response.data.files;
 			//Total number of entries
-			const length = videos.length;
+			const length = files.length;
 			//Data containing the records name and upload date
 			for (let i = 0; i < length; i++) {
 				setTableElements((arr) => [
 					...arr,
 					{
-						name: videos[i].name,
+						name: files[i].name,
 						data: {
-							thumb: videos[i].thumbnail,
-							creation: videos[i].creation,
-							upload: videos[i].upload,
+							thumb: files[i].thumbnail,
+							creation: files[i].creation,
+							upload: files[i].upload,
 						},
 					},
 				]);
@@ -252,8 +256,8 @@ export const SearchBar: React.FC = () => {
 	return (
 		<InputGroup className="SearchGroup">
 			<FormControl
-				placeholder="Nume video..."
-				aria-label="Nume video"
+				placeholder={`Nume ${props.type}...`}
+				aria-label={`Nume ${props.type}`}
 				aria-describedby="basic-addon2"
 				className="SearchBar"
 				value={searchVal}
@@ -283,7 +287,7 @@ export const SearchBar: React.FC = () => {
 			</Modal>
 			<Modal style={tableStyles} isOpen={tableOpen} ariaHideApp={false}>
 				<Reslist entries={tableElements} selectFromList={setSelected} />
-				<p className="ModalTitle">Lista video</p>
+				<p className="ModalTitle">Lista {props.type}</p>
 				<img
 					src={Icons['CancelIcon']}
 					className="CancelIcon"
