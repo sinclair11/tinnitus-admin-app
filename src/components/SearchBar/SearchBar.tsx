@@ -10,6 +10,7 @@ import { MessageBox } from '@src/components/messagebox/messagebox';
 import { Reslist } from '@components/reslist/reslist';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
+import ErrorHandler from '@src/utils/errorhandler';
 
 type SearchProps = {
 	type: string;
@@ -101,7 +102,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
 		setIsOpen(true);
 		//Get general information about resource
 		try {
-			const response = await axios({
+			let response = await axios({
 				method: 'get',
 				url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/general?id=${searchVal}`,
 				headers: {
@@ -113,57 +114,40 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
 				dataInfo = response.data;
 				//Store in redux selected resource
 				//Get usage information about resource
-				try {
-					let response = await axios({
+				response = await axios({
+					method: 'get',
+					url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/usage?id=${searchVal}`,
+					headers: {
+						Authorization: `Bearer ${secret}`,
+					},
+				});
+				if (response.status === 200) {
+					//Update usage about resource
+					dataUsage = response.data;
+					//Update view with info from firestore
+					updateInfoData(dataInfo, dataUsage);
+					//Get image thumbnail
+					response = await axios({
 						method: 'get',
-						url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/usage?id=${searchVal}`,
-						headers: {
-							Authorization: `Bearer ${secret}`,
-						},
+						url: `http://127.0.0.1:3000/api/admin/${props.type}/thumbnail?id=${searchVal}`,
 					});
-					if (response.status === 200) {
-						//Update usage about resource
-						dataUsage = response.data;
-						//Update view with info from firestore
-						updateInfoData(dataInfo, dataUsage);
-						//Get image thumbnail
-						response = await axios({
-							method: 'get',
-							url: `http://127.0.0.1:3000/api/admin/${props.type}/thumbnail?id=${searchVal}`,
-						});
-						console.log(response);
-						//Update thumbnail image
-						dispatch({
-							type: 'resdata/thumbnail',
-							payload: response.data,
-						});
-						setIsOpen(false);
-					}
-				} catch (err) {
-					let message: string;
-					if (err.response === undefined) {
-						message = err.message;
-					} else {
-						message = ResponseCodes.get(err.response.status);
-					}
-					//Notify user about error
-					setMessage(message);
-					//Hide loading screen
+					console.log(response);
+					//Update thumbnail image
+					dispatch({
+						type: 'resdata/thumbnail',
+						payload: response.data,
+					});
 					setIsOpen(false);
-					//Show dialog with error message
-					setDialogOpen(true);
 				}
 			}
-		} catch (err) {
-			let message: string;
-			if (err.response === undefined) {
-				message = err.message;
-			} else {
-				message = ResponseCodes.get(err.response.status);
-			}
-			/* Notify user about error */
-			setMessage(message);
+		} catch (error) {
+			//Handle error and display message
+			const result = ErrorHandler.getErrorType(error);
+			//Notify user about error
+			setMessage(result);
+			//Hide loading screen
 			setIsOpen(false);
+			//Show dialog with error message
 			setDialogOpen(true);
 		}
 	}
@@ -207,15 +191,11 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
 			setIsOpen(false);
 			//Display table with data
 			setTableOpen(true);
-		} catch (err) {
-			let message: string;
-			if (err.response === undefined) {
-				message = err.message;
-			} else {
-				message = ResponseCodes.get(err.response.status);
-			}
+		} catch (error) {
+			//Handle error and display message
+			const result = ErrorHandler.getErrorType(error);
 			//Notify user about error
-			setMessage(message);
+			setMessage(result);
 			//Hide loading screen
 			setIsOpen(false);
 			//Show dialog message with error

@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import { ResponseCodes, watchToken } from '@utils/utils';
 import { useDispatch } from 'react-redux';
+import ErrorHandler from '@src/utils/errorhandler';
 
 export const Login: React.FC = () => {
 	const [admin, setAdmin] = useState('');
@@ -73,12 +74,9 @@ export const Login: React.FC = () => {
 				setAdmin('');
 				setPassw('');
 			} catch (error) {
-				//console.error(error)
-				if (error.response === undefined) {
-					setPasswInvalid(error.message);
-				} else {
-					setPasswInvalid(ResponseCodes.get(error.response.status));
-				}
+				//Handle error and display message
+				const result = ErrorHandler.getErrorType(error);
+				setPasswInvalid(result);
 				setAdmin('');
 				setPassw('');
 			}

@@ -13,6 +13,7 @@ import { dialogStyles, hourglassStyle } from '@src/styles/styles';
 import { Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '@store/store';
+import ErrorHandler from '@src/utils/errorhandler';
 
 type FeedbackProps = {
 	type: string;
@@ -122,13 +123,9 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
 			//Hide loading screen
 			setLoading(false);
 		} catch (error) {
-			if (error.message === 'timeout') {
-				//! Timeout reached
-				setError('Serverul intarzie sa raspunda. Tranzactie inchisa.');
-			} else {
-				//! Could not retrieve feedbacks from server
-				setError(ResponseCodes.get(error.response.status));
-			}
+			//Handle error and display message
+			const result = ErrorHandler.getErrorType(error);
+			setError(result);
 			//Hide loading screen
 			setLoading(false);
 			//Notify user about the error (set in message box)
@@ -421,15 +418,9 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 			props.setMessage('Feedback-urile au fost sterse cu succes!');
 			props.showMessagebox(true);
 		} catch (error) {
-			if (error.message === 'timeout') {
-				//Timeout for response
-				props.setMessage(
-					'Serverul intarzie sa raspunda. Tranzactie inchisa.',
-				);
-			} else {
-				//Firestore service is not available
-				props.setMessage(ResponseCodes.get(error.response.status));
-			}
+			//Handle error and display message
+			const result = ErrorHandler.getErrorType(error);
+			props.setMessage(result);
 			props.setLoading(false);
 			//Notify user
 			props.showMessagebox(true);
