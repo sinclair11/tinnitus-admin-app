@@ -11,6 +11,7 @@ import { DialogBox } from '../dialogbox/dialogbox';
 import { dialogStyles, hourglassStyle } from '@src/styles/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
+import ErrorHandler from '@src/utils/errorhandler';
 
 type ToolbarProps = {
 	container?: string;
@@ -79,9 +80,10 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 					//Close loading screen
 					setLoading(false);
 					//Info could not be retrieved from database
-					const message = ResponseCodes.get(error.response.status);
+					//Handle error and display message
+					const result = ErrorHandler.getErrorType(error);
 					//Notify user about occured error
-					setMessageboxMsg(message);
+					setMessageboxMsg(result);
 					setMessageOpen(true);
 				}
 			} else {
@@ -130,9 +132,10 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 			//Close loading screen
 			setLoading(false);
 			//Retrieve message for corresponding status code
-			const message = ResponseCodes.get(error.response.status);
+			//Handle error and display message
+			const result = ErrorHandler.getErrorType(error);
 			//Set message and notify user about occured error
-			setMessageboxMsg(message);
+			setMessageboxMsg(result);
 			setMessageOpen(true);
 		}
 	}

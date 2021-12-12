@@ -15,6 +15,7 @@ import { readChunk } from 'read-chunk';
 import { useDispatch } from 'react-redux';
 import { store } from '@store/store';
 import { getAuth } from '@src/utils/utils';
+import ErrorHandler from '@src/utils/errorhandler';
 
 let isAborted = false;
 
@@ -274,12 +275,13 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			})
 			.catch((error) => {
 				// TODO: Log error in db specific document
-				//Notify user that edit action failed
+				//Handle error and display message
+				const result = ErrorHandler.getErrorType(error);
 				dispatch({
 					type: 'progress/fail',
 					payload: {
 						type: 'red',
-						value: 'Operatiunea de editare a esuat',
+						value: result,
 					},
 				});
 			});
@@ -460,12 +462,12 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	 *
 	 * @param status
 	 */
-	function setErrorLog(status: number): void {
+	function setErrorLog(message: string): void {
 		dispatch({
 			type: 'progress/fail',
 			payload: {
 				type: 'red',
-				value: ResponseCodes.get(status),
+				value: message,
 			},
 		});
 	}
@@ -516,18 +518,8 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				sendVideoInChunks(transactionData, 0);
 			})
 			.catch((error) => {
-				let errorMessage = '';
-				if (error.message === 'timeout') {
-					//! Timeout reached
-					errorMessage =
-						'Serverul intarzie sa raspunda, cerere anulata';
-				} else if (axios.isCancel(error)) {
-					//! User aborted the operation
-					errorMessage = 'Tranzactia a fost intrerupta';
-				} else {
-					//! Internal server error
-					errorMessage = error.response.data;
-				}
+				//Handle error and display message
+				const result = ErrorHandler.getErrorType(error);
 				//Request deletion
 				requestDeleteOnFail(transactionData.name);
 				//Could not upload video
@@ -535,7 +527,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					type: 'progress/fail',
 					payload: {
 						type: 'red',
-						value: errorMessage,
+						value: result,
 					},
 				});
 			});
@@ -603,14 +595,16 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 					done = true;
 				}
 			} catch (error) {
+				//Handle error and display message
+				const result = ErrorHandler.getErrorType(error);
 				//If operation failed then request resource deletion
 				requestDeleteOnFail(transactionData.name);
 				//Update console log
 				dispatch({
 					type: 'progress/fail',
 					payload: {
-						type: 'green',
-						value: 'Coperta nu a putut fi incarcata',
+						type: 'red',
+						value: result,
 					},
 				});
 				//Update progress to failed
@@ -628,15 +622,24 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 	 * @param name
 	 */
 	function requestDeleteOnFail(name: string): void {
-		//If somehow fails then request deletion
-		axios({
-			method: 'delete',
-			url: `http://127.0.0.1:3000/api/admin/${props.type}/thumbnail?id=${name}`,
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${transactionToken}`,
-			},
-		});
+		try {
+			//If somehow fails then request deletion
+			axios({
+				method: 'delete',
+				url: `http://127.0.0.1:3000/api/admin/${props.type}/thumbnail?id=${name}`,
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${transactionToken}`,
+				},
+			});
+		} catch (error) {
+			//Handle error and display message
+			const result = ErrorHandler.getErrorType(error);
+			dispatch({
+				type: 'progress/log',
+				payload: { type: 'red', value: result },
+			});
+		}
 	}
 
 	/**
@@ -675,13 +678,15 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 			//Start sending video file
 			transactionData.id = response.data.id;
 			storeVideo(transactionData);
-		} catch (err) {
+		} catch (error) {
+			//Handle error and display message
+			const result = ErrorHandler.getErrorType(error);
 			//Update progress
 			dispatch({
 				type: 'progress/fail',
 				payload: {
 					type: 'red',
-					value: 'Informatiile nu au putut fi inregistrate',
+					value: result,
 				},
 			});
 			dispatch({
@@ -766,13 +771,11 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 						});
 						storeThumbnail(transactionData);
 					}
-					//Something went wrong
-					else {
-						setErrorLog(response.status);
-					}
 				})
-				.catch((err) => {
-					setErrorLog(err.response.status);
+				.catch((error) => {
+					//Handle error and display message
+					const result = ErrorHandler.getErrorType(error);
+					setErrorLog(result);
 				});
 		} else if (isAborted == true) {
 			//Abort transaction

@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { store } from '@store/store';
 import { ipcRenderer } from 'electron';
+import ErrorHandler from './errorhandler';
 
 export class Err {
 	code: number;
@@ -69,16 +70,18 @@ export function watchToken(): void {
 				//Error handling
 			}
 		} catch (error) {
-			console.error(error);
+			//Handle error and display message
+			const result = ErrorHandler.getErrorType(error);
+			console.error(result);
 		}
 	}, 3600000);
 }
 
-export async function refreshToken(): Promise<string> {
+export async function refreshToken(): Promise<any> {
 	try {
 		const response = await axios({
 			method: 'post',
-			url: `http://127.0.0.1:3000/api/admin/login`,
+			url: `http://127.0.0.1:3000/api/admin/auth/login`,
 			headers: {
 				'Content-Type': 'application/json',
 			},
@@ -87,7 +90,12 @@ export async function refreshToken(): Promise<string> {
 				passw: store.getState().generalReducer.password,
 			},
 		});
-		return response.data.token;
+		//Notify main process to store received jwt
+		const result = ipcRenderer.sendSync(
+			'eventWriteJwt',
+			response.data.token,
+		);
+		return result;
 	} catch (error) {
 		throw error;
 	}
