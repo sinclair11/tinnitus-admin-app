@@ -64,3 +64,4 @@ Thumbs.db
 .webpack/main/index.js
 .webpack/main/index.js.map
 make
+package-lock.json
