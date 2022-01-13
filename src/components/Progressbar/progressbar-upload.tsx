@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import { progressStyles } from '@src/styles/styles';
 import { ProgressBar, Button } from 'react-bootstrap';
 import { Icons } from '@utils/icons';
-import { InfoLog } from '@components/infolog/InfoLog';
+import { InfoLog } from '@src/components/infolog/infolog';
 import { useSelector, useDispatch } from 'react-redux';
 import { CombinedStates } from '@store/reducers/custom';
 import { CancelTokenSource } from 'axios';

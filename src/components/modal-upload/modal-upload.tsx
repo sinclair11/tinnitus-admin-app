@@ -8,7 +8,6 @@ import {
 	Form,
 } from 'react-bootstrap';
 import electron from 'electron';
-import { ResponseCodes } from '@utils/utils';
 import axios, { CancelTokenSource } from 'axios';
 import fs from 'fs';
 import { readChunk } from 'read-chunk';
@@ -495,7 +494,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
 				finished: false,
 			},
 		})
-			.then((response) => {
+			.then(() => {
 				//Open file and get size
 				const fd = fs.openSync(transactionData.pathVideo, 'r');
 				//Round number of requests per size

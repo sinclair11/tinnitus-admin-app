@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
-import { UploadVideoModal } from '@components/upload/Upload';
+import { UploadVideoModal } from '@src/components/upload/upload';
 import { store } from '@store/store';
-import { getAuth, ResponseCodes } from '@src/utils/utils';
+import { getAuth } from '@src/utils/utils';
 import axios from 'axios';
 import Modal from 'react-modal';
 import { MessageBox } from '../messagebox/messagebox';

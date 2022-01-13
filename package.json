@@ -5,7 +5,7 @@
 	"description": "",
 	"main": ".webpack/main",
 	"scripts": {
-		"debug": "npm run fix && cross-env NODE_ENV=development electron-forge start --inspect-electron",
+		"start:debug": "npm run fix && cross-env NODE_ENV=development electron-forge start --inspect-electron",
 		"start": "cross-env NODE_ENV=production electron-forge start",
 		"package": "electron-forge package",
 		"make": "electron-forge make",

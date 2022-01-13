@@ -6,7 +6,7 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import { CombinedStates } from '@src/store/reducers/custom';
 import axios from 'axios';
-import { getAuth, MonthsMap, ResponseCodes } from '@src/utils/utils';
+import { getAuth, MonthsMap } from '@src/utils/utils';
 import { MessageBox } from '../messagebox/messagebox';
 import { DialogBox } from '../dialogbox/dialogbox';
 import { dialogStyles, hourglassStyle } from '@src/styles/styles';
@@ -303,6 +303,7 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
 		//Set current month to resource upload date
 		const entries = MonthsMap.entries();
 		for (const [_, value] of entries) {
+			_;
 			if (value.text === m) {
 				month.current = months[value.number - 1];
 			}

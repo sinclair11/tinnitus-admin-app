@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Icons } from '@src/utils/icons';
 import { modalStyle } from '@src/styles/styles';
 import Modal from 'react-modal';
 import { UploadForm } from '@components/modal-upload/modal-upload';
-import { ProgressbarUpload } from '@components/progressbar/progressbar-upload';
+import { ProgressbarUpload } from '@src/components/progressbar/progressbar-upload';
 import axios from 'axios';
 
 type UploadModalProps = {
@@ -29,7 +29,7 @@ export const UploadVideoModal: React.FC<UploadModalProps> = (
 		<div>
 			<Modal
 				isOpen={props.modalIsOpen}
-				style={modalStyle(props.action)}
+				style={modalStyle()}
 				contentLabel="Upload"
 				ariaHideApp={false}
 			>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { refreshToken } from './utils';
 
 export default class ErrorHandler {

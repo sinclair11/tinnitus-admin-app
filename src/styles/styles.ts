@@ -1,4 +1,4 @@
-export function modalStyle(type: string): unknown {
+export function modalStyle(): unknown {
 	return {
 		content: {
 			width: '580px',
@@ -19,7 +19,6 @@ export function modalStyle(type: string): unknown {
 		},
 	};
 }
-//#034694
 export const dialogStyles = {
 	content: {
 		width: '300px',

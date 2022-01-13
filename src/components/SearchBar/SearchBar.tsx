@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { ResponseCodes } from '@utils/utils';
 import { Icons } from '@utils/icons';
 import { ipcRenderer } from 'electron';
 import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';

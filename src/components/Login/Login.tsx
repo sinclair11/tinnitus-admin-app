@@ -4,7 +4,7 @@ import logo from '@icons/logo.png';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import { ResponseCodes, watchToken } from '@utils/utils';
+import { watchToken } from '@utils/utils';
 import { useDispatch } from 'react-redux';
 import ErrorHandler from '@src/utils/errorhandler';
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
-import Welcome from '@components/welcome/Welcome';
-import { VideoView } from '@components/videos/Videos';
+import Welcome from '@src/components/welcome/welcome';
+import { VideoView } from '@src/components/videos/video';
 import './app.sass';
-import { Login } from '@components/login/Login';
+import { Login } from '@src/components/login/login';
 import { AudioView } from '@components/audio/audio';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
