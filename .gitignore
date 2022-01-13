@@ -2,6 +2,7 @@
 node_modules/
 dist/
 .webpack/
+out/
 
 # Compiled Java class files
 *.class
