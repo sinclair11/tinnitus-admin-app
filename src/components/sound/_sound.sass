@@ -1,0 +1,113 @@
+@use '../../styles/colors'
+
+.CustomStyle
+	display: flex
+	flex-direction: column
+	justify-content: center
+	align-items: center
+	width: 90%
+	height: 275px
+	border: 1px solid colors.$border
+	overflow: auto
+	padding-bottom: 15px
+
+.StyleGroup
+	display: flex
+	width: 90%
+	align-items: center
+
+	p
+		font-size: 12px
+		margin-top: 20px
+		margin-left: 10px
+
+	.SimpleInput
+		width: 40%
+		height: 20px
+		overflow: auto
+		margin-top: 10px
+
+	.InputColor
+		background-color: white
+		height: 25px
+		width: 41%
+		&:hover
+			cursor: pointer
+
+	.Label
+		font-size: 14px
+		width: 22%
+
+	.SelectInput
+		width: 41%
+		height: 25px
+		overflow: auto
+		margin-top: 9px
+
+	.PickerDiv
+		position: absolute
+
+.BrowseGroup
+	display: flex
+	width: 90%
+	align-items: center
+	margin-left: 5%
+
+.BrowseInput
+	width: 100%
+	height: 20px
+	overflow: auto
+	margin-top: 10px
+
+.NameGroup
+	@extend .BrowseGroup
+
+.NameInput
+	width: 67%
+	height: 20px
+	overflow: auto
+	margin-top: 10px
+
+.DescGroup
+	@extend .BrowseGroup
+	flex-direction: column
+
+.LabelDesc
+	width: 88%
+	background-color: #0f81c4
+	font-size: 14px
+	padding: 5px
+	margin-top: 10px
+	margin-left: 5%
+
+.DescInput
+	width: 99%
+	height: 200px
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+	resize: none
+	padding: 5px
+
+.UploadView
+	display: flex
+	flex-direction: column
+	align-items: center
+	justify-content: space-evenly
+	height: 100%
+	width: 50%
+	border: 1px solid black
+	border-bottom: none
+	background-color: rgb(14, 51, 134)
+
+	.InputGroupDiv
+		display: flex
+		flex-direction: column
+		width: 100%
+
+		p
+			margin: 0px
+			margin-left: 5%
+			color: colors.$invalid
+			font-size: 12px
+
+	.UploadBtn
+		margin-bottom: 20px

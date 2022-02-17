@@ -4,7 +4,7 @@ import { resdataReducer } from './resdata';
 import { generalReducer } from './general';
 
 export const rootReducer = combineReducers({
-	progressReducer: progressReducer,
-	resdataReducer: resdataReducer,
-	generalReducer: generalReducer,
+    progressReducer: progressReducer,
+    resdataReducer: resdataReducer,
+    generalReducer: generalReducer,
 });
