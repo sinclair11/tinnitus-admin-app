@@ -7,52 +7,52 @@ import { ProgressbarUpload } from '@src/components/progressbar/progressbar-uploa
 import axios from 'axios';
 
 type UploadModalProps = {
-	modalIsOpen?: boolean;
-	setModalIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-	action: string;
-	type: string;
-	editable?: { name: string; tags: string; description: string };
+    modalIsOpen?: boolean;
+    setModalIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+    action: string;
+    type: string;
+    editable?: { name: string; tags: string; description: string };
 };
 
 export const UploadVideoModal: React.FC<UploadModalProps> = (
-	props: UploadModalProps,
+    props: UploadModalProps,
 ) => {
-	//Cancel token for abort operation
-	const CancelToken = axios.CancelToken;
-	const source = CancelToken.source();
+    //Cancel token for abort operation
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
 
-	function closeModal(): void {
-		props.setModalIsOpen(false);
-	}
+    function closeModal(): void {
+        props.setModalIsOpen(false);
+    }
 
-	return (
-		<div>
-			<Modal
-				isOpen={props.modalIsOpen}
-				style={modalStyle()}
-				contentLabel="Upload"
-				ariaHideApp={false}
-			>
-				<div className="UploadFormContainer">
-					<UploadForm
-						formModal={props.setModalIsOpen}
-						type={props.type}
-						action={props.action}
-						data={props.editable}
-						cancelation={source}
-					/>
-				</div>
+    return (
+        <div>
+            <Modal
+                isOpen={props.modalIsOpen}
+                style={modalStyle()}
+                contentLabel="Upload"
+                ariaHideApp={false}
+            >
+                <div className="UploadFormContainer">
+                    <UploadForm
+                        formModal={props.setModalIsOpen}
+                        type={props.type}
+                        action={props.action}
+                        data={props.editable}
+                        cancelation={source}
+                    />
+                </div>
 
-				<p className="ModalTitle">
-					{props.action === 'upload' ? 'Upload' : 'Edit'}
-				</p>
-				<img
-					src={Icons['CancelIcon']}
-					className="CancelIcon"
-					onClick={closeModal}
-				/>
-			</Modal>
-			<ProgressbarUpload cancelation={source} />
-		</div>
-	);
+                <p className="ModalTitle">
+                    {props.action === 'upload' ? 'Upload' : 'Edit'}
+                </p>
+                <img
+                    src={Icons['CancelIcon']}
+                    className="CancelIcon"
+                    onClick={closeModal}
+                />
+            </Modal>
+            <ProgressbarUpload cancelation={source} />
+        </div>
+    );
 };
