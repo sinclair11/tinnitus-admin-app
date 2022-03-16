@@ -162,27 +162,31 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
                 effect="float"
                 delayShow={500}
             />
-            <div className="TitleDiv">
-                <p className="TitleSelected">{selected}</p>
-            </div>
-            <img
-                data-tip="Incarca"
-                src={ToolbarIcons['UploadIcon']}
-                className="ActionIcon"
+            <div
+                className="toolbar-action"
                 onClick={(): Promise<void> => openModal('upload')}
-            />
-            <img
-                data-tip="Editeaza"
-                src={ToolbarIcons['EditIcon']}
-                className="ActionIcon"
+            >
+                <img src={ToolbarIcons['UploadIcon']} className="ActionIcon" />
+                <p>Incarca</p>
+            </div>
+
+            <div
+                className="toolbar-action"
                 onClick={(): Promise<void> => openModal('edit')}
-            />
-            <img
-                data-tip="Sterge"
-                src={ToolbarIcons['DeleteIcon']}
-                className="ActionIcon"
-                onClick={onRequestDeleteClick}
-            />
+            >
+                <img src={ToolbarIcons['EditIcon']} className="ActionIcon" />
+                <p>Editeaza</p>
+            </div>
+
+            <div className="toolbar-action" onClick={onRequestDeleteClick}>
+                <img
+                    data-tip="Sterge"
+                    src={ToolbarIcons['DeleteIcon']}
+                    className="ActionIcon"
+                />
+                <p>Sterge</p>
+            </div>
+
             <UploadVideoModal
                 modalIsOpen={modalIsOpen}
                 setModalIsOpen={setIsOpen}
