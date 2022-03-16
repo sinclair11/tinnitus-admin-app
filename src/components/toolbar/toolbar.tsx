@@ -3,7 +3,6 @@ import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
 import { UploadVideoModal } from '@src/components/upload/upload';
 import { store } from '@store/store';
-import { getAuth } from '@src/utils/utils';
 import axios from 'axios';
 import Modal from 'react-modal';
 import { MessageBox } from '../messagebox/messagebox';
@@ -62,7 +61,9 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
                         }`,
                         headers: {
                             'Content-Type': 'application/json',
-                            Authorization: `Bearer ${await getAuth()}`,
+                            Authorization: `Bearer ${
+                                store.getState().generalReducer.token
+                            }`,
                         },
                     });
                     //Set received editable data
@@ -121,7 +122,9 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
                 url: path,
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${await getAuth()}`,
+                    Authorization: `Bearer ${
+                        store.getState().generalReducer.token
+                    }`,
                 },
             });
             //Reset selected resource state

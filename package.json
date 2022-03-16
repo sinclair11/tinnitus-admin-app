@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "npm run fix && vite serve",
+    "start:dev": "npm run fix && vite serve",
     "build": "tsc && vite build --emptyOutDir",
     "preview": "vite preview",
     "format": "prettier --write 'src/**/*.{js,ts,tsx}' ",
@@ -19,11 +19,12 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-	"@rollup/plugin-alias": "^3.1.9",
     "@reduxjs/toolkit": "^1.6.2",
+    "@rollup/plugin-alias": "^3.1.9",
     "@types/node": "^17.0.18",
     "@types/react": "^17.0.19",
     "@types/react-burger-menu": "^2.8.1",
+    "@types/react-color": "^3.0.6",
     "@types/react-dom": "^17.0.9",
     "@types/react-modal": "^3.12.1",
     "@types/react-redux": "^7.1.20",
@@ -52,6 +53,7 @@
     "react-bootstrap": "^1.6.1",
     "react-bootstrap-floating-label": "^1.6.0",
     "react-burger-menu": "^3.0.6",
+    "react-color": "^2.19.3",
     "react-hot-loader": "^4.13.0",
     "react-modal": "^3.14.3",
     "react-new-window": "^0.1.3",

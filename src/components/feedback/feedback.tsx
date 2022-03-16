@@ -6,7 +6,7 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import { CombinedStates } from '@src/store/reducers/custom';
 import axios from 'axios';
-import { getAuth, MonthsMap } from '@src/utils/utils';
+import { MonthsMap } from '@src/utils/utils';
 import { MessageBox } from '../messagebox/messagebox';
 import { DialogBox } from '../dialogbox/dialogbox';
 import { dialogStyles, hourglassStyle } from '@src/styles/styles';
@@ -76,7 +76,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
         try {
             //Show loading screen
             setLoading(true);
-            const secret = await getAuth();
+            const secret = store.getState().generalReducer.token;
             //Request feedback data
             const response = await axios({
                 method: 'get',
@@ -394,7 +394,7 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
     async function onRequestDelete(): Promise<void> {
         //Show loading screen
         props.setLoading(true);
-        const secret = await getAuth();
+        const secret = store.getState().generalReducer.token;
         //Request deletion of selected feedbacks
         try {
             await axios({

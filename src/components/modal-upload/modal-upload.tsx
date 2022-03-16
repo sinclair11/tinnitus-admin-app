@@ -11,7 +11,6 @@ import axios, { CancelTokenSource } from 'axios';
 import fs from 'fs';
 import { useDispatch } from 'react-redux';
 import { store } from '@store/store';
-import { getAuth } from '@src/utils/utils';
 import ErrorHandler from '@src/utils/errorhandler';
 
 let isAborted = false;
@@ -335,7 +334,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
             //First get authorization permission
             try {
                 //JWT
-                const secret = await getAuth();
+                const secret = store.getState().generalReducer.token;
                 //First step completed
                 dispatch({ type: 'progress/update', payload: 10 });
                 dispatch({
@@ -398,7 +397,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
             //First get authorization permission
             try {
                 //JWT
-                const secret = await getAuth();
+                const secret = store.getState().generalReducer.token;
                 //First step completed
                 progress += 5;
                 // props.updateProgress(progress);

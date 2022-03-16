@@ -1,5 +1,3 @@
-import { refreshToken } from './utils';
-
 export default class ErrorHandler {
     /**
      *
@@ -19,7 +17,7 @@ export default class ErrorHandler {
                 retVal = error.response.data.message;
             } else {
                 //! Reject because response format is invalid
-                // TODO: Additional handling
+                retVal = error.message;
             }
         } else {
             //! Undefined error
@@ -50,7 +48,6 @@ export default class ErrorHandler {
                     error.response.data.message =
                         'Tokenul a expirat si a fost inlocuit automat cu unul nou.';
                     //Reqeust new token
-                    refreshToken();
                 }
                 break;
             }

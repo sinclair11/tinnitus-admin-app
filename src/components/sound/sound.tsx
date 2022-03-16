@@ -1,14 +1,12 @@
 import { dialogStyles } from '@src/styles/styles';
 import ErrorHandler from '@src/utils/errorhandler';
-import { getAuth, formatFont } from '@src/utils/utils';
 import axios from 'axios';
-import electron from 'electron';
-import { readFileSync } from 'original-fs';
 import React, { useEffect, useRef, useState } from 'react';
 import Modal from 'react-modal';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import { SketchPicker } from 'react-color';
 import { MessageBox } from '../messagebox/messagebox';
+import { store } from '@src/store/store';
 
 class SoundData {
     sound: string;
@@ -61,42 +59,42 @@ const SoundView: React.FC = () => {
 
     function browseFile(type: string, setState: any): void {
         //Check resource type to provide correct extension for open file dialog
-        let extensions: string[] = [];
-        if (type === 'sound') {
-            extensions = ['mp3'];
-        } else if (type === 'image') {
-            extensions = ['jpg', 'jpeg', 'png'];
-        }
-        electron.remote.dialog
-            .showOpenDialog({
-                properties: ['openFile'],
-                filters: [
-                    {
-                        name: 'Movies',
-                        extensions: extensions,
-                    },
-                ],
-            })
-            .then((path) => {
-                //User canceled
-                if (path.canceled === true) {
-                    setState('');
-                } else {
-                    //Update path in component
-                    setState(String(path.filePaths));
-                    //Read buffer bytes
-                    const item = readFileSync(String(path.filePaths));
-                    //Store item in string format
-                    if (type === 'sound') {
-                        soundData.current.sound = item.toString('base64');
-                    } else if (type === 'image') {
-                        soundData.current.img = item.toString('base64');
-                    }
-                }
-            })
-            .catch(() => {
-                setState('');
-            });
+        // let extensions: string[] = [];
+        // if (type === 'sound') {
+        //     extensions = ['mp3'];
+        // } else if (type === 'image') {
+        //     extensions = ['jpg', 'jpeg', 'png'];
+        // }
+        // electron.remote.dialog
+        //     .showOpenDialog({
+        //         properties: ['openFile'],
+        //         filters: [
+        //             {
+        //                 name: 'Movies',
+        //                 extensions: extensions,
+        //             },
+        //         ],
+        //     })
+        //     .then((path) => {
+        //         //User canceled
+        //         if (path.canceled === true) {
+        //             setState('');
+        //         } else {
+        //             //Update path in component
+        //             setState(String(path.filePaths));
+        //             //Read buffer bytes
+        //             const item = readFileSync(String(path.filePaths));
+        //             //Store item in string format
+        //             if (type === 'sound') {
+        //                 soundData.current.sound = item.toString('base64');
+        //             } else if (type === 'image') {
+        //                 soundData.current.img = item.toString('base64');
+        //             }
+        //         }
+        //     })
+        //     .catch(() => {
+        //         setState('');
+        //     });
     }
 
     useEffect(() => {
@@ -116,7 +114,7 @@ const SoundView: React.FC = () => {
 
     async function onUploadClick(): Promise<void> {
         if (checkInputs()) {
-            const secret = await getAuth();
+            const secret = store.getState().generalReducer.token;
             const data = {
                 name: soundData.current.name,
                 description: soundData.current.description,
@@ -398,11 +396,7 @@ const SoundView: React.FC = () => {
                         value={soundData.current.font}
                         onChange={(e: any): void => {
                             soundData.current.font = e.target.value;
-                            modifyPreviewStyle(
-                                descId,
-                                'font',
-                                formatFont(e.target.value),
-                            );
+                            modifyPreviewStyle(descId, 'font', e.target.value);
                         }}
                     />
                     <p>Selecteaza fontul textului</p>

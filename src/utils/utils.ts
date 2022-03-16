@@ -1,8 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from 'axios';
-import { store } from '@store/store';
-import ErrorHandler from './errorhandler';
-
 export class Err {
     code: number;
     message: string;
@@ -55,57 +51,3 @@ export const MonthsMap = new Map([
     ['Noiembrie', { number: 11, text: 'nov' }],
     ['Decembrie', { number: 12, text: 'dec' }],
 ]);
-
-export function watchToken(): void {
-    setTimeout(async () => {
-        try {
-            console.error('Token expired');
-            const token = await refreshToken();
-            //Notify main process to store received jwt
-            // const result = ipcRenderer.sendSync('eventWriteJwt', token);
-            const result = 0;
-            if (result) {
-                watchToken();
-            } else {
-                //Error handling
-            }
-        } catch (error) {
-            //Handle error and display message
-            const result = ErrorHandler.getErrorType(error);
-            console.error(result);
-        }
-    }, 3600000);
-}
-
-export async function refreshToken(): Promise<any> {
-    try {
-        const response = await axios({
-            method: 'post',
-            url: `http://127.0.0.1:3000/api/admin/auth/login`,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            data: {
-                user: store.getState().generalReducer.admin,
-                passw: store.getState().generalReducer.password,
-            },
-        });
-        //Notify main process to store received jwt
-        // const result = ipcRenderer.sendSync(
-        //     'eventWriteJwt',
-        //     response.data.token,
-        // );
-        const result = 0;
-        return result;
-    } catch (error) {
-        throw error;
-    }
-}
-
-/**
- *
- * @returns
- */
-export async function getAuth(): Promise<any> {
-    // return ipcRenderer.sendSync('eventReadJwt');
-}

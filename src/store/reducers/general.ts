@@ -3,8 +3,6 @@ import { action, GeneralState } from './custom';
 const initialState: GeneralState = {
     token: '',
     isTokenExpired: false,
-    admin: '',
-    password: '',
 };
 
 /**
@@ -34,18 +32,6 @@ export function generalReducer(
             return {
                 ...state,
                 isTokenExpired: payload as boolean,
-            };
-
-        case 'general/set-admin':
-            return {
-                ...state,
-                admin: payload as string,
-            };
-
-        case 'general/set-password':
-            return {
-                ...state,
-                password: payload as string,
             };
 
         default:
