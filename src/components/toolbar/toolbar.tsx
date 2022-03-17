@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
-import { UploadVideoModal } from '@src/components/upload/upload';
 import { store } from '@store/store';
 import axios from 'axios';
 import Modal from 'react-modal';
@@ -18,6 +18,7 @@ type ToolbarProps = {
 };
 
 export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
+    const history = useHistory();
     const [modalIsOpen, setIsOpen] = useState(false);
     const [action, setAction] = useState('');
     const [editData, setEditData] = useState({
@@ -89,7 +90,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
                 }
             } else {
                 //Notify user that he must select a resource first
-                setMessageboxMsg('Selectati o resursa intai!');
+                setMessageboxMsg('Selectati un album intai!');
                 setMessageOpen(true);
             }
         } else if (type === 'upload') {
@@ -149,7 +150,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
             setDialogbox(true);
         } else {
             //Notify user that he must select a resource first
-            setMessageboxMsg('Selectati o resursa intai!');
+            setMessageboxMsg('Selectati un album intai!');
             setMessageOpen(true);
         }
     }
@@ -164,7 +165,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
             />
             <div
                 className="toolbar-action"
-                onClick={(): Promise<void> => openModal('upload')}
+                onClick={(): void => history.push('/audio/upload')}
             >
                 <img src={ToolbarIcons['UploadIcon']} className="ActionIcon" />
                 <p>Incarca</p>
@@ -186,14 +187,6 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
                 />
                 <p>Sterge</p>
             </div>
-
-            <UploadVideoModal
-                modalIsOpen={modalIsOpen}
-                setModalIsOpen={setIsOpen}
-                action={action}
-                type={props.type}
-                editable={editData}
-            />
             <Modal
                 isOpen={messageOpen}
                 style={dialogStyles}
@@ -213,7 +206,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
             >
                 <DialogBox
                     setIsOpen={setDialogbox}
-                    message="Esti sigur ca vrei sa stergi aceasta resursa?"
+                    message="Esti sigur ca vrei sa stergi acest album?"
                     setAccepted={setAccept}
                 />
             </Modal>

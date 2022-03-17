@@ -1,25 +1,61 @@
-.UploadFormContainer
-  margin-top: 15px
-  width: 100%
-  height: 100%
+@use '../../styles/colors'
+@use '../../styles/custom'
 
-.ModalTitle
-  position: absolute
-  top: 5px
-  font-weight: 300
-  padding: 0px
-  margin: 0px
-  left: 0px
-  padding-left: 5px
-  border-bottom: 1px solid aquamarine
-  width: 100%
-  height: 23px
-  font-weight: 500
+.upload-section
+  display: flex
+  flex-direction: column
+  width: calc(100% - 300px - 80px)
+  padding: 40px
+  margin-left: 300px
 
-.CancelIcon
-  position: absolute
-  top: 4px
-  right: 5px
-  width: 20px
-  height: 20px
-  cursor: pointer
+.upload-album
+  display: flex
+  width: 100%
+
+.upload-album-artwork
+  width: 400px
+  height: 400px
+  background: colors.$albumArtwork
+  border: 2px solid #fcac00
+  box-shadow: custom.$boxshadow
+
+  img
+    width: 400px
+    height: 400px 
+
+.upload-album-info
+  display: flex
+  flex-direction: column
+  padding: 1rem
+  margin-left: 30px
+  width: calc(100% - 400px)
+  background: #e4e4e4
+  border-radius: 10px
+  box-shadow: custom.$boxshadow
+
+  .input-group
+    display: flex
+    margin-bottom: 20px
+
+    .input
+      margin-left: 20px
+      width: 50%
+      height: 20px
+      
+    .input-description
+      min-height: 100px
+      max-height: 100px
+      margin-top: 10px
+      overflow: auto
+
+    .invalid-input
+      font-size: 14px
+      color: red
+      margin: 0px
+      font-weight: 500
+
+    .label
+      color: black
+
+  .input-group-area
+    flex-direction: column

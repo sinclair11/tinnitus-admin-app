@@ -1,58 +1,85 @@
-import React from 'react';
-import { Icons } from '@src/utils/icons';
-import { modalStyle } from '@src/styles/styles';
-import Modal from 'react-modal';
-import { UploadForm } from '@components/modal-upload/modal-upload';
-import { ProgressbarUpload } from '@src/components/progressbar/progressbar-upload';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { FormControl } from 'react-bootstrap';
+import InputGroup from 'react-bootstrap/esm/InputGroup';
+import Sidebar from '../sidebar/sidebar';
 
-type UploadModalProps = {
-    modalIsOpen?: boolean;
-    setModalIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-    action: string;
-    type: string;
-    editable?: { name: string; tags: string; description: string };
-};
-
-export const UploadVideoModal: React.FC<UploadModalProps> = (
-    props: UploadModalProps,
-) => {
-    //Cancel token for abort operation
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
-
-    function closeModal(): void {
-        props.setModalIsOpen(false);
-    }
+const UploadView: React.FC = () => {
+    const [name, setName] = useState('');
+    const [nameinvalid, setNameInvalid] = useState('');
+    const [description, setDescription] = useState('');
+    const [descinvalid, setDescInvalid] = useState('');
+    const [tags, setTags] = useState('');
+    const [thumbnail, setThumbnail] = useState(null);
 
     return (
-        <div>
-            <Modal
-                isOpen={props.modalIsOpen}
-                style={modalStyle()}
-                contentLabel="Upload"
-                ariaHideApp={false}
-            >
-                <div className="UploadFormContainer">
-                    <UploadForm
-                        formModal={props.setModalIsOpen}
-                        type={props.type}
-                        action={props.action}
-                        data={props.editable}
-                        cancelation={source}
-                    />
+        <div className="page">
+            <Sidebar />
+            <div className="upload-section">
+                {/* Album details */}
+                <div className="upload-album">
+                    {/* Artwork */}
+                    <div className="upload-album-artwork">
+                        <img />
+                    </div>
+                    {/* General info */}
+                    <div className="upload-album-info">
+                        <InputGroup hasValidation className="input-group">
+                            <InputGroup.Text className="label">
+                                Nume
+                            </InputGroup.Text>
+                            <FormControl
+                                className="input"
+                                required
+                                value={name}
+                                // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+                                onChange={(event) =>
+                                    setName(event.target.value)
+                                }
+                            />
+                            <p className="invalid-input">{nameinvalid}</p>
+                        </InputGroup>
+                        <InputGroup
+                            hasValidation
+                            className="input-group input-group-area"
+                        >
+                            <InputGroup.Text className="label">
+                                Descriere
+                            </InputGroup.Text>
+                            <FormControl
+                                className="input-description"
+                                required
+                                as="textarea"
+                                value={description}
+                                // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+                                onChange={(event) =>
+                                    setDescription(event.target.value)
+                                }
+                            />
+                            <p className="invalid-input">{descinvalid}</p>
+                        </InputGroup>
+                        <InputGroup
+                            hasValidation
+                            className="input-group input-group-area"
+                        >
+                            <InputGroup.Text className="label">
+                                Tag-uri(optional)
+                            </InputGroup.Text>
+                            <FormControl
+                                className="input-description"
+                                required
+                                as="textarea"
+                                value={tags}
+                                // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+                                onChange={(event) =>
+                                    setTags(event.target.value)
+                                }
+                            />
+                        </InputGroup>
+                    </div>
                 </div>
-
-                <p className="ModalTitle">
-                    {props.action === 'upload' ? 'Upload' : 'Edit'}
-                </p>
-                <img
-                    src={Icons['CancelIcon']}
-                    className="CancelIcon"
-                    onClick={closeModal}
-                />
-            </Modal>
-            <ProgressbarUpload cancelation={source} />
+            </div>
         </div>
     );
 };
+
+export default UploadView;

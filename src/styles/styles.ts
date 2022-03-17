@@ -2,11 +2,10 @@ export function modalStyle(): unknown {
     return {
         content: {
             width: '580px',
-            // height: type === 'upload' ? '600px' : '500px',
             display: 'inline-block',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: '#0E3386',
+            backgroundColor: '#0a2351',
             top: '50%',
             left: '50%',
             right: 'auto',
@@ -22,11 +21,11 @@ export function modalStyle(): unknown {
 export const dialogStyles = {
     content: {
         width: '300px',
-        height: '150px',
+        minHeight: '150px',
         display: 'inline-block',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#0E3386',
+        backgroundColor: '#0a2351',
         top: '50%',
         left: '50%',
         right: 'auto',

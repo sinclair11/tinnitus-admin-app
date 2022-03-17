@@ -5,6 +5,7 @@ import { VideoView } from '@src/components/videos/video';
 import './app.sass';
 import { Login } from '@src/components/login/login';
 import { AudioView } from '@components/audio/audio';
+import UploadView from './components/upload/upload';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const App: React.FC<{ title: string; version: string }> = (props: {
@@ -17,6 +18,7 @@ const App: React.FC<{ title: string; version: string }> = (props: {
             <Route exact path="/welcome" component={Welcome} />
             <Route exact path="/video" component={VideoView} />
             <Route exact path="/audio" component={AudioView} />
+            <Route exact path="/audio/upload" component={UploadView} />
         </Router>
     );
 };

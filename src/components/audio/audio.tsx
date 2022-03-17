@@ -3,7 +3,6 @@ import { Container } from 'react-bootstrap';
 import { SearchBar } from '@src/components/searchbar/searchbar';
 import { InfoFile } from '@src/components/infofile/infofile';
 import { Toolbar } from '@src/components/toolbar/toolbar';
-// import ReactPlayer from 'react-player';
 import '@components/modal-search/modal-search.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
@@ -14,15 +13,37 @@ type ArtworkProps = {
 };
 
 const AlbumArtwork: React.FC<ArtworkProps> = (props: ArtworkProps) => {
+    return (
+        <div className="section-album-artwork">
+            <img src={`data:image/png;base64,${props.img}`} />
+        </div>
+    );
+};
+
+export const AudioView: React.FC = () => {
+    const dispatch = useDispatch();
     const selected = useSelector<CombinedStates>(
         (state) => state.resdataReducer.selected,
     ) as string;
+    const thumbnail = useSelector<CombinedStates>(
+        (state) => state.resdataReducer.thumbnail,
+    ) as string;
 
-    function displayArtwork(): JSX.Element {
+    useEffect(() => {
+        //No resource data on first rendering
+        dispatch({ type: 'resdata/selected', payload: '' });
+    }, []);
+
+    function displayContent(): JSX.Element {
         //Check if a resource was selected
         if (selected !== '') {
             //Insert video player
-            return <img src={`data:image/png;base64,${props.img}`} />;
+            return (
+                <div className="section-album-content">
+                    <AlbumArtwork img={thumbnail} />
+                    <InfoFile title="Informatii generale" type={'general'} />
+                </div>
+            );
         }
         //Functionality N/A
         else {
@@ -33,28 +54,16 @@ const AlbumArtwork: React.FC<ArtworkProps> = (props: ArtworkProps) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                         width: '100%',
-                        height: '100%',
+                        color: 'black',
                     }}
                 >
-                    <p>Selectati un album pentru a vedea coperta</p>
+                    <p>
+                        Selectati un album pentru a vedea informatii despre el
+                    </p>
                 </div>
             );
         }
     }
-
-    return <div className="section-album-artwork">{displayArtwork()}</div>;
-};
-
-export const AudioView: React.FC = () => {
-    const dispatch = useDispatch();
-    const thumbnail = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.thumbnail,
-    ) as string;
-
-    useEffect(() => {
-        //No resource data on first rendering
-        dispatch({ type: 'resdata/selected', payload: '' });
-    }, []);
 
     return (
         <div className="page">
@@ -65,13 +74,7 @@ export const AudioView: React.FC = () => {
                 </div>
                 <Container id="content" className="ContentPlaceholder">
                     <Toolbar type="audio" />
-                    <div className="section-album-content">
-                        <AlbumArtwork img={thumbnail} />
-                        <InfoFile
-                            title="Informatii generale"
-                            type={'general'}
-                        />
-                    </div>
+                    {displayContent()}
                 </Container>
             </div>
         </div>

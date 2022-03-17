@@ -16,6 +16,8 @@ import ZoomOut from '../icons/zoom-out.png';
 import Switch from '../icons/switch.png';
 import Cancel from '../icons/cancel.png';
 import List from '../icons/list.png';
+import EarsbuzzingSite from '../icons/earsbuzzingsite.png';
+import Tutorial from '../icons/tutorial.png';
 
 export const Icons = {
     HomeIcon: Home,
@@ -29,6 +31,8 @@ export const Icons = {
     SwitchIcon: Switch,
     CancelIcon: Cancel,
     ListIcon: List,
+    EarsbuzzingSite: EarsbuzzingSite,
+    Tutorial: Tutorial,
 };
 
 export const ToolbarIcons = {
