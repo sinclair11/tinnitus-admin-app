@@ -19,6 +19,9 @@ import List from '../icons/list.png';
 import EarsbuzzingSite from '../icons/earsbuzzingsite.png';
 import Tutorial from '../icons/tutorial.png';
 import Plus from '../icons/plus.png';
+import DeleteRow from '../icons/trash_row.png';
+import Up from '../icons/up.png';
+import Down from '../icons/down.png';
 
 export const Icons = {
     HomeIcon: Home,
@@ -35,6 +38,9 @@ export const Icons = {
     EarsbuzzingSite: EarsbuzzingSite,
     Tutorial: Tutorial,
     Plus: Plus,
+    DeleteRow: DeleteRow,
+    Up: Up,
+    Down: Down,
 };
 
 export const ToolbarIcons = {

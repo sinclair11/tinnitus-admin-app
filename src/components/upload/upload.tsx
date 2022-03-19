@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { FormControl } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
 import Sidebar from '../sidebar/sidebar';
-import Table from '@components/table/table';
+import Table, { RowFuncs } from '@components/table/table';
 
 const UploadView: React.FC = () => {
     const [name, setName] = useState('');
@@ -13,32 +13,7 @@ const UploadView: React.FC = () => {
     const [tags, setTags] = useState('');
     const [thumbnail, setThumbnail] = useState(null);
     const inputImg = useRef(null);
-
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: 'Nume',
-                accessor: 'name',
-            },
-            {
-                Header: 'Pozitie',
-                accessor: 'pos',
-            },
-            {
-                Header: 'Durata',
-                accessor: 'length',
-            },
-        ],
-        [],
-    );
-
-    const entries = [
-        { name: '', pos: '', length: '' },
-        { name: '', pos: '', length: '' },
-        { name: '', pos: '', length: '' },
-    ];
-
-    const data = React.useMemo(() => entries, []);
+    const tableObj: { function: any } = { function: null };
 
     function displayThumbnail(): JSX.Element {
         if (thumbnail) {
@@ -63,6 +38,10 @@ const UploadView: React.FC = () => {
         inputImg.current.click();
     }
 
+    function onUpload(): void {
+        console.log(tableObj.function());
+    }
+
     return (
         <div className="page">
             <Sidebar />
@@ -78,8 +57,7 @@ const UploadView: React.FC = () => {
                                 className="input-plus"
                                 type="file"
                                 accept="image/*"
-                                // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-                                onChange={(event) => getImage(event)}
+                                onChange={(event): void => getImage(event)}
                             />
                         </div>
                         {displayThumbnail()}
@@ -94,8 +72,7 @@ const UploadView: React.FC = () => {
                                 className="input"
                                 required
                                 value={name}
-                                // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-                                onChange={(event) =>
+                                onChange={(event): void =>
                                     setName(event.target.value)
                                 }
                             />
@@ -113,8 +90,7 @@ const UploadView: React.FC = () => {
                                 required
                                 as="textarea"
                                 value={description}
-                                // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-                                onChange={(event) =>
+                                onChange={(event): void =>
                                     setDescription(event.target.value)
                                 }
                             />
@@ -128,13 +104,12 @@ const UploadView: React.FC = () => {
                                 Tag-uri(optional)
                             </InputGroup.Text>
                             <FormControl
-                                className="input-description"
+                                className="input-tag"
                                 required
                                 as="textarea"
                                 value={tags}
                                 placeholder="#tag1 #tag2 #tag3"
-                                // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-                                onChange={(event) =>
+                                onChange={(event): void =>
                                     setTags(event.target.value)
                                 }
                             />
@@ -142,7 +117,10 @@ const UploadView: React.FC = () => {
                     </div>
                 </div>
                 {/* Table with songs */}
-                <Table columns={columns} data={data} />
+                <Table table={tableObj} />
+                <button className="upload-btn-album" onClick={onUpload}>
+                    Upload
+                </button>
             </div>
         </div>
     );

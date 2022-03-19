@@ -7,7 +7,7 @@
     .plus-body
         position: absolute
         right: -16px
-        bottom: -16px
+        bottom: -12px
         width: 32px
         height: 32px
         cursor: pointer
@@ -34,5 +34,45 @@
         border-bottom: 0
         border-left: 0
 
-    :last-child
-        border-right: 0
+        &:last-child
+            border-right: none
+
+    td
+        vertical-align: middle
+        text-align: center
+
+    .input-name
+        width: 100%
+        background: colors.$table
+        color: white
+        border: none
+        font-size: 16px
+        text-align: center
+        overflow-x: auto
+        
+        &:focus-visible
+            outline: none
+
+.table-row-func
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 100%
+
+    .remove-icon
+        width: 32px
+        height: 32px
+        cursor: pointer
+
+    .nav-section
+        display: flex
+        flex-direction: column
+        margin-left: 20px
+
+        img
+            width: 16px
+            height: 16px
+            cursor: pointer
+
+        .down
+            margin-top: 5px
