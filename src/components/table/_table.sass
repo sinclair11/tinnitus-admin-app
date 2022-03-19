@@ -1,0 +1,38 @@
+@use '../../styles/colors'
+
+.table-section
+    position: relative
+    width: 100%
+
+    .plus-body
+        position: absolute
+        right: -16px
+        bottom: -16px
+        width: 32px
+        height: 32px
+        cursor: pointer
+
+    .plus
+        width: 32px
+        height: 32px
+
+    .input-plus
+        display: none
+
+.table
+    width: 100%
+    color: white
+    background: colors.$table
+    border-spacing: 0
+    border: 1px solid colors.$border
+    margin-top: 50px
+
+    td, th
+        margin: 0
+        padding: 1rem
+        border: 1px solid colors.$border
+        border-bottom: 0
+        border-left: 0
+
+    :last-child
+        border-right: 0

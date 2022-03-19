@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import { Icons } from '@src/utils/icons';
+import React, { useState, useRef } from 'react';
 import { FormControl } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
 import Sidebar from '../sidebar/sidebar';
+import Table from '@components/table/table';
 
 const UploadView: React.FC = () => {
     const [name, setName] = useState('');
@@ -10,6 +12,56 @@ const UploadView: React.FC = () => {
     const [descinvalid, setDescInvalid] = useState('');
     const [tags, setTags] = useState('');
     const [thumbnail, setThumbnail] = useState(null);
+    const inputImg = useRef(null);
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: 'Nume',
+                accessor: 'name',
+            },
+            {
+                Header: 'Pozitie',
+                accessor: 'pos',
+            },
+            {
+                Header: 'Durata',
+                accessor: 'length',
+            },
+        ],
+        [],
+    );
+
+    const entries = [
+        { name: '', pos: '', length: '' },
+        { name: '', pos: '', length: '' },
+        { name: '', pos: '', length: '' },
+    ];
+
+    const data = React.useMemo(() => entries, []);
+
+    function displayThumbnail(): JSX.Element {
+        if (thumbnail) {
+            return <img src={thumbnail} />;
+        } else {
+            return <p>Selectati o coperta de album</p>;
+        }
+    }
+
+    function getImage(event: any): void {
+        const reader = new FileReader();
+        let res = null;
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onloadend = (): void => {
+            res = reader.result;
+            console.log(res);
+            setThumbnail(res);
+        };
+    }
+
+    function onPlusClick(): void {
+        inputImg.current.click();
+    }
 
     return (
         <div className="page">
@@ -19,7 +71,18 @@ const UploadView: React.FC = () => {
                 <div className="upload-album">
                     {/* Artwork */}
                     <div className="upload-album-artwork">
-                        <img />
+                        <div className="plus-body" onClick={onPlusClick}>
+                            <img src={Icons.Plus} className="plus" />
+                            <input
+                                ref={inputImg}
+                                className="input-plus"
+                                type="file"
+                                accept="image/*"
+                                // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+                                onChange={(event) => getImage(event)}
+                            />
+                        </div>
+                        {displayThumbnail()}
                     </div>
                     {/* General info */}
                     <div className="upload-album-info">
@@ -69,6 +132,7 @@ const UploadView: React.FC = () => {
                                 required
                                 as="textarea"
                                 value={tags}
+                                placeholder="#tag1 #tag2 #tag3"
                                 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
                                 onChange={(event) =>
                                     setTags(event.target.value)
@@ -77,6 +141,8 @@ const UploadView: React.FC = () => {
                         </InputGroup>
                     </div>
                 </div>
+                {/* Table with songs */}
+                <Table columns={columns} data={data} />
             </div>
         </div>
     );

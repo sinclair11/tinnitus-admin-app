@@ -18,6 +18,7 @@ import Cancel from '../icons/cancel.png';
 import List from '../icons/list.png';
 import EarsbuzzingSite from '../icons/earsbuzzingsite.png';
 import Tutorial from '../icons/tutorial.png';
+import Plus from '../icons/plus.png';
 
 export const Icons = {
     HomeIcon: Home,
@@ -33,6 +34,7 @@ export const Icons = {
     ListIcon: List,
     EarsbuzzingSite: EarsbuzzingSite,
     Tutorial: Tutorial,
+    Plus: Plus,
 };
 
 export const ToolbarIcons = {

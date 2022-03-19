@@ -7,21 +7,42 @@
   width: calc(100% - 300px - 80px)
   padding: 40px
   margin-left: 300px
+  overflow: auto
 
 .upload-album
   display: flex
   width: 100%
 
 .upload-album-artwork
+  position: relative
+  display: flex
+  justify-content: center
+  align-items: center
   width: 400px
   height: 400px
   background: colors.$albumArtwork
   border: 2px solid #fcac00
   box-shadow: custom.$boxshadow
 
+  .plus-body
+    position: absolute
+    right: -20px
+    bottom: -12px
+    width: 42px
+    height: 42px
+    cursor: pointer
+
+  .plus
+    width: 42px
+    height: 42px
+
+  .input-plus
+    display: none
+    
   img
     width: 400px
-    height: 400px 
+    height: 400px
+    object-fit: cover
 
 .upload-album-info
   display: flex
@@ -35,13 +56,14 @@
 
   .input-group
     display: flex
+    align-items: center
     margin-bottom: 20px
 
     .input
       margin-left: 20px
       width: 50%
       height: 20px
-      
+
     .input-description
       min-height: 100px
       max-height: 100px
@@ -59,3 +81,4 @@
 
   .input-group-area
     flex-direction: column
+    align-items: normal
