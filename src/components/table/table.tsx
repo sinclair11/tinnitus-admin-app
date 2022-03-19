@@ -1,16 +1,6 @@
 import { Icons } from '@src/utils/icons';
 import React, { useState, useRef } from 'react';
 
-type RowNameProps = {
-    name: string;
-    setName: any;
-};
-
-type RowFuncsProps = {
-    id: number;
-    deleteCallback: any;
-};
-
 type TableProps = {
     table: any;
 };
@@ -27,6 +17,7 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
     const [entries, setEntries] = useState([]);
     const headers = ['Nume', 'Pozitie', 'Durata', ''];
     const [update, setUpdate] = useState(false);
+    //Assign function to pass table data to Upload component
     props.table.function = getData;
 
     function getSong(event: any): void {
@@ -35,11 +26,14 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         const audio = document.createElement('audio');
 
         if (event.target.files && file) {
+            //Read content of audio file
             reader.readAsDataURL(file);
             reader.onloadend = (): void => {
                 audio.src = reader.result as string;
+                //Load metadata for audio file
                 audio.onloadedmetadata = (): void => {
                     const duration = Math.round(audio.duration);
+                    //Set all required data
                     setEntries([
                         ...entries,
                         {
@@ -55,9 +49,11 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                 };
             };
         }
+        //Reset to be able to choose last selected file
         event.target.value = null;
     }
 
+    //Function used to pass data to Upload component
     function getData(): TableData[] {
         return entries;
     }
@@ -81,6 +77,7 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
     }
 
     function onDisplayName(id: number): string {
+        //Find required input by id
         for (const entry of entries) {
             if (entry.pos === id) {
                 return entry.name;
@@ -90,7 +87,7 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
 
     function onChangeName(event: any, id: number): void {
         const temp = entries;
-
+        //Find required input by id
         for (const entry of temp) {
             if (entry.pos === id) {
                 entry.name = event.target.value;
@@ -98,19 +95,23 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         }
 
         setEntries(temp);
+        //Idk why is not rendering on first change state
         setUpdate(!update);
     }
 
     function onPlusClick(): void {
+        //Trigger choose file dialog
         inputSong.current.click();
     }
 
     function getDurationFormat(duration: number): string {
+        //Calculate duration in HH:MM:SS format
         const hours = Math.round(duration / 3600);
         const hoursRemSec = duration - hours * 3600;
         const minutes = Math.round(hoursRemSec / 60);
         const seconds = hoursRemSec - minutes * 60;
 
+        //Append a 0
         let retVal = `0${hours}:`;
         if (minutes < 10) {
             retVal += '0';
@@ -184,28 +185,6 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                     accept="audio/*"
                     onChange={(event): void => getSong(event)}
                 />
-            </div>
-        </div>
-    );
-};
-
-export const RowFuncs: React.FC<RowFuncsProps> = (props: RowFuncsProps) => {
-    function deleteEntry(): void {
-        props.deleteCallback(props.id);
-    }
-
-    return (
-        <div className="table-row-func">
-            {/* Delete icon */}
-            <img
-                src={Icons.DeleteRow}
-                className="remove-icon"
-                onClick={deleteEntry}
-            />
-            {/* Up & Down buttons */}
-            <div className="nav-section">
-                <img src={Icons.Up} />
-                <img src={Icons.Down} className="down" />
             </div>
         </div>
     );
