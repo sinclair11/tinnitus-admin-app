@@ -3,13 +3,14 @@ import React, { useState, useRef } from 'react';
 import { FormControl } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
 import Sidebar from '../sidebar/sidebar';
-import Table, { RowFuncs } from '@components/table/table';
+import Table from '@components/table/table';
 
 const UploadView: React.FC = () => {
     const [name, setName] = useState('');
     const [nameinvalid, setNameInvalid] = useState('');
     const [description, setDescription] = useState('');
     const [descinvalid, setDescInvalid] = useState('');
+    const [notification, setNotification] = useState('');
     const [tags, setTags] = useState('');
     const [thumbnail, setThumbnail] = useState(null);
     const inputImg = useRef(null);
@@ -113,6 +114,24 @@ const UploadView: React.FC = () => {
                                     setTags(event.target.value)
                                 }
                             />
+                        </InputGroup>
+                        <InputGroup
+                            hasValidation
+                            className="input-group input-group-area"
+                        >
+                            <InputGroup.Text className="label">
+                                Notificare(optional)
+                            </InputGroup.Text>
+                            <FormControl
+                                className="input-notification"
+                                required
+                                as="textarea"
+                                value={notification}
+                                onChange={(event): void =>
+                                    setNotification(event.target.value)
+                                }
+                            />
+                            <p className="invalid-input">{descinvalid}</p>
                         </InputGroup>
                     </div>
                 </div>
