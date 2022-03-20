@@ -7,6 +7,7 @@ type TableProps = {
 
 type TableData = {
     file: Blob;
+    extension: string;
     name: string;
     pos: string;
     length: string;
@@ -39,6 +40,9 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                         ...entries,
                         {
                             file: file,
+                            extension: file.name.slice(
+                                file.name.lastIndexOf('.'),
+                            ),
                             name: file.name.slice(
                                 0,
                                 file.name.lastIndexOf('.'),
