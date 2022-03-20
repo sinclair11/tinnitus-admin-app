@@ -10,12 +10,13 @@ type TableData = {
     name: string;
     pos: string;
     length: string;
+    category: string;
 };
 
 const Table: React.FC<TableProps> = (props: TableProps) => {
     const inputSong = useRef(null);
     const [entries, setEntries] = useState([]);
-    const headers = ['Nume', 'Pozitie', 'Durata', ''];
+    const headers = ['Nume', 'Pozitie', 'Durata', 'Categorie', ''];
     const [update, setUpdate] = useState(false);
     //Assign function to pass table data to Upload component
     props.table.function = getData;
@@ -99,6 +100,29 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         setUpdate(!update);
     }
 
+    function onDisplayCategory(id: number): string {
+        //Find required input by id
+        for (const entry of entries) {
+            if (entry.pos === id) {
+                return entry.category;
+            }
+        }
+    }
+
+    function onChangeCategory(event: any, id: number): void {
+        const temp = entries;
+        //Find required input by id
+        for (const entry of temp) {
+            if (entry.pos === id) {
+                entry.category = event.target.value;
+            }
+        }
+
+        setEntries(temp);
+        //Idk why is not rendering on first change state
+        setUpdate(!update);
+    }
+
     function onPlusClick(): void {
         //Trigger choose file dialog
         inputSong.current.click();
@@ -151,6 +175,16 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                                 </td>
                                 <td>{row.pos}</td>
                                 <td>{row.length}</td>
+                                <td className="category">
+                                    <input
+                                        id={`row-name-${i + 1}`}
+                                        className="input-name"
+                                        value={onDisplayCategory(i + 1)}
+                                        onChange={(event): void =>
+                                            onChangeCategory(event, i + 1)
+                                        }
+                                    />
+                                </td>
                                 <td>
                                     <div className="table-row-func">
                                         {/* Delete icon */}
