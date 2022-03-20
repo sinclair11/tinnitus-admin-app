@@ -9,10 +9,12 @@ const UploadView: React.FC = () => {
     const [name, setName] = useState('');
     const [nameinvalid, setNameInvalid] = useState('');
     const [description, setDescription] = useState('');
-    const [descinvalid, setDescInvalid] = useState('');
+    const [descInvalid, setDescInvalid] = useState('');
     const [notification, setNotification] = useState('');
-    const [tags, setTags] = useState('');
     const [thumbnail, setThumbnail] = useState(null);
+    const [thumbnailInvalid, setThumbnailInvalid] = useState('');
+    const [tags, setTags] = useState('');
+    const [tableInvalid, setTableInvalid] = useState('');
     const inputImg = useRef(null);
     const tableObj: { function: any } = { function: null };
 
@@ -27,20 +29,72 @@ const UploadView: React.FC = () => {
     function getImage(event: any): void {
         const reader = new FileReader();
         let res = null;
+        //Read image data
         reader.readAsDataURL(event.target.files[0]);
         reader.onloadend = (): void => {
             res = reader.result;
-            console.log(res);
             setThumbnail(res);
         };
     }
 
     function onPlusClick(): void {
+        //Trigger choose file dialog
         inputImg.current.click();
     }
 
     function onUpload(): void {
-        console.log(tableObj.function());
+        if (verifyInputs() === 0) {
+            //Reset invalid labels if they were set previously
+            
+            
+            
+            
+        } else {
+        }
+    }
+
+    function verifyInputs(): number {
+        let retVal = 0;
+
+        if (name === '') {
+            setNameInvalid('Acest camp este obligatoriu');
+            retVal++;
+        } else {
+            setNameInvalid('');
+        }
+
+        if (description === '') {
+            setDescInvalid('Acest camp este obligatoriu');
+            retVal++;
+        } else {
+            setDescInvalid('');
+        }
+
+        if (thumbnail === null) {
+            setThumbnailInvalid('Coperta de album este obligatorie');
+            retVal++;
+        } else {
+            setThumbnailInvalid('');
+        }
+
+        const tableData = tableObj.function();
+        if (tableData.length === 0) {
+            setTableInvalid('Introduceti cel putin un audio');
+        } else {
+            for (const entry of tableData) {
+                if (entry.name === '' || entry.category === '') {
+                    setTableInvalid(
+                        'Toate campurile din tabel sunt obligatorii',
+                    );
+                    retVal++;
+                    break;
+                } else {
+                    setTableInvalid('');
+                }
+            }
+        }
+
+        return retVal;
     }
 
     return (
@@ -50,19 +104,25 @@ const UploadView: React.FC = () => {
                 {/* Album details */}
                 <div className="upload-album">
                     {/* Artwork */}
-                    <div className="upload-album-artwork">
-                        <div className="plus-body" onClick={onPlusClick}>
-                            <img src={Icons.Plus} className="plus" />
-                            <input
-                                ref={inputImg}
-                                className="input-plus"
-                                type="file"
-                                accept="image/*"
-                                onChange={(event): void => getImage(event)}
-                            />
+                    <div>
+                        <div className="upload-album-artwork">
+                            <div className="plus-body" onClick={onPlusClick}>
+                                <img src={Icons.Plus} className="plus" />
+                                <input
+                                    ref={inputImg}
+                                    className="input-plus"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(event): void => getImage(event)}
+                                />
+                            </div>
+                            {displayThumbnail()}
                         </div>
-                        {displayThumbnail()}
+                        <p className="invalid-input invalid-thumbnail">
+                            {thumbnailInvalid}
+                        </p>
                     </div>
+
                     {/* General info */}
                     <div className="upload-album-info">
                         <InputGroup hasValidation className="input-group">
@@ -77,7 +137,9 @@ const UploadView: React.FC = () => {
                                     setName(event.target.value)
                                 }
                             />
-                            <p className="invalid-input">{nameinvalid}</p>
+                            <p className="invalid-input invalid-name">
+                                {nameinvalid}
+                            </p>
                         </InputGroup>
                         <InputGroup
                             hasValidation
@@ -95,7 +157,9 @@ const UploadView: React.FC = () => {
                                     setDescription(event.target.value)
                                 }
                             />
-                            <p className="invalid-input">{descinvalid}</p>
+                            <p className="invalid-input invalid-desc">
+                                {descInvalid}
+                            </p>
                         </InputGroup>
                         <InputGroup
                             hasValidation
@@ -131,12 +195,12 @@ const UploadView: React.FC = () => {
                                     setNotification(event.target.value)
                                 }
                             />
-                            <p className="invalid-input">{descinvalid}</p>
                         </InputGroup>
                     </div>
                 </div>
                 {/* Table with songs */}
                 <Table table={tableObj} />
+                <p className="invalid-input invalid-table">{tableInvalid}</p>
                 <button className="upload-btn-album" onClick={onUpload}>
                     Upload
                 </button>

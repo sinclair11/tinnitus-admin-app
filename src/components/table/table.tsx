@@ -49,6 +49,7 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                             ),
                             pos: entries.length + 1,
                             length: getDurationFormat(duration),
+                            category: 'General',
                         },
                     ]);
                 };
