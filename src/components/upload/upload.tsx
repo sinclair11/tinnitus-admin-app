@@ -1,10 +1,11 @@
 import { Icons } from '@src/utils/icons';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FormControl } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
 import Sidebar from '../sidebar/sidebar';
 import Table from '@components/table/table';
 import Dropdown from '@components/dropdown/dropdown';
+import axios from 'axios';
 
 const UploadView: React.FC = () => {
     const [name, setName] = useState('');
@@ -18,6 +19,30 @@ const UploadView: React.FC = () => {
     const [tableInvalid, setTableInvalid] = useState('');
     const inputImg = useRef(null);
     const tableObj: { function: any } = { function: null };
+    const [categories, setCategories] = useState(['General']);
+    const category = useRef('');
+
+    useEffect(() => {
+        onFetchCategories().then((data) => {
+            setCategories(data);
+        });
+    }, []);
+
+    async function onFetchCategories(): Promise<Array<string>> {
+        try {
+            const response = await axios({
+                method: 'get',
+                url: `http://127.0.0.1:3000/api/admin/album/categories`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${category}`,
+                },
+            });
+            return response.data;
+        } catch (err) {
+            return ['General'];
+        }
+    }
 
     function displayThumbnail(): JSX.Element {
         if (thumbnail) {
@@ -42,6 +67,10 @@ const UploadView: React.FC = () => {
     function onPlusClick(): void {
         //Trigger choose file dialog
         inputImg.current.click();
+    }
+
+    function onCategoryChange(value: string): void {
+        category.current = value;
     }
 
     function verifyInputs(): number {
@@ -158,8 +187,9 @@ const UploadView: React.FC = () => {
                         <div className="category">
                             <p>Categorie</p>
                             <Dropdown
-                                items={['General', 'Plm', 'Plt']}
+                                items={categories}
                                 className="dropdown-margin"
+                                onChange={onCategoryChange}
                             />
                         </div>
                         <InputGroup
