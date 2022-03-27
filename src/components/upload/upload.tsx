@@ -34,6 +34,7 @@ const UploadView: React.FC = () => {
         reader.onloadend = (): void => {
             res = reader.result;
             setThumbnail(res);
+            setThumbnailInvalid('');
         };
     }
 
@@ -45,10 +46,6 @@ const UploadView: React.FC = () => {
     function onUpload(): void {
         if (verifyInputs() === 0) {
             //Reset invalid labels if they were set previously
-            
-            
-            
-            
         } else {
         }
     }
@@ -133,9 +130,10 @@ const UploadView: React.FC = () => {
                                 className="input"
                                 required
                                 value={name}
-                                onChange={(event): void =>
-                                    setName(event.target.value)
-                                }
+                                onChange={(event): void => {
+                                    setName(event.target.value);
+                                    setNameInvalid('');
+                                }}
                             />
                             <p className="invalid-input invalid-name">
                                 {nameinvalid}
@@ -153,9 +151,10 @@ const UploadView: React.FC = () => {
                                 required
                                 as="textarea"
                                 value={description}
-                                onChange={(event): void =>
-                                    setDescription(event.target.value)
-                                }
+                                onChange={(event): void => {
+                                    setDescription(event.target.value);
+                                    setDescInvalid('');
+                                }}
                             />
                             <p className="invalid-input invalid-desc">
                                 {descInvalid}
@@ -199,7 +198,7 @@ const UploadView: React.FC = () => {
                     </div>
                 </div>
                 {/* Table with songs */}
-                <Table table={tableObj} />
+                <Table table={tableObj} setInvalid={setTableInvalid} />
                 <p className="invalid-input invalid-table">{tableInvalid}</p>
                 <button className="upload-btn-album" onClick={onUpload}>
                     Upload
