@@ -3,21 +3,27 @@ import React, { useState, useRef } from 'react';
 
 type TableProps = {
     table: any;
+    setInvalid: any;
 };
 
 type TableData = {
     file: Blob;
     extension: string;
     name: string;
-    pos: string;
+    pos: string | number;
     length: string;
     category: string;
 };
 
 const Table: React.FC<TableProps> = (props: TableProps) => {
     const inputSong = useRef(null);
-    const [entries, setEntries] = useState([]);
-    const headers = ['Nume', 'Pozitie', 'Durata', 'Categorie', ''];
+    const loadingEl = (
+        <div id="table-loading">
+            <img src={Icons.Loading} className="table-loading-anim" />
+        </div>
+    );
+    const [entries, setEntries] = useState(Array<TableData>());
+    const headers = ['Nume', 'Pozitie', 'Durata', 'Categorie', loadingEl];
     const [update, setUpdate] = useState(false);
     //Assign function to pass table data to Upload component
     props.table.function = getData;
@@ -28,6 +34,8 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         const audio = document.createElement('audio');
 
         if (event.target.files && file) {
+            //Trigger loading animation
+            document.getElementById('table-loading').style.display = 'flex';
             //Read content of audio file
             reader.readAsDataURL(file);
             reader.onloadend = (): void => {
@@ -52,6 +60,14 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                             category: 'General',
                         },
                     ]);
+                    props.setInvalid('');
+                    //Loading ended
+                    document.getElementById('table-loading').style.display =
+                        'none';
+                    //Trigger animation for new inserted entry
+                    document
+                        .getElementById(`${entries.length}`)
+                        .classList.add('table-row-animation');
                 };
             };
         }
@@ -66,13 +82,9 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
 
     function deleteEntry(id: number): void {
         const temp = entries;
-        //Find and delete the entry by provided id
-        for (let i = 0; i < temp.length; i++) {
-            if (temp[i].pos === id) {
-                temp.splice(i, 1);
-                break;
-            }
-        }
+
+        temp.splice(id, 1);
+
         //Replace all positions
         for (let i = 0; i < temp.length; i++) {
             temp[i].pos = i + 1;
@@ -83,22 +95,13 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
     }
 
     function onDisplayName(id: number): string {
-        //Find required input by id
-        for (const entry of entries) {
-            if (entry.pos === id) {
-                return entry.name;
-            }
-        }
+        return entries[id].name;
     }
 
     function onChangeName(event: any, id: number): void {
         const temp = entries;
-        //Find required input by id
-        for (const entry of temp) {
-            if (entry.pos === id) {
-                entry.name = event.target.value;
-            }
-        }
+
+        temp[id].name = event.target.value;
 
         setEntries(temp);
         //Idk why is not rendering on first change state
@@ -106,22 +109,12 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
     }
 
     function onDisplayCategory(id: number): string {
-        //Find required input by id
-        for (const entry of entries) {
-            if (entry.pos === id) {
-                return entry.category;
-            }
-        }
+        return entries[id].category;
     }
 
     function onChangeCategory(event: any, id: number): void {
         const temp = entries;
-        //Find required input by id
-        for (const entry of temp) {
-            if (entry.pos === id) {
-                entry.category = event.target.value;
-            }
-        }
+        temp[id].category = event.target.value;
 
         setEntries(temp);
         //Idk why is not rendering on first change state
@@ -154,6 +147,71 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         return retVal;
     }
 
+    function onMoveUp(id: number): void {
+        const temp = entries;
+        const tempEl = temp[id];
+        let currentRowHtml;
+
+        if (id === 0) {
+            //Already the first position
+        } else {
+            //Interchange elements and change positions in album
+            temp[id] = temp[id - 1];
+            temp[id].pos = (temp[id].pos as number) + 1;
+            temp[id - 1] = tempEl;
+            temp[id - 1].pos = (temp[id - 1].pos as number) - 1;
+            //Set highlight animation
+            currentRowHtml = document.getElementById(`${id - 1}`);
+            currentRowHtml.classList.add('table-row-animation');
+            setEntries(temp);
+            setUpdate(!update);
+        }
+    }
+
+    function onMoveDown(id: number): void {
+        const temp = entries;
+        const tempEl = temp[id];
+        let currentRowHtml;
+
+        if (id == entries.length - 1) {
+            //Already the last position
+        } else {
+            //Interchange elements and change positions in album
+            temp[id] = temp[id + 1];
+            temp[id].pos = (temp[id].pos as number) - 1;
+            temp[id + 1] = tempEl;
+            temp[id + 1].pos = (temp[id + 1].pos as number) + 1;
+            //Set highlight animation
+            currentRowHtml = document.getElementById(`${id + 1}`);
+            currentRowHtml.classList.add('table-row-animation');
+            setEntries(temp);
+            setUpdate(!update);
+        }
+    }
+
+    function onRowAnimationStart(id: number): void {
+        //Also set animation to the input fields in the row
+        document
+            .getElementById(`row-name-${id}`)
+            .classList.add('table-row-animation');
+        document
+            .getElementById(`row-category-${id}`)
+            .classList.add('table-row-animation');
+    }
+
+    function onRowAnimationEnd(id: number): void {
+        //Remove animations from row level and inputs inside the row
+        document
+            .getElementById(`row-name-${id}`)
+            .classList.remove('table-row-animation');
+        document
+            .getElementById(`row-category-${id}`)
+            .classList.remove('table-row-animation');
+        document
+            .getElementById(`${id}`)
+            .classList.remove('table-row-animation');
+    }
+
     return (
         <div className="table-section">
             <table className="table" id="album-table">
@@ -167,14 +225,23 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                 <tbody>
                     {entries.map((row, i) => {
                         return (
-                            <tr key={`${i}`} id={`${i + 1}`}>
+                            <tr
+                                key={`${i}`}
+                                id={`${i}`}
+                                onAnimationStart={(): void => {
+                                    onRowAnimationStart(i);
+                                }}
+                                onAnimationEnd={(): void => {
+                                    onRowAnimationEnd(i);
+                                }}
+                            >
                                 <td>
                                     <input
-                                        id={`row-name-${i + 1}`}
+                                        id={`row-name-${i}`}
                                         className="input-name"
-                                        value={onDisplayName(i + 1)}
+                                        value={onDisplayName(i)}
                                         onChange={(event): void =>
-                                            onChangeName(event, i + 1)
+                                            onChangeName(event, i)
                                         }
                                     />
                                 </td>
@@ -182,11 +249,11 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                                 <td>{row.length}</td>
                                 <td className="category">
                                     <input
-                                        id={`row-name-${i + 1}`}
+                                        id={`row-category-${i}`}
                                         className="input-name"
-                                        value={onDisplayCategory(i + 1)}
+                                        value={onDisplayCategory(i)}
                                         onChange={(event): void =>
-                                            onChangeCategory(event, i + 1)
+                                            onChangeCategory(event, i)
                                         }
                                     />
                                 </td>
@@ -196,16 +263,22 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                                         <img
                                             src={Icons.DeleteRow}
                                             className="remove-icon"
-                                            onClick={(): void =>
-                                                deleteEntry(i + 1)
-                                            }
+                                            onClick={(): void => deleteEntry(i)}
                                         />
                                         {/* Up & Down buttons */}
                                         <div className="nav-section">
-                                            <img src={Icons.Up} />
+                                            <img
+                                                src={Icons.Up}
+                                                onClick={(): void =>
+                                                    onMoveUp(i)
+                                                }
+                                            />
                                             <img
                                                 src={Icons.Down}
                                                 className="down"
+                                                onClick={(): void =>
+                                                    onMoveDown(i)
+                                                }
                                             />
                                         </div>
                                     </div>
