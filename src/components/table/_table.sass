@@ -36,10 +36,12 @@
 
         &:last-child
             border-right: none
+            padding: 0px
 
     td
         vertical-align: middle
         text-align: center
+        border-bottom: none
 
     .category
         width: 20%
@@ -90,3 +92,35 @@
 
         .down
             margin-top: 5px
+
+.table-row-animation
+    animation-name: row-highlight
+    animation-duration: 800ms
+
+
+@keyframes row-highlight
+    0%
+        opacity: 0
+        background: #FFFFFF 
+    100%
+        opacity: 1.0
+        background: colors.$table
+
+#table-loading
+    display: none
+    justify-content: center
+    align-items: center
+    width: 100%
+    height: 99%
+
+    img
+        width: 24px
+        height: 24px
+
+.table-loading-anim
+    animation: loading-rotate 2s linear infinite
+
+@keyframes loading-rotate
+    100%
+        transform: rotate(360deg)
+        
