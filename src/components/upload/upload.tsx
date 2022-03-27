@@ -4,6 +4,7 @@ import { FormControl } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
 import Sidebar from '../sidebar/sidebar';
 import Table from '@components/table/table';
+import Dropdown from '@components/dropdown/dropdown';
 
 const UploadView: React.FC = () => {
     const [name, setName] = useState('');
@@ -41,13 +42,6 @@ const UploadView: React.FC = () => {
     function onPlusClick(): void {
         //Trigger choose file dialog
         inputImg.current.click();
-    }
-
-    function onUpload(): void {
-        if (verifyInputs() === 0) {
-            //Reset invalid labels if they were set previously
-        } else {
-        }
     }
 
     function verifyInputs(): number {
@@ -92,6 +86,28 @@ const UploadView: React.FC = () => {
         }
 
         return retVal;
+    }
+
+    function uploadAlbum(): boolean {
+        throw new Error('Method not implemented.');
+    }
+
+    function uploadAlbumArtwork(): boolean {
+        throw new Error('Function not implemented.');
+    }
+
+    function uploadInfoToDb(): void {
+        throw new Error('Method not implemented.');
+    }
+
+    function onUpload(): void {
+        let retVal;
+
+        if (verifyInputs() === 0) {
+            //First upload info in db
+            //Upload entire album
+            //Upload album artwork
+        }
     }
 
     return (
@@ -139,6 +155,13 @@ const UploadView: React.FC = () => {
                                 {nameinvalid}
                             </p>
                         </InputGroup>
+                        <div className="category">
+                            <p>Categorie</p>
+                            <Dropdown
+                                items={['General', 'Plm', 'Plt']}
+                                className="dropdown-margin"
+                            />
+                        </div>
                         <InputGroup
                             hasValidation
                             className="input-group input-group-area"
