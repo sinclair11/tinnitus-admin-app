@@ -3,7 +3,6 @@ import { InputGroup, FormControl, Button, Form } from 'react-bootstrap';
 import logo from '@icons/logo.png';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import { watchToken } from '@utils/utils';
 import { useDispatch } from 'react-redux';
 import ErrorHandler from '@src/utils/errorhandler';
 
@@ -16,18 +15,10 @@ export const Login: React.FC = () => {
     const dispatch = useDispatch();
 
     function storeToken(token: string): void {
-        //Notify main process to store received jwt
-        // const result = ipcRenderer.sendSync('eventWriteJwt', token);
-        const result = 0;
-        //Everything went as expected
-        if (result) {
-            watchToken();
-            dispatch({ type: 'general/set-admin', payload: admin });
-            dispatch({ type: 'general/set-password', payload: passw });
-            history.push('/welcome');
-        } else {
-            //Error handling
-        }
+        //Store received token
+        dispatch({ type: 'general/set-token', payload: token });
+        //Route to Welcome page
+        history.push('/welcome');
     }
 
     async function AuthAdmin(): Promise<void> {

@@ -4,38 +4,35 @@
 .SearchGroup
 	display: flex
 	width: 90%
-	height: 100%
+	height: 70px
 
 .SearchBar
-	background-color: white
 	width: 90%
-	height: 55%
-	border-radius: 8px
-	border: 1px solid colors.$border
-	border-bottom-width: 1px
+	height: 40px
+	border-radius: 5px
+	border: 1px solid black
 	padding-left: 7px
-	margin-left: 5%
 
 .SearchBarDiv
 	display: flex
 	justify-content: center
+	align-items: center
 	width: 100%
-	height: 7%
-	padding-top: 33px
+	height: 70px
 
 .SearchButton
-	@include custom.btnStyle($width: 7%, $height: 65%)
+	@include custom.btnStyle($width: 70px, $height: 45px)
 	@include custom.flexCenter($direction: row)
 	margin-left: 10px
 	border-radius: 8px
+	cursor: pointer
 
 	&:hover
-		transform: scale(1.0)
-		opacity: 0.5
+		opacity: 0.6
 
 .SearchIcon
-	width: 36px
-	height: 36px
+	width: 32px
+	height: 32px
 
 .ListOk
 	width: 70px

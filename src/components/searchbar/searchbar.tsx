@@ -9,6 +9,7 @@ import { Reslist } from '@components/reslist/reslist';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import ErrorHandler from '@src/utils/errorhandler';
+import { store } from '@src/store/store';
 
 type SearchProps = {
     type: string;
@@ -92,7 +93,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
      */
     async function getResourceData(): Promise<void> {
         //Token
-        const secret = '0';
+        const secret = store.getState().generalReducer.token;
         // const secret = ipcRenderer.sendSync('eventReadJwt');
         let dataInfo = [];
         let dataUsage = [];
@@ -156,7 +157,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
      * @description
      */
     async function getListOfResources(): Promise<void> {
-        const secret = '0';
+        const secret = store.getState().generalReducer.token;
         // const secret = ipcRenderer.sendSync('eventReadJwt');
         //Show loading modal
         setIsOpen(true);

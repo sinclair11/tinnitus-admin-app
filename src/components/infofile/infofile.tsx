@@ -38,7 +38,7 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
             return (
                 <div className="NoSelected">
                     <p>
-                        Selectati o resursa pentru a vedea informatii{' '}
+                        Selectati un album pentru a vedea informatii{' '}
                         {props.type === 'general' ? 'generale' : 'de utilizare'}
                     </p>
                 </div>
@@ -60,12 +60,5 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
         }
     }
 
-    return (
-        <div className="InfoPlaceholder">
-            <div className="InfoTitle">
-                <h4>{props.title}</h4>
-            </div>
-            {displayInfo()}
-        </div>
-    );
+    return <div className="InfoPlaceholder">{displayInfo()}</div>;
 };

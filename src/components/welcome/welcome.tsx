@@ -10,7 +10,15 @@ const Welcome: React.FC = () => {
         <div className="Stack">
             <img src={logoIcon} className="Logo fade linear" />
             <GridActionsMemo />
-            <p style={{ color: 'black' }}>© 2021 Tinnitus Sounds</p>
+            <p
+                style={{
+                    position: 'absolute',
+                    color: 'black',
+                    bottom: '1px',
+                }}
+            >
+                Copyright © 2021 Tinnitus Sounds
+            </p>
         </div>
     );
 };
@@ -27,19 +35,15 @@ const GridActions: React.FC = () => {
             <ButtonGroup vertical className="ButtonGroup">
                 <Button
                     className="GridButton GridButtonText"
-                    onClick={(): void => goToRoute('/video')}
-                >
-                    <img src={Icons['VideoIcon']} className="ButtonIcon" />
-                    Administreaza fisiere video
-                </Button>
-                <Button
-                    className="GridButton GridButtonText"
                     onClick={(): void => goToRoute('/audio')}
                 >
                     <img src={Icons['AudioIcon']} className="ButtonIcon" />
-                    Administreaza fisiere audio
+                    Administreaza albume audio
                 </Button>
-                <Button className="GridButton GridButtonText">
+                <Button
+                    className="GridButton GridButtonText"
+                    onClick={(): void => goToRoute('/generator')}
+                >
                     <img src={Icons['GeneratorIcon']} className="ButtonIcon" />
                     Administreaza generator
                 </Button>
