@@ -17,7 +17,7 @@ const Welcome: React.FC = () => {
                     bottom: '1px',
                 }}
             >
-                © 2021 Tinnitus Sounds
+                Copyright © 2021 Tinnitus Sounds
             </p>
         </div>
     );
