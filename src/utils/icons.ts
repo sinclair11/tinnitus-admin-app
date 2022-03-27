@@ -23,6 +23,7 @@ import DeleteRow from '../icons/trash_row.png';
 import Up from '../icons/up.png';
 import Down from '../icons/down.png';
 import Loading from '../icons/loading.png';
+import ArrowDown from '../icons/arrow-down.png';
 
 export const Icons = {
     HomeIcon: Home,
@@ -43,6 +44,7 @@ export const Icons = {
     Up: Up,
     Down: Down,
     Loading: Loading,
+    ArrowDown: ArrowDown,
 };
 
 export const ToolbarIcons = {
