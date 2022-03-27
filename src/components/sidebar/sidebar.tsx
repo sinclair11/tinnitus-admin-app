@@ -61,7 +61,9 @@ const Sidebar: React.FC = () => {
                     <p>Tutorial</p>
                 </div>
             </div>
-            <p className="sidebar-copyright">© 2022 Tinnitus Sounds</p>
+            <p className="sidebar-copyright">
+                Copyright © 2022 Tinnitus Sounds
+            </p>
         </div>
     );
 };
