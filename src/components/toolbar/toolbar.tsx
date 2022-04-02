@@ -31,9 +31,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
     const [dialogbox, setDialogbox] = useState(false);
     const [accept, setAccept] = useState(false);
     const dispatch = useDispatch();
-    const selected = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.selected,
-    ) as string;
+    const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
 
     useEffect(() => {
         // if (accept == true) {
@@ -156,16 +154,8 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 
     return (
         <div className={props.container + ' ToolbarContainer '}>
-            <ReactTooltip
-                place="top"
-                type="dark"
-                effect="float"
-                delayShow={500}
-            />
-            <div
-                className="toolbar-action"
-                onClick={(): void => history.push('/audio/upload')}
-            >
+            <ReactTooltip place="top" type="dark" effect="float" delayShow={500} />
+            <div className="toolbar-action" onClick={(): void => history.push('/audio/upload')}>
                 <img src={ToolbarIcons['UploadIcon']} className="ActionIcon" />
                 <p>Incarca</p>
             </div>
@@ -179,30 +169,13 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
             </div>
 
             <div className="toolbar-action" onClick={onRequestDeleteClick}>
-                <img
-                    data-tip="Sterge"
-                    src={ToolbarIcons['DeleteIcon']}
-                    className="ActionIcon"
-                />
+                <img data-tip="Sterge" src={ToolbarIcons['DeleteIcon']} className="ActionIcon" />
                 <p>Sterge</p>
             </div>
-            <Modal
-                isOpen={messageOpen}
-                style={dialogStyles}
-                contentLabel="Upload"
-                ariaHideApp={false}
-            >
-                <MessageBox
-                    setIsOpen={setMessageOpen}
-                    message={messageboxMsg}
-                />
+            <Modal isOpen={messageOpen} style={dialogStyles} contentLabel="Upload" ariaHideApp={false}>
+                <MessageBox setIsOpen={setMessageOpen} message={messageboxMsg} />
             </Modal>
-            <Modal
-                isOpen={dialogbox}
-                style={dialogStyles}
-                contentLabel="Dialog box"
-                ariaHideApp={false}
-            >
+            <Modal isOpen={dialogbox} style={dialogStyles} contentLabel="Dialog box" ariaHideApp={false}>
                 <DialogBox
                     setIsOpen={setDialogbox}
                     message="Esti sigur ca vrei sa stergi acest album?"

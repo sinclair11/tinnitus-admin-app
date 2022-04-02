@@ -57,10 +57,7 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                         ...entries,
                         {
                             file: file,
-                            name: file.name.slice(
-                                0,
-                                file.name.lastIndexOf('.'),
-                            ),
+                            name: file.name.slice(0, file.name.lastIndexOf('.')),
                             pos: entries.length + 1,
                             length: getDurationFormat(duration),
                             category: 'General',
@@ -68,12 +65,9 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                     ]);
                     props.setInvalid('');
                     //Loading ended
-                    document.getElementById('table-loading').style.display =
-                        'none';
+                    document.getElementById('table-loading').style.display = 'none';
                     //Trigger animation for new inserted entry
-                    document
-                        .getElementById(`${entries.length}`)
-                        .classList.add('table-row-animation');
+                    document.getElementById(`${entries.length}`).classList.add('table-row-animation');
                 };
             };
         }
@@ -192,25 +186,15 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
 
     function onRowAnimationStart(id: number): void {
         //Also set animation to the input fields in the row
-        document
-            .getElementById(`row-name-${id}`)
-            .classList.add('table-row-animation');
-        document
-            .getElementById(`row-category-${id}`)
-            .classList.add('table-row-animation');
+        document.getElementById(`row-name-${id}`).classList.add('table-row-animation');
+        document.getElementById(`row-category-${id}`).classList.add('table-row-animation');
     }
 
     function onRowAnimationEnd(id: number): void {
         //Remove animations from row level and inputs inside the row
-        document
-            .getElementById(`row-name-${id}`)
-            .classList.remove('table-row-animation');
-        document
-            .getElementById(`row-category-${id}`)
-            .classList.remove('table-row-animation');
-        document
-            .getElementById(`${id}`)
-            .classList.remove('table-row-animation');
+        document.getElementById(`row-name-${id}`).classList.remove('table-row-animation');
+        document.getElementById(`row-category-${id}`).classList.remove('table-row-animation');
+        document.getElementById(`${id}`).classList.remove('table-row-animation');
     }
 
     return (
@@ -243,9 +227,7 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                                         id={`row-name-${i}`}
                                         className="input-name"
                                         value={onDisplayName(i)}
-                                        onChange={(event): void =>
-                                            onChangeName(event, i)
-                                        }
+                                        onChange={(event): void => onChangeName(event, i)}
                                     />
                                 </td>
                                 <td>{row.pos}</td>
@@ -269,18 +251,11 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                                         />
                                         {/* Up & Down buttons */}
                                         <div className="nav-section">
-                                            <img
-                                                src={Icons.Up}
-                                                onClick={(): void =>
-                                                    onMoveUp(i)
-                                                }
-                                            />
+                                            <img src={Icons.Up} onClick={(): void => onMoveUp(i)} />
                                             <img
                                                 src={Icons.Down}
                                                 className="down"
-                                                onClick={(): void =>
-                                                    onMoveDown(i)
-                                                }
+                                                onClick={(): void => onMoveDown(i)}
                                             />
                                         </div>
                                     </div>

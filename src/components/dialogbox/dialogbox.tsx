@@ -33,11 +33,7 @@ export const DialogBox: React.FC<DialogboxProps> = (props: DialogboxProps) => {
             >
                 Cancel
             </Button>
-            <img
-                src={Icons['CancelIcon']}
-                className="cancel-icon"
-                onClick={(): void => props.setIsOpen(false)}
-            />
+            <img src={Icons['CancelIcon']} className="cancel-icon" onClick={(): void => props.setIsOpen(false)} />
         </>
     );
 };

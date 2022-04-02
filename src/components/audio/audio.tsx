@@ -26,15 +26,9 @@ const AlbumArtwork: React.FC<ArtworkProps> = (props: ArtworkProps) => {
 
 export const AudioView: React.FC = () => {
     const dispatch = useDispatch();
-    const auth = useSelector<CombinedStates>(
-        (state) => state.generalReducer.auth,
-    ) as any;
-    const selected = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.selected,
-    ) as string;
-    const thumbnail = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.thumbnail,
-    ) as string;
+    const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
+    const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
+    const thumbnail = useSelector<CombinedStates>((state) => state.resdataReducer.thumbnail) as string;
     const history = useHistory();
 
     useEffect(() => {
@@ -73,9 +67,7 @@ export const AudioView: React.FC = () => {
                         color: 'black',
                     }}
                 >
-                    <p>
-                        Selectati un album pentru a vedea informatii despre el
-                    </p>
+                    <p>Selectati un album pentru a vedea informatii despre el</p>
                 </div>
             );
         }

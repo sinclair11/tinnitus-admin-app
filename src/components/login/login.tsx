@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { InputGroup, FormControl, Button, Form } from 'react-bootstrap';
 import logo from '@icons/logo.png';
 import { useHistory } from 'react-router-dom';
-import {
-    getAuth,
-    signInWithEmailAndPassword,
-    setPersistence,
-    browserSessionPersistence,
-} from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth';
 import { app } from '@config/firebase';
 import { useDispatch } from 'react-redux';
 
@@ -72,9 +67,7 @@ export const Login: React.FC = () => {
                             className="LoginInput"
                             value={admin}
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            onChange={(e: any): void =>
-                                setAdmin(e.target.value)
-                            }
+                            onChange={(e: any): void => setAdmin(e.target.value)}
                         />
                     </InputGroup>
                     <p className="InvalidRed" style={{ marginTop: '2px' }}>
@@ -90,9 +83,7 @@ export const Login: React.FC = () => {
                             className="LoginInput"
                             value={passw}
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            onChange={(e: any): void =>
-                                setPassw(e.target.value)
-                            }
+                            onChange={(e: any): void => setPassw(e.target.value)}
                         />
                     </InputGroup>
                     <p className="InvalidRed" style={{ marginTop: '2px' }}>

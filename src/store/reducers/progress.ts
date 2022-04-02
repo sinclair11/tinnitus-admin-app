@@ -22,10 +22,7 @@ const initialState: ProgState = {
  * - progress/fail
  * - progress/clean
  */
-export function progressReducer(
-    state: ProgState = initialState,
-    action: action,
-): ProgState {
+export function progressReducer(state: ProgState = initialState, action: action): ProgState {
     const payload = action.payload;
     switch (action.type) {
         case 'progress/open': {
@@ -40,13 +37,16 @@ export function progressReducer(
                 progress: (payload as number) + state.progress,
             };
         }
+        case 'progress/progress': {
+            return {
+                ...state,
+                progress: payload as number,
+            };
+        }
         case 'progress/log':
             return {
                 ...state,
-                log: [
-                    ...state.log,
-                    payload as { type: string; value: unknown },
-                ],
+                log: [...state.log, payload as { type: string; value: unknown }],
             };
         case 'progress/variant':
             return {
@@ -63,10 +63,7 @@ export function progressReducer(
                 ...state,
                 variant: 'danger',
                 progress: 100,
-                log: [
-                    ...state.log,
-                    payload as { type: string; value: unknown },
-                ],
+                log: [...state.log, payload as { type: string; value: unknown }],
             };
         case 'progress/clean':
             return {

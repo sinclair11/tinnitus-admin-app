@@ -11,22 +11,16 @@ export const InfoFile: React.FC<InfoProps> = (props?: InfoProps) => {
     // Choose which type of info to be displayed
     const info =
         props.type === 'general'
-            ? (useSelector<CombinedStates>(
-                  (state) => state.resdataReducer.info,
-              ) as {
+            ? (useSelector<CombinedStates>((state) => state.resdataReducer.info) as {
                   name: string;
                   value: unknown;
               }[])
-            : (useSelector<CombinedStates>(
-                  (state) => state.resdataReducer.usage,
-              ) as {
+            : (useSelector<CombinedStates>((state) => state.resdataReducer.usage) as {
                   name: string;
                   value: unknown;
               }[]);
 
-    const selected = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.selected,
-    ) as string;
+    const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
 
     /**
      * @function displayInfo Display corresponding info or a message if info does not exist

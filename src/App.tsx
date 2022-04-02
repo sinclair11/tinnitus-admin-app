@@ -10,10 +10,7 @@ import UploadView from './components/upload/upload';
 import { app } from '@src/config/firebase';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const App: React.FC<{ title: string; version: string }> = (props: {
-    title: string;
-    version: string;
-}) => {
+const App: React.FC<{ title: string; version: string }> = (props: { title: string; version: string }) => {
     app;
     return (
         <Router>

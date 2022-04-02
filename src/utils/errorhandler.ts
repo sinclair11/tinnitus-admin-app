@@ -45,8 +45,7 @@ export default class ErrorHandler {
                 //* Request new token in case of expiration error
                 if (error.response.data.message === 'jwt expired') {
                     //Explicit user message
-                    error.response.data.message =
-                        'Tokenul a expirat si a fost inlocuit automat cu unul nou.';
+                    error.response.data.message = 'Tokenul a expirat si a fost inlocuit automat cu unul nou.';
                     //Reqeust new token
                 }
                 break;

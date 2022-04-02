@@ -28,16 +28,9 @@ export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
             return (
                 <ul className="ListView">
                     {props.entries.map((item, index) => (
-                        <li
-                            key={index}
-                            tabIndex={-1}
-                            onClick={(): void => itemSelected(item.name)}
-                        >
+                        <li key={index} tabIndex={-1} onClick={(): void => itemSelected(item.name)}>
                             <div className="ListItem">
-                                <img
-                                    src={`data:image/png;base64,${item.data.thumb}`}
-                                    className="ListItemThumb"
-                                />
+                                <img src={`data:image/png;base64,${item.data.thumb}`} className="ListItemThumb" />
                                 <div className="ListItemInfo">
                                     <h4>{item.name}</h4>
                                     <p>{'Upload: ' + item.data.upload}</p>
@@ -50,12 +43,7 @@ export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
         }
         //Let user know that there is no resource for this category
         else {
-            return (
-                <p>
-                    Nu exista nicio resursa inregistrata pentru aceasta
-                    categorie
-                </p>
-            );
+            return <p>Nu exista nicio resursa inregistrata pentru aceasta categorie</p>;
         }
     }
 

@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-} from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
 
@@ -33,19 +25,12 @@ export const Graph: React.FC<GraphProps> = (props: GraphProps) => {
                         boxShadow: '-3px 5px 4px -1px rgba(0,0,0,0.66)',
                     }}
                 >
-                    <p>
-                        Functia de afisare a datelor nu este disponibila
-                        momentan.
-                    </p>
+                    <p>Functia de afisare a datelor nu este disponibila momentan.</p>
                 </div>
             );
         } else {
             return (
-                <ResponsiveContainer
-                    width="100%"
-                    height="60%"
-                    className={props.container}
-                >
+                <ResponsiveContainer width="100%" height="60%" className={props.container}>
                     <AreaChart
                         // width={300}
                         // height={500}
@@ -83,34 +68,13 @@ export const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 
     return (
         <div className={props.container}>
-            <ReactTooltip
-                place="top"
-                type="dark"
-                effect="float"
-                delayShow={500}
-            />
+            <ReactTooltip place="top" type="dark" effect="float" delayShow={500} />
             {/* Toolbar area */}
             <div className="GraphActions">
-                <img
-                    data-tip="Alege data"
-                    src={ToolbarIcons['CalendarIcon']}
-                    className="GraphIcon"
-                />
-                <img
-                    data-tip="Alege tipul de grafic"
-                    src={ToolbarIcons['ChartIcon']}
-                    className="GraphIcon"
-                />
-                <img
-                    data-tip="Mareste"
-                    src={ToolbarIcons['ZoominIcon']}
-                    className="GraphIcon"
-                />
-                <img
-                    data-tip="Micsoreaza"
-                    src={ToolbarIcons['ZoomoutIcon']}
-                    className="GraphIcon"
-                />
+                <img data-tip="Alege data" src={ToolbarIcons['CalendarIcon']} className="GraphIcon" />
+                <img data-tip="Alege tipul de grafic" src={ToolbarIcons['ChartIcon']} className="GraphIcon" />
+                <img data-tip="Mareste" src={ToolbarIcons['ZoominIcon']} className="GraphIcon" />
+                <img data-tip="Micsoreaza" src={ToolbarIcons['ZoomoutIcon']} className="GraphIcon" />
             </div>
             {GraphOrPlaceholder()}
         </div>

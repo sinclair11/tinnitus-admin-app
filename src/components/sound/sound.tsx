@@ -219,17 +219,11 @@ const SoundView: React.FC = () => {
         return `position:${soundData.current.position} color:${soundData.current.color} font:${fontTemp} opacity:${opacTemp} blur:${blurTemp}`;
     }
 
-    async function modifyPreviewStyle(
-        id: string,
-        key: any,
-        value: string,
-    ): Promise<void> {
+    async function modifyPreviewStyle(id: string, key: any, value: string): Promise<void> {
         const el = document.getElementById(id);
         if (key === 'position') {
             //Because of absolute position we need Y coord of the screen preview
-            let height = document
-                .getElementById(screenId)
-                .getBoundingClientRect().top;
+            let height = document.getElementById(screenId).getBoundingClientRect().top;
             //Add half to center
             if (value === 'center') {
                 height += 300;
@@ -245,10 +239,7 @@ const SoundView: React.FC = () => {
         }
     }
 
-    async function modifyPreviewChild(
-        id: string,
-        value: string,
-    ): Promise<void> {
+    async function modifyPreviewChild(id: string, value: string): Promise<void> {
         // document.getElementById(id).childNodes[0] = value;
     }
 
@@ -258,12 +249,7 @@ const SoundView: React.FC = () => {
             <InputGroup className="InputGroupDiv" hasValidation>
                 <div className="BrowseGroup">
                     <InputGroup.Text className="Label">Sunet</InputGroup.Text>
-                    <FormControl
-                        required
-                        className="BrowseInput"
-                        value={audioPath}
-                        onChange={noChange}
-                    />
+                    <FormControl required className="BrowseInput" value={audioPath} onChange={noChange} />
                     <Button
                         variant="outline-secondary"
                         className="BrowseBtn"
@@ -279,12 +265,7 @@ const SoundView: React.FC = () => {
             <InputGroup className="InputGroupDiv" hasValidation>
                 <div className="BrowseGroup">
                     <InputGroup.Text className="Label">Imagine</InputGroup.Text>
-                    <FormControl
-                        required
-                        className="BrowseInput"
-                        value={imgPath}
-                        onChange={noChange}
-                    />
+                    <FormControl required className="BrowseInput" value={imgPath} onChange={noChange} />
                     <Button
                         variant="outline-secondary"
                         className="BrowseBtn"
@@ -298,9 +279,7 @@ const SoundView: React.FC = () => {
             {/* Name */}
             <InputGroup className="InputGroupDiv" hasValidation>
                 <div className="BrowseGroup">
-                    <InputGroup.Text className="LabelName Label">
-                        Nume
-                    </InputGroup.Text>
+                    <InputGroup.Text className="LabelName Label">Nume</InputGroup.Text>
                     <FormControl
                         required
                         className="NameInput"
@@ -314,14 +293,8 @@ const SoundView: React.FC = () => {
                 <p>{invalid.current.name}</p>
             </InputGroup>
             {/* Description */}
-            <InputGroup
-                className="InputGroupDiv"
-                hasValidation
-                style={{ marginBottom: '5px' }}
-            >
-                <InputGroup.Text className="LabelDesc">
-                    Descriere
-                </InputGroup.Text>
+            <InputGroup className="InputGroupDiv" hasValidation style={{ marginBottom: '5px' }}>
+                <InputGroup.Text className="LabelDesc">Descriere</InputGroup.Text>
                 <div className="BrowseGroup">
                     <FormControl
                         required
@@ -340,9 +313,7 @@ const SoundView: React.FC = () => {
                 {/* Style for phone screen */}
                 {/* Text position */}
                 <InputGroup className="StyleGroup" hasValidation>
-                    <InputGroup.Text className="Label LabelPosition">
-                        Pozitie text
-                    </InputGroup.Text>
+                    <InputGroup.Text className="Label LabelPosition">Pozitie text</InputGroup.Text>
                     <FormControl
                         required
                         as="select"
@@ -350,11 +321,7 @@ const SoundView: React.FC = () => {
                         value={soundData.current.position}
                         onChange={(e: any): void => {
                             soundData.current.position = e.target.value;
-                            modifyPreviewStyle(
-                                descId,
-                                'position',
-                                e.target.value,
-                            );
+                            modifyPreviewStyle(descId, 'position', e.target.value);
                         }}
                     >
                         <option value="top">Sus</option>
@@ -365,9 +332,7 @@ const SoundView: React.FC = () => {
                 </InputGroup>
                 {/* Text color */}
                 <InputGroup className="StyleGroup" hasValidation>
-                    <InputGroup.Text className="Label LabelColor">
-                        Culoare text
-                    </InputGroup.Text>
+                    <InputGroup.Text className="Label LabelColor">Culoare text</InputGroup.Text>
                     <div
                         ref={inputColor}
                         className="SimpleInput InputColor"
@@ -377,19 +342,14 @@ const SoundView: React.FC = () => {
                     ></div>
                     <div className="PickerDiv">
                         {showPicker && (
-                            <SketchPicker
-                                onChangeComplete={onColorChange}
-                                color={soundData.current.color}
-                            />
+                            <SketchPicker onChangeComplete={onColorChange} color={soundData.current.color} />
                         )}
                     </div>
                     <p>Selecteaza culoarea textului</p>
                 </InputGroup>
                 {/* Text font */}
                 <InputGroup className="StyleGroup" hasValidation>
-                    <InputGroup.Text className="Label">
-                        Font text
-                    </InputGroup.Text>
+                    <InputGroup.Text className="Label">Font text</InputGroup.Text>
                     <FormControl
                         required
                         className="SimpleInput InputFont"
@@ -403,40 +363,28 @@ const SoundView: React.FC = () => {
                 </InputGroup>
                 {/* Image opacity */}
                 <InputGroup className="StyleGroup" hasValidation>
-                    <InputGroup.Text className="Label LabelOpac">
-                        Opacitate imagine
-                    </InputGroup.Text>
+                    <InputGroup.Text className="Label LabelOpac">Opacitate imagine</InputGroup.Text>
                     <FormControl
                         required
                         className="SimpleInput InputOpac"
                         value={soundData.current.opacity}
                         onChange={(e: any): void => {
                             soundData.current.opacity = e.target.value;
-                            modifyPreviewStyle(
-                                imgId,
-                                'opacity',
-                                e.target.value,
-                            );
+                            modifyPreviewStyle(imgId, 'opacity', e.target.value);
                         }}
                     />
                     <p>Seteaza opacitatea imaginii</p>
                 </InputGroup>
                 {/* Image blur */}
                 <InputGroup className="StyleGroup" hasValidation>
-                    <InputGroup.Text className="Label">
-                        Blur imagine
-                    </InputGroup.Text>
+                    <InputGroup.Text className="Label">Blur imagine</InputGroup.Text>
                     <FormControl
                         required
                         className="SimpleInput InputBlur"
                         value={soundData.current.blur}
                         onChange={(e: any): void => {
                             soundData.current.blur = e.target.value;
-                            modifyPreviewStyle(
-                                imgId,
-                                'filter',
-                                `blur(${e.target.value})`,
-                            );
+                            modifyPreviewStyle(imgId, 'filter', `blur(${e.target.value})`);
                         }}
                     />
                     <p>Seteaza blur imagine</p>

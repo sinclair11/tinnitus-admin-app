@@ -27,14 +27,8 @@ export const ResponseCodes = new Map([
     [415, 'Formatul multimedia nu este suportat.'],
     [500, 'A intervenit o eroare interna in server.'],
     [501, 'Metoda cererii trimisa nu este suportata de catre acest server.'],
-    [
-        503,
-        'Serviciul cerut nu este disponibil. Serverul este in mentenanta sau indisponibil in momentul de fata.',
-    ],
-    [
-        507,
-        'Serverul nu mai are spatiu de stocare suficient pentru a inregistra resursa dorita.',
-    ],
+    [503, 'Serviciul cerut nu este disponibil. Serverul este in mentenanta sau indisponibil in momentul de fata.'],
+    [507, 'Serverul nu mai are spatiu de stocare suficient pentru a inregistra resursa dorita.'],
 ]);
 
 export const MonthsMap = new Map([
@@ -51,3 +45,28 @@ export const MonthsMap = new Map([
     ['Noiembrie', { number: 11, text: 'nov' }],
     ['Decembrie', { number: 12, text: 'dec' }],
 ]);
+
+export function calculateSeconds(seconds: number, minutes: number, hours: number): number {
+    return seconds + minutes * 60 + hours * 3600;
+}
+
+export function getDurationFormat(duration: number): string {
+    //Calculate duration in HH:MM:SS format
+    const hours = Math.floor(duration / 3600);
+    const hoursRemSec = duration - hours * 3600;
+    const minutes = Math.floor(hoursRemSec / 60);
+    const seconds = hoursRemSec - minutes * 60;
+
+    //Append a 0
+    let retVal = `0${hours}:`;
+    if (minutes < 10) {
+        retVal += '0';
+    }
+    retVal += `${minutes}:`;
+    if (seconds < 10) {
+        retVal += '0';
+    }
+    retVal += `${seconds}`;
+
+    return retVal;
+}

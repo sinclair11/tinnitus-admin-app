@@ -30,9 +30,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
     const [selected, setSelected] = useState('');
     //Redux
     const dispatch = useDispatch();
-    const selectedRes = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.selected,
-    ) as string;
+    const selectedRes = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
 
     //* Use effect to change or reset searchbar value
     useEffect(() => {
@@ -268,11 +266,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
             <Modal style={tableStyles} isOpen={tableOpen} ariaHideApp={false}>
                 <Reslist entries={tableElements} selectFromList={setSelected} />
                 <p className="modal-title">Lista {props.type}</p>
-                <img
-                    src={Icons['CancelIcon']}
-                    className="cancel-icon"
-                    onClick={closeListView}
-                />
+                <img src={Icons['CancelIcon']} className="cancel-icon" onClick={closeListView} />
                 <Button className="ListOk" onClick={okList}>
                     OK
                 </Button>

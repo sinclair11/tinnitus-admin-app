@@ -19,20 +19,12 @@ export const Menu: React.FC<{ page: string; outer: string }> = (props) => {
     });
 
     return (
-        <ScaleMenu
-            width={menuWidth}
-            pageWrapId={props.page}
-            outerContainerId={props.outer}
-        >
+        <ScaleMenu width={menuWidth} pageWrapId={props.page} outerContainerId={props.outer}>
             <div style={{ display: 'flex' }}>
                 <img src={Logo} className="LogoMenu" />
                 <p className="Title">Tinnitus Admin</p>
             </div>
-            <Link
-                className="MenuLink"
-                style={{ borderTop: '1px solid aquamarine' }}
-                to="/welcome"
-            >
+            <Link className="MenuLink" style={{ borderTop: '1px solid aquamarine' }} to="/welcome">
                 <div className="LinkPlaceholder">
                     <img src={Icons['HomeIcon']} className="MenuIcon" />
                     <p className="LinkText">Home</p>
@@ -64,12 +56,7 @@ export const Menu: React.FC<{ page: string; outer: string }> = (props) => {
             </Link>
             <button
                 className="ChannelLink"
-                onClick={(): Window =>
-                    window.open(
-                        'https://www.youtube.com/channel/UCIygYFvZg8xH3S05mS7xzNg',
-                        'modal',
-                    )
-                }
+                onClick={(): Window => window.open('https://www.youtube.com/channel/UCIygYFvZg8xH3S05mS7xzNg', 'modal')}
             >
                 <div className="LinkPlaceholder">
                     <img src={Icons['ChannelIcon']} className="MenuIcon" />
