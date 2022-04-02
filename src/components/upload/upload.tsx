@@ -3,12 +3,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FormControl } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
 import Sidebar from '../sidebar/sidebar';
-import { TableEdit } from '@components/table/table';
+import { TableData, TableEdit } from '@components/table/table';
 import Dropdown from '@components/dropdown/dropdown';
 import ErrorHandler from '@src/utils/errorhandler';
 import { useHistory } from 'react-router-dom';
 import { db, app } from '@config/firebase';
-import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import { getAuth } from 'firebase/auth';
@@ -16,13 +16,12 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useDispatch } from 'react-redux';
 import { ProgressbarUpload } from '../progressbar/progressbar-upload';
 import axios from 'axios';
+import { getDurationFormat } from '@src/utils/utils';
 
 const UploadView: React.FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
-    const auth = useSelector<CombinedStates>(
-        (state) => state.generalReducer.auth,
-    ) as any;
+    const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
     const [name, setName] = useState('');
     const [nameinvalid, setNameInvalid] = useState('');
     const [description, setDescription] = useState('');
@@ -122,43 +121,18 @@ const UploadView: React.FC = () => {
         return parsedTags;
     }
 
-    function getDurationFormat(duration: number): string {
-        //Calculate duration in HH:MM:SS format
-        const hours = Math.floor(duration / 3600);
-        const hoursRemSec = duration - hours * 3600;
-        const minutes = Math.floor(hoursRemSec / 60);
-        const seconds = hoursRemSec - minutes * 60;
-
-        //Append a 0
-        let retVal = `0${hours}:`;
-        if (minutes < 10) {
-            retVal += '0';
-        }
-        retVal += `${minutes}:`;
-        if (seconds < 10) {
-            retVal += '0';
-        }
-        retVal += `${seconds}`;
-
-        return retVal;
-    }
-
-    function calculateTotalLength(): string {
-        const entries = tableObj.function();
+    function calculateTotalLength(songs: Array<string>): number {
         let seconds = 0;
         let minutes = 0;
         let hours = 0;
         //Extract hours, minutes and seconds
-        for (let i = 0; i < entries.length; i++) {
-            hours += parseInt(entries[i].length.slice(0, 2));
-            minutes += parseInt(entries[i].length.slice(3, 5));
-            seconds += parseInt(entries[i].length.slice(6));
+        for (let i = 0; i < songs.length; i++) {
+            hours += parseInt(songs[i].slice(0, 2));
+            minutes += parseInt(songs[i].slice(3, 5));
+            seconds += parseInt(songs[i].slice(6));
         }
-
         //Calculate total length in seconds
-        const lengthInSeconds = hours * 3600 + minutes * 60 + seconds;
-
-        return getDurationFormat(lengthInSeconds);
+        return hours * 3600 + minutes * 60 + seconds;
     }
 
     function verifyInputs(): number {
@@ -191,9 +165,7 @@ const UploadView: React.FC = () => {
         } else {
             for (const entry of tableData) {
                 if (entry.name === '' || entry.category === '') {
-                    setTableInvalid(
-                        'Toate campurile din tabel sunt obligatorii',
-                    );
+                    setTableInvalid('Toate campurile din tabel sunt obligatorii');
                     retVal++;
                     break;
                 } else {
@@ -205,10 +177,11 @@ const UploadView: React.FC = () => {
         return retVal;
     }
 
-    async function abortUpload(id: string): Promise<any> {
+    async function deleteAlbum(id: string): Promise<void> {
         try {
-            const path = `albums`;
-            const res = await axios.post(
+            const path = `albums/${id}/songs`;
+            //Delete everyting related to this album
+            await axios.post(
                 'https://us-central1-tinnitus-50627.cloudfunctions.net/deleteCollection',
                 {},
                 {
@@ -217,62 +190,87 @@ const UploadView: React.FC = () => {
                     },
                 },
             );
-            return res.data.result;
+            await deleteDoc(doc(db, 'albums', id));
+            await axios.post(
+                'https://us-central1-tinnitus-50627.cloudfunctions.net/deleteAlbumFromStorage',
+                {},
+                {
+                    params: {
+                        path: `albums/${id}`,
+                    },
+                },
+            );
         } catch (error) {
             console.log(error);
         }
     }
 
-    async function uploadSongs(albumId: string): Promise<any> {
-        // const entries: TableData[] = tableObj.function();
-        // for (let i = 0; i < entries.length; i++) {
-        //     const docRef = doc(collection(db, `albums/${albumId}/songs`));
-        //     await setDoc = (docRef, {
-        //         name: entries[i].name,
-        //         position: entries[i].pos,
-        //         length: entries[i].length,
-        //         file: entries[i].
-        //     })
-        // }
+    function getSongsLength(songs: TableData[]): Array<string> {
+        const retVal = new Array<string>();
+        for (const entry of songs) {
+            retVal.push(entry.length);
+        }
+        return retVal;
     }
 
-    async function uploadAlbum(): Promise<string> {
-        const totalActions = 2 + tableObj.function().length;
+    function getTotalLength(songs: TableData[]): string {
+        const totalLength = calculateTotalLength(getSongsLength(songs));
+        return getDurationFormat(totalLength);
+    }
+
+    async function uploadSongs(albumId: string): Promise<any> {
+        const entries: TableData[] = tableObj.function();
+        const totalActions = 2 + entries.length;
         const percent = Math.floor(100 / totalActions);
 
         try {
-            const docRef = doc(collection(db, 'albums'));
-            //Save album artwork at corresponding path provided by doc id
-            const storage = getStorage();
-            const storageRef = ref(storage, `albums/${docRef.id}/artwork.jpg`);
-            await uploadBytes(storageRef, thumbnailFile.current);
-            //Update progressbar
-            dispatch({ type: 'progress/update', payload: percent });
-            dispatch({
-                type: 'progress/log',
-                payload: {
-                    type: basicTxtColor.current,
-                    value: 'Album registered in database',
-                },
-            });
-            //Get URL to store in firestore
-            const artworkUrl = await getDownloadURL(storageRef);
+            for (let i = 0; i < entries.length; i++) {
+                const docRef = doc(collection(db, `albums/${albumId}/songs`));
+                //Save each song at corresponding path in storage having firestore id as name
+                const storage = getStorage();
+                const storageRef = ref(storage, `albums/${albumId}/${docRef.id}`);
+                await uploadBytes(storageRef, entries[i].file);
+                //Get URL to store in firestore
+                const songUrl = await getDownloadURL(storageRef);
+                await setDoc(docRef, {
+                    name: entries[i].name,
+                    position: entries[i].pos,
+                    length: entries[i].length,
+                    file: songUrl,
+                });
+                //Upload song usage
+                await setDoc(doc(db, `albums/${albumId}/songs`, docRef.id), {
+                    likes: 0,
+                    favorites: 0,
+                    feedbacks: 0,
+                    total_listened: 0,
+                });
+                //Update progressbar
+                dispatch({ type: 'progress/update', payload: percent });
+                dispatch({
+                    type: 'progress/log',
+                    payload: {
+                        type: basicTxtColor.current,
+                        value: `Album song ${i + 1} uploaded`,
+                    },
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async function uploadAlbumInfo(docRef: any, artworkUrl: string): Promise<void> {
+        try {
+            //Upload general information about album
             await setDoc(docRef, {
                 name: name,
                 category: category.current,
                 description: description,
                 tags: parseTags(),
-                length: calculateTotalLength(),
+                length: getTotalLength(tableObj.function()),
                 artwork: artworkUrl,
-            });
-            //Update progress bar
-            dispatch({ type: 'progress/update', payload: percent });
-            dispatch({
-                type: 'progress/log',
-                payload: {
-                    type: basicTxtColor.current,
-                    value: 'Album artwork stored',
-                },
             });
             return docRef.id;
         } catch (error) {
@@ -280,30 +278,83 @@ const UploadView: React.FC = () => {
         }
     }
 
+    async function uploadAlbumUsage(docRef: any): Promise<void> {
+        try {
+            //Upload album usage
+            await setDoc(docRef, {
+                likes: 0,
+                favorites: 0,
+                feedbacks: 0,
+                total_listened: 0,
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
+    async function uploadAlbumArtwork(id: string): Promise<string> {
+        try {
+            //Save album artwork at corresponding path provided by doc id
+            const storage = getStorage();
+            const storageRef = ref(storage, `albums/${id}/artwork.jpg`);
+            await uploadBytes(storageRef, thumbnailFile.current);
+            //Get URL to store in firestore
+            const artworkUrl = await getDownloadURL(storageRef);
+            return artworkUrl;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async function onUpload(): Promise<void> {
         let id;
+        const totalActions = 2 + tableObj.function().length;
+        const percent = Math.floor(100 / totalActions);
 
         if (verifyInputs() === 0) {
             try {
-                //Open modal to track upload progress
-                // dispatch({ type: 'progress/open', payload: true });
-                // //First upload info in db
-                // id = await uploadAlbum();
-                // const options = { method: 'OPTIONS' };
-                // await fetch(
-                //     'https://us-central1-tinnitus-50627.cloudfunctions.net/corsEnabledFunction',
-                //     options,
-                // );
-                // const xhr = new XMLHttpRequest();
-                // const url =
-                //     'https://us-central1-tinnitus-50627.cloudfunctions.net/corsEnabledFunction';
-
-                // xhr.open('OPTIONS', url);
-                // xhr.send();
-                console.log(await abortUpload('albums'));
-                // await uploadSongs(id);
+                // Open modal to track upload progress
+                dispatch({ type: 'progress/open', payload: true });
+                //Create general doc reference
+                const docRef = doc(collection(db, 'albums'));
+                id = docRef.id;
+                //Upload album artwork
+                const artworkRef = await uploadAlbumArtwork(id);
+                dispatch({ type: 'progress/update', payload: percent });
+                dispatch({
+                    type: 'progress/log',
+                    payload: {
+                        type: basicTxtColor.current,
+                        value: 'Album registered in db',
+                    },
+                });
+                //Upload album info in db
+                await uploadAlbumInfo(docRef, artworkRef);
+                await uploadAlbumUsage(doc(collection(db, 'albums-usage'), id));
+                //Update progress bar
+                dispatch({ type: 'progress/update', payload: percent });
+                dispatch({
+                    type: 'progress/log',
+                    payload: {
+                        type: basicTxtColor.current,
+                        value: 'Album artwork stored',
+                    },
+                });
+                await uploadSongs(id);
+                //All album data uploaded successfully
+                dispatch({ type: 'progress/progress', payload: 100 });
+                dispatch({
+                    type: 'progress/log',
+                    payload: {
+                        type: 'green',
+                        value: 'All album data uploaded successfully',
+                    },
+                });
+                // deleteAlbum('C9t72F5JP2JzbYGZmWRW');
             } catch (error) {
                 console.log(error);
+                //Delete album from db
+                deleteAlbum(id);
+                //Mark upload as failed
                 dispatch({
                     type: 'progress/fail',
                     payload: {
@@ -343,17 +394,13 @@ const UploadView: React.FC = () => {
                             </div>
                             {displayThumbnail()}
                         </div>
-                        <p className="invalid-input invalid-thumbnail">
-                            {thumbnailInvalid}
-                        </p>
+                        <p className="invalid-input invalid-thumbnail">{thumbnailInvalid}</p>
                     </div>
 
                     {/* General info */}
                     <div className="upload-album-info">
                         <InputGroup hasValidation className="input-group">
-                            <InputGroup.Text className="label">
-                                Nume
-                            </InputGroup.Text>
+                            <InputGroup.Text className="label">Nume</InputGroup.Text>
                             <FormControl
                                 className="input"
                                 required
@@ -363,9 +410,7 @@ const UploadView: React.FC = () => {
                                     setNameInvalid('');
                                 }}
                             />
-                            <p className="invalid-input invalid-name">
-                                {nameinvalid}
-                            </p>
+                            <p className="invalid-input invalid-name">{nameinvalid}</p>
                         </InputGroup>
                         <div className="category">
                             <p>Categorie</p>
@@ -376,13 +421,8 @@ const UploadView: React.FC = () => {
                                 current={categories[0]}
                             />
                         </div>
-                        <InputGroup
-                            hasValidation
-                            className="input-group input-group-area"
-                        >
-                            <InputGroup.Text className="label">
-                                Descriere
-                            </InputGroup.Text>
+                        <InputGroup hasValidation className="input-group input-group-area">
+                            <InputGroup.Text className="label">Descriere</InputGroup.Text>
                             <FormControl
                                 className="input-description"
                                 required
@@ -393,53 +433,33 @@ const UploadView: React.FC = () => {
                                     setDescInvalid('');
                                 }}
                             />
-                            <p className="invalid-input invalid-desc">
-                                {descInvalid}
-                            </p>
+                            <p className="invalid-input invalid-desc">{descInvalid}</p>
                         </InputGroup>
-                        <InputGroup
-                            hasValidation
-                            className="input-group input-group-area"
-                        >
-                            <InputGroup.Text className="label">
-                                Tag-uri(optional)
-                            </InputGroup.Text>
+                        <InputGroup hasValidation className="input-group input-group-area">
+                            <InputGroup.Text className="label">Tag-uri(optional)</InputGroup.Text>
                             <FormControl
                                 className="input-tag"
                                 required
                                 as="textarea"
                                 value={tags}
                                 placeholder="#tag1 #tag2 #tag3"
-                                onChange={(event): void =>
-                                    setTags(event.target.value)
-                                }
+                                onChange={(event): void => setTags(event.target.value)}
                             />
                         </InputGroup>
-                        <InputGroup
-                            hasValidation
-                            className="input-group input-group-area"
-                        >
-                            <InputGroup.Text className="label">
-                                Notificare(optional)
-                            </InputGroup.Text>
+                        <InputGroup hasValidation className="input-group input-group-area">
+                            <InputGroup.Text className="label">Notificare(optional)</InputGroup.Text>
                             <FormControl
                                 className="input-notification"
                                 required
                                 as="textarea"
                                 value={notification}
-                                onChange={(event): void =>
-                                    setNotification(event.target.value)
-                                }
+                                onChange={(event): void => setNotification(event.target.value)}
                             />
                         </InputGroup>
                     </div>
                 </div>
                 {/* Table with songs */}
-                <TableEdit
-                    table={tableObj}
-                    setInvalid={setTableInvalid}
-                    categories={categories}
-                />
+                <TableEdit table={tableObj} setInvalid={setTableInvalid} categories={categories} />
                 <p className="invalid-input invalid-table">{tableInvalid}</p>
                 <button className="upload-btn-album" onClick={onUpload}>
                     Upload
