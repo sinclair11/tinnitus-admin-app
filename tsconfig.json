@@ -20,6 +20,7 @@
 	  "@utils/*": ["./src/utils/*"],
 	  "@icons/*": ["./src/icons/*"],
 	  "@store/*": ["./src/store/*"],
+    "@config/*": ["./src/config/*"],
     },
     "typeRoots": [
       "node_modules/@types"
