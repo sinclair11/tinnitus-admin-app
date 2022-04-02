@@ -9,7 +9,6 @@ import { Reslist } from '@components/reslist/reslist';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import ErrorHandler from '@src/utils/errorhandler';
-import { store } from '@src/store/store';
 
 type SearchProps = {
     type: string;
@@ -93,7 +92,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
      */
     async function getResourceData(): Promise<void> {
         //Token
-        const secret = store.getState().generalReducer.token;
+        // const secret = store.getState().generalReducer.token;
         // const secret = ipcRenderer.sendSync('eventReadJwt');
         let dataInfo = [];
         let dataUsage = [];
@@ -106,7 +105,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
                 method: 'get',
                 url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/general?id=${searchVal}`,
                 headers: {
-                    Authorization: `Bearer ${secret}`,
+                    Authorization: `Bearer`,
                 },
             });
             if (response.status === 200) {
@@ -118,7 +117,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
                     method: 'get',
                     url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/usage?id=${searchVal}`,
                     headers: {
-                        Authorization: `Bearer ${secret}`,
+                        Authorization: `Bearer`,
                     },
                 });
                 if (response.status === 200) {
@@ -268,10 +267,10 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
             </Modal>
             <Modal style={tableStyles} isOpen={tableOpen} ariaHideApp={false}>
                 <Reslist entries={tableElements} selectFromList={setSelected} />
-                <p className="ModalTitle">Lista {props.type}</p>
+                <p className="modal-title">Lista {props.type}</p>
                 <img
                     src={Icons['CancelIcon']}
-                    className="CancelIcon"
+                    className="cancel-icon"
                     onClick={closeListView}
                 />
                 <Button className="ListOk" onClick={okList}>
