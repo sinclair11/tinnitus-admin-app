@@ -15,9 +15,10 @@ const devConfig = {
 		alias: {
 			'@src': resolve(projectRootDir, 'src'),
 			'@components': resolve(projectRootDir, 'src/components'),
-      '@utils': resolve(projectRootDir, 'src/utils'),
-      '@store': resolve(projectRootDir, 'src/store'),
-      '@icons': resolve(projectRootDir, 'src/icons'),
+			'@config': resolve(projectRootDir, 'src/config'),
+			'@utils': resolve(projectRootDir, 'src/utils'),
+			'@store': resolve(projectRootDir, 'src/store'),
+			'@icons': resolve(projectRootDir, 'src/icons'),
 		}
 	}
 };
@@ -35,9 +36,10 @@ const prodConfig = {
 		alias: {
 			'@src': resolve(projectRootDir, 'src'),
 			'@components': resolve(projectRootDir, 'src/components'),
-      '@utils': resolve(projectRootDir, 'src/utils'),
-      '@store': resolve(projectRootDir, 'src/store'),
-      '@icons': resolve(projectRootDir, 'src/icons'),
+			'@config': resolve(projectRootDir, 'src/config'),
+			'@utils': resolve(projectRootDir, 'src/utils'),
+			'@store': resolve(projectRootDir, 'src/store'),
+			'@icons': resolve(projectRootDir, 'src/icons'),
 		}
 	}
 };
