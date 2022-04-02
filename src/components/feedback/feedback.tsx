@@ -12,7 +12,6 @@ import { DialogBox } from '../dialogbox/dialogbox';
 import { dialogStyles, hourglassStyle } from '@src/styles/styles';
 import { Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { store } from '@store/store';
 import ErrorHandler from '@src/utils/errorhandler';
 
 type FeedbackProps = {
@@ -76,7 +75,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
         try {
             //Show loading screen
             setLoading(true);
-            const secret = store.getState().generalReducer.token;
+            // const secret = store.getState().generalReducer.token;
             //Request feedback data
             const response = await axios({
                 method: 'get',
@@ -85,7 +84,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
                 url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks?id=${selected}&month=${month}&year=${year}`,
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${secret}`,
+                    Authorization: `Bearer `,
                 },
             });
             //Construct dictionary with feedbacks
@@ -287,29 +286,29 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
     const selectedFbacks = useRef(null);
 
     useEffect(() => {
-        //Get date for selected resource
-        const date = store.getState().resdataReducer.infoData['upload'];
-        //Extract month
-        const m = date.slice(4, 7).toLowerCase();
-        //Extract year
-        const y = date.slice(11, 15);
-        //Set current year to resource upload date
-        for (let i = 0; i < years.length; i++) {
-            if (years[i] === y) {
-                year.current = years[i];
-                break;
-            }
-        }
-        //Set current month to resource upload date
-        const entries = MonthsMap.entries();
-        for (const [_, value] of entries) {
-            _;
-            if (value.text === m) {
-                month.current = months[value.number - 1];
-            }
-        }
-        //Display all feedbakcs
-        displayFeedbacks(m, y);
+        // //Get date for selected resource
+        // const date = store.getState().resdataReducer.infoData['upload'];
+        // //Extract month
+        // const m = date.slice(4, 7).toLowerCase();
+        // //Extract year
+        // const y = date.slice(11, 15);
+        // //Set current year to resource upload date
+        // for (let i = 0; i < years.length; i++) {
+        //     if (years[i] === y) {
+        //         year.current = years[i];
+        //         break;
+        //     }
+        // }
+        // //Set current month to resource upload date
+        // const entries = MonthsMap.entries();
+        // for (const [_, value] of entries) {
+        //     _;
+        //     if (value.text === m) {
+        //         month.current = months[value.number - 1];
+        //     }
+        // }
+        // //Display all feedbakcs
+        // displayFeedbacks(m, y);
     }, []);
 
     useEffect(() => {
@@ -324,31 +323,31 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
      */
     function selectAll(): void {
         //Get an array of id:string; value:boolean
-        const entries = Object.entries(store.getState().resdataReducer.checks);
-        const temp: any = {};
-        //Check if there are any feedbacks
-        if (entries.length > 0) {
-            if (checkType.current) {
-                //Mark all as selected
-                for (const [key] of entries) {
-                    temp[key] = true;
-                }
-                setSelectText('Deselecteaza toate');
-            } else {
-                //Mark all as unselected
-                for (const [key] of entries) {
-                    temp[key] = false;
-                }
-                setSelectText('Selecteaza toate');
-            }
-            //Update check state
-            dispatch({ type: 'resdata/checks', payload: temp });
-            //Change to opposite
-            checkType.current = !checkType.current;
-        } else {
-            props.setMessage('Resursa nu are niciun feedback!');
-            props.showMessagebox(true);
-        }
+        // const entries = Object.entries(store.getState().resdataReducer.checks);
+        // const temp: any = {};
+        // //Check if there are any feedbacks
+        // if (entries.length > 0) {
+        //     if (checkType.current) {
+        //         //Mark all as selected
+        //         for (const [key] of entries) {
+        //             temp[key] = true;
+        //         }
+        //         setSelectText('Deselecteaza toate');
+        //     } else {
+        //         //Mark all as unselected
+        //         for (const [key] of entries) {
+        //             temp[key] = false;
+        //         }
+        //         setSelectText('Selecteaza toate');
+        //     }
+        //     //Update check state
+        //     dispatch({ type: 'resdata/checks', payload: temp });
+        //     //Change to opposite
+        //     checkType.current = !checkType.current;
+        // } else {
+        //     props.setMessage('Resursa nu are niciun feedback!');
+        //     props.showMessagebox(true);
+        // }
     }
 
     /**
@@ -356,29 +355,27 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
      */
     async function deleteSelected(): Promise<void> {
         //Get an array of id:string; value:boolean
-        const entries = Object.entries(store.getState().resdataReducer.checks);
-        const checks: any = store.getState().resdataReducer.checks;
-        const fbacksToDelete = new Array<string>();
-        let counter = 0;
-
-        for (const [key] of entries) {
-            if (checks[key] === true) {
-                fbacksToDelete.push(key);
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                counter++;
-            }
-        }
-
-        //Check if there was at least one feedback selected
-        if (counter > 0) {
-            selectedFbacks.current = fbacksToDelete;
-            setDialogOpen(true);
-        } else {
-            //Notify user that he musts select a feedback first
-            props.setMessage('Selectati cel putin un feedback!');
-            props.showMessagebox(true);
-        }
-        props.setLoading(false);
+        // const entries = Object.entries(store.getState().resdataReducer.checks);
+        // const checks: any = store.getState().resdataReducer.checks;
+        // const fbacksToDelete = new Array<string>();
+        // let counter = 0;
+        // for (const [key] of entries) {
+        //     if (checks[key] === true) {
+        //         fbacksToDelete.push(key);
+        //         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        //         counter++;
+        //     }
+        // }
+        // //Check if there was at least one feedback selected
+        // if (counter > 0) {
+        //     selectedFbacks.current = fbacksToDelete;
+        //     setDialogOpen(true);
+        // } else {
+        //     //Notify user that he musts select a feedback first
+        //     props.setMessage('Selectati cel putin un feedback!');
+        //     props.showMessagebox(true);
+        // }
+        // props.setLoading(false);
     }
 
     /**
@@ -393,39 +390,39 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
      */
     async function onRequestDelete(): Promise<void> {
         //Show loading screen
-        props.setLoading(true);
-        const secret = store.getState().generalReducer.token;
-        //Request deletion of selected feedbacks
-        try {
-            await axios({
-                method: 'delete',
-                timeout: 30000,
-                timeoutErrorMessage: 'timeout',
-                url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks`,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${secret}`,
-                },
-                data: {
-                    videoId: store.getState().resdataReducer.selected,
-                    feedbackIds: selectedFbacks.current,
-                },
-            });
-            //Render remained feedbacks
-            displayFeedbacks(month.current, year.current);
-            //Hide loading screen
-            props.setLoading(false);
-            //Notify user that request was handled successfully
-            props.setMessage('Feedback-urile au fost sterse cu succes!');
-            props.showMessagebox(true);
-        } catch (error) {
-            //Handle error and display message
-            const result = ErrorHandler.getErrorType(error);
-            props.setMessage(result);
-            props.setLoading(false);
-            //Notify user
-            props.showMessagebox(true);
-        }
+        // props.setLoading(true);
+        // const secret = store.getState().generalReducer.token;
+        // //Request deletion of selected feedbacks
+        // try {
+        //     await axios({
+        //         method: 'delete',
+        //         timeout: 30000,
+        //         timeoutErrorMessage: 'timeout',
+        //         url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks`,
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             Authorization: `Bearer ${secret}`,
+        //         },
+        //         data: {
+        //             videoId: store.getState().resdataReducer.selected,
+        //             feedbackIds: selectedFbacks.current,
+        //         },
+        //     });
+        //     //Render remained feedbacks
+        //     displayFeedbacks(month.current, year.current);
+        //     //Hide loading screen
+        //     props.setLoading(false);
+        //     //Notify user that request was handled successfully
+        //     props.setMessage('Feedback-urile au fost sterse cu succes!');
+        //     props.showMessagebox(true);
+        // } catch (error) {
+        //     //Handle error and display message
+        //     const result = ErrorHandler.getErrorType(error);
+        //     props.setMessage(result);
+        //     props.setLoading(false);
+        //     //Notify user
+        //     props.showMessagebox(true);
+        // }
     }
 
     return (

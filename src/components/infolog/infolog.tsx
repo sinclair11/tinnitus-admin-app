@@ -13,7 +13,7 @@ export const InfoLog: React.FC<InfologProps> = (props: InfologProps) => {
                         key={index}
                         style={{
                             color: item.type,
-                            fontSize: '13px',
+                            fontSize: '15px',
                             marginBottom: '10px',
                         }}
                     >

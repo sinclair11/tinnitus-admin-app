@@ -7,6 +7,10 @@ import '@components/modal-search/modal-search.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import Sidebar from '../sidebar/sidebar';
+import { useHistory } from 'react-router-dom';
+import { getAuth } from 'firebase/auth';
+import { db, app } from '@config/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 type ArtworkProps = {
     img: any;
@@ -22,17 +26,29 @@ const AlbumArtwork: React.FC<ArtworkProps> = (props: ArtworkProps) => {
 
 export const AudioView: React.FC = () => {
     const dispatch = useDispatch();
+    const auth = useSelector<CombinedStates>(
+        (state) => state.generalReducer.auth,
+    ) as any;
     const selected = useSelector<CombinedStates>(
         (state) => state.resdataReducer.selected,
     ) as string;
     const thumbnail = useSelector<CombinedStates>(
         (state) => state.resdataReducer.thumbnail,
     ) as string;
+    const history = useHistory();
 
     useEffect(() => {
         //No resource data on first rendering
         dispatch({ type: 'resdata/selected', payload: '' });
     }, []);
+
+    useEffect(() => {
+        if (auth) {
+            //Continue in page
+        } else {
+            history.push('/');
+        }
+    }, [getAuth(app).currentUser]);
 
     function displayContent(): JSX.Element {
         //Check if a resource was selected
