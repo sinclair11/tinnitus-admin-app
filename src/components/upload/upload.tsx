@@ -3,11 +3,26 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FormControl } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
 import Sidebar from '../sidebar/sidebar';
-import Table from '@components/table/table';
+import { TableEdit } from '@components/table/table';
 import Dropdown from '@components/dropdown/dropdown';
+import ErrorHandler from '@src/utils/errorhandler';
+import { useHistory } from 'react-router-dom';
+import { db, app } from '@config/firebase';
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { useSelector } from 'react-redux';
+import { CombinedStates } from '@src/store/reducers/custom';
+import { getAuth } from 'firebase/auth';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useDispatch } from 'react-redux';
+import { ProgressbarUpload } from '../progressbar/progressbar-upload';
 import axios from 'axios';
 
 const UploadView: React.FC = () => {
+    const history = useHistory();
+    const dispatch = useDispatch();
+    const auth = useSelector<CombinedStates>(
+        (state) => state.generalReducer.auth,
+    ) as any;
     const [name, setName] = useState('');
     const [nameinvalid, setNameInvalid] = useState('');
     const [description, setDescription] = useState('');
@@ -15,30 +30,31 @@ const UploadView: React.FC = () => {
     const [notification, setNotification] = useState('');
     const [thumbnail, setThumbnail] = useState(null);
     const [thumbnailInvalid, setThumbnailInvalid] = useState('');
+    const thumbnailFile = useRef(null);
     const [tags, setTags] = useState('');
     const [tableInvalid, setTableInvalid] = useState('');
     const inputImg = useRef(null);
     const tableObj: { function: any } = { function: null };
     const [categories, setCategories] = useState(['General']);
     const category = useRef('');
+    const basicTxtColor = useRef('#00FFFF');
 
     useEffect(() => {
-        onFetchCategories().then((data) => {
-            setCategories(data);
-        });
-    }, []);
+        if (auth) {
+            onFetchCategories().then((data) => {
+                setCategories(data);
+                category.current = data[0];
+            });
+        } else {
+            history.push('/');
+        }
+    }, [getAuth(app).currentUser]);
 
     async function onFetchCategories(): Promise<Array<string>> {
         try {
-            const response = await axios({
-                method: 'get',
-                url: `http://127.0.0.1:3000/api/admin/album/categories`,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${category}`,
-                },
-            });
-            return response.data;
+            const docRef = doc(db, 'misc', 'albums');
+            const docSnap = await getDoc(docRef);
+            return docSnap.data().categories;
         } catch (err) {
             return ['General'];
         }
@@ -54,14 +70,20 @@ const UploadView: React.FC = () => {
 
     function getImage(event: any): void {
         const reader = new FileReader();
+        const file = event.target.files[0];
         let res = null;
-        //Read image data
-        reader.readAsDataURL(event.target.files[0]);
-        reader.onloadend = (): void => {
-            res = reader.result;
-            setThumbnail(res);
-            setThumbnailInvalid('');
-        };
+
+        if (event.target.files && file) {
+            //Read image data
+            reader.readAsDataURL(file);
+            //Save file for firebase storage
+            thumbnailFile.current = file;
+            reader.onloadend = (): void => {
+                res = reader.result;
+                setThumbnail(res);
+                setThumbnailInvalid('');
+            };
+        }
     }
 
     function onPlusClick(): void {
@@ -71,6 +93,72 @@ const UploadView: React.FC = () => {
 
     function onCategoryChange(value: string): void {
         category.current = value;
+    }
+
+    function parseTags(): Array<string> {
+        const parsedTags = new Array<string>();
+        const hashIndexes = new Array<number>();
+
+        //Get indexes of all hash characters
+        for (let i = 0; i < tags.length; i++) {
+            if (tags[i] === '#') {
+                hashIndexes.push(i);
+            }
+        }
+
+        //Extract hash tags
+        for (let i = 0; i < hashIndexes.length - 1; i++) {
+            for (let j = hashIndexes[i] + 1; j < tags.length; j++) {
+                if (tags[j] === '#') {
+                    parsedTags.push(tags.slice(hashIndexes[i], j).trim());
+                    break;
+                }
+            }
+        }
+
+        //Last hash tag goes until the eng of string
+        parsedTags.push(tags.slice(hashIndexes[hashIndexes.length - 1]).trim());
+
+        return parsedTags;
+    }
+
+    function getDurationFormat(duration: number): string {
+        //Calculate duration in HH:MM:SS format
+        const hours = Math.floor(duration / 3600);
+        const hoursRemSec = duration - hours * 3600;
+        const minutes = Math.floor(hoursRemSec / 60);
+        const seconds = hoursRemSec - minutes * 60;
+
+        //Append a 0
+        let retVal = `0${hours}:`;
+        if (minutes < 10) {
+            retVal += '0';
+        }
+        retVal += `${minutes}:`;
+        if (seconds < 10) {
+            retVal += '0';
+        }
+        retVal += `${seconds}`;
+
+        return retVal;
+    }
+
+    function calculateTotalLength(): string {
+        const entries = tableObj.function();
+        let seconds = 0;
+        let minutes = 0;
+        let hours = 0;
+        //Extract hours, minutes and seconds
+        for (let i = 0; i < entries.length; i++) {
+            hours += parseInt(entries[i].length.slice(0, 2));
+            minutes += parseInt(entries[i].length.slice(3, 5));
+            seconds += parseInt(entries[i].length.slice(6));
+        }
+
+        //Calculate total length in seconds
+        const lengthInSeconds = hours * 3600 + minutes * 60 + seconds;
+
+        return getDurationFormat(lengthInSeconds);
     }
 
     function verifyInputs(): number {
@@ -117,25 +205,120 @@ const UploadView: React.FC = () => {
         return retVal;
     }
 
-    function uploadAlbum(): boolean {
-        throw new Error('Method not implemented.');
+    async function abortUpload(id: string): Promise<any> {
+        try {
+            const path = `albums`;
+            const res = await axios.post(
+                'https://us-central1-tinnitus-50627.cloudfunctions.net/deleteCollection',
+                {},
+                {
+                    params: {
+                        path,
+                    },
+                },
+            );
+            return res.data.result;
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    function uploadAlbumArtwork(): boolean {
-        throw new Error('Function not implemented.');
+    async function uploadSongs(albumId: string): Promise<any> {
+        // const entries: TableData[] = tableObj.function();
+        // for (let i = 0; i < entries.length; i++) {
+        //     const docRef = doc(collection(db, `albums/${albumId}/songs`));
+        //     await setDoc = (docRef, {
+        //         name: entries[i].name,
+        //         position: entries[i].pos,
+        //         length: entries[i].length,
+        //         file: entries[i].
+        //     })
+        // }
     }
 
-    function uploadInfoToDb(): void {
-        throw new Error('Method not implemented.');
+    async function uploadAlbum(): Promise<string> {
+        const totalActions = 2 + tableObj.function().length;
+        const percent = Math.floor(100 / totalActions);
+
+        try {
+            const docRef = doc(collection(db, 'albums'));
+            //Save album artwork at corresponding path provided by doc id
+            const storage = getStorage();
+            const storageRef = ref(storage, `albums/${docRef.id}/artwork.jpg`);
+            await uploadBytes(storageRef, thumbnailFile.current);
+            //Update progressbar
+            dispatch({ type: 'progress/update', payload: percent });
+            dispatch({
+                type: 'progress/log',
+                payload: {
+                    type: basicTxtColor.current,
+                    value: 'Album registered in database',
+                },
+            });
+            //Get URL to store in firestore
+            const artworkUrl = await getDownloadURL(storageRef);
+            await setDoc(docRef, {
+                name: name,
+                category: category.current,
+                description: description,
+                tags: parseTags(),
+                length: calculateTotalLength(),
+                artwork: artworkUrl,
+            });
+            //Update progress bar
+            dispatch({ type: 'progress/update', payload: percent });
+            dispatch({
+                type: 'progress/log',
+                payload: {
+                    type: basicTxtColor.current,
+                    value: 'Album artwork stored',
+                },
+            });
+            return docRef.id;
+        } catch (error) {
+            throw error;
+        }
     }
 
-    function onUpload(): void {
-        let retVal;
+    async function onUpload(): Promise<void> {
+        let id;
 
         if (verifyInputs() === 0) {
-            //First upload info in db
-            //Upload entire album
-            //Upload album artwork
+            try {
+                //Open modal to track upload progress
+                // dispatch({ type: 'progress/open', payload: true });
+                // //First upload info in db
+                // id = await uploadAlbum();
+                // const options = { method: 'OPTIONS' };
+                // await fetch(
+                //     'https://us-central1-tinnitus-50627.cloudfunctions.net/corsEnabledFunction',
+                //     options,
+                // );
+                // const xhr = new XMLHttpRequest();
+                // const url =
+                //     'https://us-central1-tinnitus-50627.cloudfunctions.net/corsEnabledFunction';
+
+                // xhr.open('OPTIONS', url);
+                // xhr.send();
+                console.log(await abortUpload('albums'));
+                // await uploadSongs(id);
+            } catch (error) {
+                console.log(error);
+                dispatch({
+                    type: 'progress/fail',
+                    payload: {
+                        type: 'red',
+                        value: error.message,
+                    },
+                });
+                dispatch({
+                    type: 'progress/log',
+                    payload: {
+                        type: 'red',
+                        value: 'Upload reverted',
+                    },
+                });
+            }
         }
     }
 
@@ -190,6 +373,7 @@ const UploadView: React.FC = () => {
                                 items={categories}
                                 className="dropdown-margin"
                                 onChange={onCategoryChange}
+                                current={categories[0]}
                             />
                         </div>
                         <InputGroup
@@ -251,12 +435,17 @@ const UploadView: React.FC = () => {
                     </div>
                 </div>
                 {/* Table with songs */}
-                <Table table={tableObj} setInvalid={setTableInvalid} />
+                <TableEdit
+                    table={tableObj}
+                    setInvalid={setTableInvalid}
+                    categories={categories}
+                />
                 <p className="invalid-input invalid-table">{tableInvalid}</p>
                 <button className="upload-btn-album" onClick={onUpload}>
                     Upload
                 </button>
             </div>
+            <ProgressbarUpload />
         </div>
     );
 };
