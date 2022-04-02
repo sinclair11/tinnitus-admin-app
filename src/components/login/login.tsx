@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
 import { InputGroup, FormControl, Button, Form } from 'react-bootstrap';
 import logo from '@icons/logo.png';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    setPersistence,
+    browserSessionPersistence,
+} from 'firebase/auth';
+import { app } from '@config/firebase';
 import { useDispatch } from 'react-redux';
-import ErrorHandler from '@src/utils/errorhandler';
 
 export const Login: React.FC = () => {
+    const dispatch = useDispatch();
     const [admin, setAdmin] = useState('');
     const [passw, setPassw] = useState('');
     const [adminInvalid, setAdminInvalid] = useState('');
     const [passwInvalid, setPasswInvalid] = useState('');
     const history = useHistory();
-    const dispatch = useDispatch();
-
-    function storeToken(token: string): void {
-        //Store received token
-        dispatch({ type: 'general/set-token', payload: token });
-        //Route to Welcome page
-        history.push('/welcome');
-    }
+    const auth = getAuth(app);
 
     async function AuthAdmin(): Promise<void> {
         let isValid = 0;
@@ -41,33 +40,18 @@ export const Login: React.FC = () => {
         if (isValid === 0) {
             //Send authentication request
             try {
-                const response = await axios({
-                    method: 'post',
-                    url: `http://127.0.0.1:3000/api/admin/auth/login`,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    data: {
-                        user: admin,
-                        passw: passw,
-                    },
+                await setPersistence(auth, browserSessionPersistence);
+                await signInWithEmailAndPassword(getAuth(), admin, passw);
+                dispatch({
+                    type: 'general/auth',
+                    payload: getAuth().currentUser.uid,
                 });
-                if (response.status === 200) {
-                    // history.push('/welcome')
-                    const data = response.data as {
-                        message: string;
-                        token: string;
-                    };
-                    storeToken(data.token);
-                } else {
-                    setPasswInvalid('Credentialele de admin sunt invalide.');
-                }
                 setAdmin('');
                 setPassw('');
+                history.push('/welcome');
             } catch (error) {
                 //Handle error and display message
-                const result = ErrorHandler.getErrorType(error);
-                setPasswInvalid(result);
+                setPasswInvalid('Invalid username or password');
                 setAdmin('');
                 setPassw('');
             }
@@ -84,7 +68,7 @@ export const Login: React.FC = () => {
                     <InputGroup className="InputGroupPath" hasValidation>
                         <FormControl
                             required
-                            placeholder="Admin"
+                            placeholder="email"
                             className="LoginInput"
                             value={admin}
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -102,7 +86,7 @@ export const Login: React.FC = () => {
                         <FormControl
                             required
                             type="password"
-                            placeholder="Parola"
+                            placeholder="password"
                             className="LoginInput"
                             value={passw}
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
