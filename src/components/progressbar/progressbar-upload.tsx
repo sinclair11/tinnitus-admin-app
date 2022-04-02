@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './progressbar.css';
 import Modal from 'react-modal';
 import { progressStyles } from '@src/styles/styles';
@@ -7,18 +7,11 @@ import { Icons } from '@utils/icons';
 import { InfoLog } from '@src/components/infolog/infolog';
 import { useSelector, useDispatch } from 'react-redux';
 import { CombinedStates } from '@store/reducers/custom';
-import { CancelTokenSource } from 'axios';
 
-type ProgressProps = {
-    cancelation: CancelTokenSource;
-};
-
-export const ProgressbarUpload: React.FC<ProgressProps> = (
-    props: ProgressProps,
-) => {
+export const ProgressbarUpload: React.FC = () => {
     const dispatch = useDispatch();
-    const [continueOpac, setContinueOpac] = useState(0.5);
-    const [abortOpac, setAbortOpac] = useState(1);
+    const btnContinue = useRef(null);
+    const btnAbort = useRef(null);
     const isOpen = useSelector<CombinedStates>(
         (state) => state.progressReducer.open,
     ) as boolean;
@@ -33,51 +26,34 @@ export const ProgressbarUpload: React.FC<ProgressProps> = (
     ) as Array<{ type: string; value: unknown }>;
 
     useEffect(() => {
-        if (progress === 100) {
-            setAbortOpac(0.5);
-            setContinueOpac(1);
-        } else {
-            setContinueOpac(0.5);
-            setAbortOpac(1);
+        if (btnContinue.current != null) {
+            btnContinue.current.disabled = true;
         }
-    });
+    }, [btnContinue.current]);
 
-    /**
-     * @function close
-     * @param action
-     */
-    function close(action: string): void {
-        switch (action) {
-            case 'cancel':
-                //Request server to delete unfinished resource
-                props.cancelation.cancel('Tranzactia a fost intrerupta');
-                dispatch({ type: 'progress/clean', payload: null });
-                break;
+    function close(): void {
+        dispatch({ type: 'progress/clean', payload: null });
+    }
 
-            case 'abort':
-                //Abort upload process and request deletion of unfinished resource
-                props.cancelation.cancel('Tranzactia a fost intrerupta');
-                //Modify progressbar states
-                dispatch({ type: 'progress/progress', payload: 100 });
-                dispatch({ type: 'progress/variant', payload: 'danger' });
-                dispatch({
-                    type: 'progress/log',
-                    payload: {
-                        type: 'red',
-                        value: 'Tranzactia a fost intrerupta',
-                    },
-                });
-                break;
+    function onContinue(): void {
+        if (btnContinue.current.disabled === false) {
+            dispatch({ type: 'progress/clean', payload: null });
+        }
+    }
 
-            case 'continue':
-                //Reset the state of progressbar component
-                if (progress === 100) {
-                    dispatch({ type: 'progress/clean', payload: null });
-                }
-                break;
-
-            default:
-                break;
+    function onAbort(): void {
+        if (btnAbort.current.disabled == false) {
+            dispatch({ type: 'progress/progress', payload: 100 });
+            dispatch({ type: 'progress/variant', payload: 'danger' });
+            dispatch({
+                type: 'progress/log',
+                payload: {
+                    type: 'red',
+                    value: 'Upload aborted',
+                },
+            });
+            btnAbort.current.disabled = true;
+            btnContinue.current.disabled = false;
         }
     }
 
@@ -88,35 +64,35 @@ export const ProgressbarUpload: React.FC<ProgressProps> = (
             contentLabel="Progressbar"
             ariaHideApp={false}
         >
-            <div className="ProgressContainer">
+            <div className="progress-container">
                 <ProgressBar
                     variant={variant}
-                    className="ProgressBar"
+                    className="progressbar"
                     animated
                     now={progress}
                     label={`${progress}%`}
                 />
             </div>
             <InfoLog messages={log} />
-            <p className="ModalTitle">Upload</p>
+            <p className="modal-title">Upload</p>
             <img
                 src={Icons['CancelIcon']}
-                className="CancelIcon"
-                onClick={(): void => close('cancel')}
+                className="cancel-icon"
+                onClick={(): void => close()}
             />
             <Button
-                className="BtnProgress"
-                style={{ opacity: abortOpac }}
-                onClick={(): void => close('abort')}
+                ref={btnAbort}
+                className="btn-progress-abort"
+                onClick={onAbort}
             >
-                <p className="BtnProgressTxt">Abort</p>
+                <p className="btn-progress-txt">Abort</p>
             </Button>
             <Button
-                className="BtnProgress"
-                style={{ right: '95px', opacity: continueOpac }}
-                onClick={(): void => close('continue')}
+                ref={btnContinue}
+                className="btn-progress-continue"
+                onClick={onContinue}
             >
-                <p className="BtnProgressTxt">Continue</p>
+                <p className="btn-progress-txt">Continue</p>
             </Button>
         </Modal>
     );
