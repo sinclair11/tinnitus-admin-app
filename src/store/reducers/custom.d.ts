@@ -16,8 +16,7 @@ export type ResdataState = {
 };
 
 export type GeneralState = {
-    token: string;
-    isTokenExpired: boolean;
+    auth: any;
 };
 
 export type CombinedStates = {
