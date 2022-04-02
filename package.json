@@ -1,6 +1,7 @@
 {
   "name": "tinnitus-admin",
   "private": true,
+  "proxy": "http://localhost:3000/",
   "version": "0.0.0",
   "scripts": {
     "start:dev": "npm run fix && vite serve",
@@ -10,11 +11,13 @@
     "fix": "prettier --write 'src/**/*.{js,ts,tsx}' && eslint 'src/**/*.{js,ts,tsx}' --fix"
   },
   "dependencies": {
+    "firebase": "^9.6.10",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-dropdown": "^1.9.2",
     "react-redux": "^7.2.6",
     "redux": "^4.1.1",
+    "redux-persist": "^6.0.0",
     "svgo": "^2.7.0",
     "uuid": "^8.3.2"
   },
