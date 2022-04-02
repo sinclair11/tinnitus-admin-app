@@ -1,21 +1,30 @@
 import { Icons } from '@src/utils/icons';
 import React, { useState, useRef } from 'react';
+import Dropdown from '@components/dropdown/dropdown';
 
 type TableProps = {
     table: any;
     setInvalid: any;
+    categories?: Array<string>;
+    data?: Array<TableData>;
 };
 
-type TableData = {
+export type TableData = {
     file: Blob;
-    extension: string;
     name: string;
     pos: string | number;
     length: string;
     category: string;
 };
 
-const Table: React.FC<TableProps> = (props: TableProps) => {
+type RowEditProps = {
+    name: string;
+    position: number;
+    length: string;
+    categories: Array<string>;
+};
+
+export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
     const inputSong = useRef(null);
     const loadingEl = (
         <div id="table-loading">
@@ -48,9 +57,6 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                         ...entries,
                         {
                             file: file,
-                            extension: file.name.slice(
-                                file.name.lastIndexOf('.'),
-                            ),
                             name: file.name.slice(
                                 0,
                                 file.name.lastIndexOf('.'),
@@ -108,29 +114,24 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         setUpdate(!update);
     }
 
-    function onDisplayCategory(id: number): string {
-        return entries[id].category;
-    }
-
-    function onChangeCategory(event: any, id: number): void {
-        const temp = entries;
-        temp[id].category = event.target.value;
-
-        setEntries(temp);
-        //Idk why is not rendering on first change state
-        setUpdate(!update);
-    }
-
     function onPlusClick(): void {
         //Trigger choose file dialog
         inputSong.current.click();
     }
 
+    function onCategoryChange(value: string, id: string): void {
+        const temp = entries;
+        const index = id[id.length - 1] as unknown as number;
+        temp[index].category = value;
+        setEntries(temp);
+        setUpdate(!update);
+    }
+
     function getDurationFormat(duration: number): string {
         //Calculate duration in HH:MM:SS format
-        const hours = Math.round(duration / 3600);
+        const hours = Math.floor(duration / 3600);
         const hoursRemSec = duration - hours * 3600;
-        const minutes = Math.round(hoursRemSec / 60);
+        const minutes = Math.floor(hoursRemSec / 60);
         const seconds = hoursRemSec - minutes * 60;
 
         //Append a 0
@@ -218,7 +219,9 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                 <thead>
                     <tr>
                         {headers.map((header, i) => (
-                            <th key={`${i}`}>{header}</th>
+                            <th id={`table-edit-header-${i}`} key={`${i}`}>
+                                {header}
+                            </th>
                         ))}
                     </tr>
                 </thead>
@@ -248,13 +251,12 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                                 <td>{row.pos}</td>
                                 <td>{row.length}</td>
                                 <td className="category">
-                                    <input
+                                    <Dropdown
                                         id={`row-category-${i}`}
-                                        className="input-name"
-                                        value={onDisplayCategory(i)}
-                                        onChange={(event): void =>
-                                            onChangeCategory(event, i)
-                                        }
+                                        items={props.categories}
+                                        className="dropdown-category"
+                                        onChange={onCategoryChange}
+                                        current={entries[i].category}
                                     />
                                 </td>
                                 <td>
@@ -301,5 +303,3 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         </div>
     );
 };
-
-export default Table;
