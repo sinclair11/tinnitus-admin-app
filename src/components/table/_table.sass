@@ -33,7 +33,6 @@
         border: 1px solid colors.$border
         border-left: 0
         border-bottom: none
-        
 
         &:last-child
             border-right: none
@@ -44,7 +43,7 @@
         text-align: center
 
     .category
-        width: 20%
+        min-width: 5%
 
     .input-name
         width: 100%
@@ -54,20 +53,13 @@
         font-size: 16px
         text-align: center
         overflow-x: auto
-        
+
         &:focus-visible
             outline: none
 
-    .input-category
-        background: colors.$table
-        color: white
-        border: none
-        font-size: 16px
-        text-align: center
-        overflow-x: auto
-        
-        &:focus-visible
-            outline: none
+    .dropdown-category
+        padding: 5px
+
 
 .table-row-func
     display: flex
@@ -97,11 +89,10 @@
     animation-name: row-highlight
     animation-duration: 800ms
 
-
 @keyframes row-highlight
     0%
         opacity: 0
-        background: #FFFFFF 
+        background: #FFFFFF
     100%
         opacity: 1.0
         background: colors.$table
@@ -123,4 +114,3 @@
 @keyframes loading-rotate
     100%
         transform: rotate(360deg)
-        
