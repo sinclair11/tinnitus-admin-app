@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ButtonGroup, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import logoIcon from '@icons/logo.png';
 import { Icons } from '@utils/icons';
+import { getAuth } from 'firebase/auth';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const Welcome: React.FC = () => {
+    const history = useHistory();
+
+    useEffect(() => {
+        if (getAuth().currentUser) {
+            //Continue in page
+        } else {
+            history.push('/');
+        }
+    });
+
     return (
         <div className="Stack">
             <img src={logoIcon} className="Logo fade linear" />
