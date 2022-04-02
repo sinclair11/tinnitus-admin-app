@@ -24,7 +24,7 @@ export const MessageBox: React.FC<MessageboxProps> = (
             </Button>
             <img
                 src={Icons['CancelIcon']}
-                className="CancelIcon"
+                className="cancel-icon"
                 onClick={(): void => props.setIsOpen(false)}
             />
         </>
