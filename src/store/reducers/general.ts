@@ -1,8 +1,7 @@
 import { action, GeneralState } from './custom';
 
 const initialState: GeneralState = {
-    token: '',
-    isTokenExpired: false,
+    auth: null,
 };
 
 /**
@@ -11,10 +10,7 @@ const initialState: GeneralState = {
  * @param action Event triggered for state
  * @returns Global state of app
  * @description Available actions regarding general state are:
- * - general/set-token
- * - general/set-expiration
- * - general/set-password
- * - general/set-password
+ * - general/auth
  */
 export function generalReducer(
     state: GeneralState = initialState,
@@ -22,16 +18,10 @@ export function generalReducer(
 ): GeneralState {
     const payload = action.payload;
     switch (action.type) {
-        case 'general/set-token':
+        case 'general/auth':
             return {
                 ...state,
-                token: payload as string,
-            };
-
-        case 'general/set-expiration':
-            return {
-                ...state,
-                isTokenExpired: payload as boolean,
+                auth: payload,
             };
 
         default:

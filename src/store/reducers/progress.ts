@@ -37,7 +37,7 @@ export function progressReducer(
         case 'progress/update': {
             return {
                 ...state,
-                progress: payload as number,
+                progress: (payload as number) + state.progress,
             };
         }
         case 'progress/log':
