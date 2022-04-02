@@ -42,11 +42,11 @@ export const dialogStyles = {
 export const progressStyles = {
     content: {
         width: '580px',
-        height: '280px',
+        height: '320px',
         display: 'inline-block',
         justifyContent: 'right',
         alignItems: 'center',
-        backgroundColor: '#0E3386',
+        backgroundColor: '#0a2351',
         top: '50%',
         left: '50%',
         right: 'auto',
