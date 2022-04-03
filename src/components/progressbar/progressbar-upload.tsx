@@ -56,7 +56,7 @@ export const ProgressbarUpload: React.FC = () => {
             btnContinue.current.style.opacity = btnEnabled.current;
             btnAbort.current.style.opacity = btnDisabled.current;
             dispatch({ type: 'progress/abort', payload: true });
-            dispatch({ type: 'progress/fail', payload: { type: 'red', value: 'Upload aborted' } });
+            dispatch({ type: 'progress/fail', payload: { type: 'error', value: 'Upload aborted' } });
         }
     }
 
