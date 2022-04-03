@@ -7,7 +7,7 @@ import { TableData, TableEdit } from '@components/table/table';
 import Dropdown from '@components/dropdown/dropdown';
 import { useHistory } from 'react-router-dom';
 import { db, app } from '@config/firebase';
-import { collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import { getAuth } from 'firebase/auth';
@@ -153,14 +153,21 @@ const UploadView: React.FC = () => {
         return hours * 3600 + minutes * 60 + seconds;
     }
 
-    function verifyInputs(): number {
+    async function verifyInputs(): Promise<number> {
         let retVal = 0;
 
         if (name === '') {
             setNameInvalid('Acest camp este obligatoriu');
             retVal++;
         } else {
-            setNameInvalid('');
+            const q = query(collection(db, 'albums'), where('name', '==', name));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.docs.length > 0) {
+                setNameInvalid('An album with this name already exists');
+                retVal++;
+            } else {
+                setNameInvalid('');
+            }
         }
 
         if (description === '') {
@@ -357,7 +364,7 @@ const UploadView: React.FC = () => {
 
     async function onUpload(): Promise<void> {
         console.log(tableData);
-        if (verifyInputs() === 0) {
+        if ((await verifyInputs()) === 0) {
             const docRef = doc(collection(db, 'albums'));
             dispatch({ type: 'progress/open', payload: true });
             uploadStateMachine({
@@ -384,6 +391,9 @@ const UploadView: React.FC = () => {
                 case 'upload-song': {
                     uploadSong(smData.id, smData.song, smData.it);
                     break;
+                }
+                case 'upload-notification': {
+                    // TODO: Send notification
                 }
                 case 'upload-finish': {
                     dispatch({ type: 'progress/progress', payload: 100 });
