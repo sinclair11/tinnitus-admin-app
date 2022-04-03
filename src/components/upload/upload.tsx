@@ -5,7 +5,6 @@ import InputGroup from 'react-bootstrap/esm/InputGroup';
 import Sidebar from '../sidebar/sidebar';
 import { TableData, TableEdit } from '@components/table/table';
 import Dropdown from '@components/dropdown/dropdown';
-import ErrorHandler from '@src/utils/errorhandler';
 import { useHistory } from 'react-router-dom';
 import { db, app } from '@config/firebase';
 import { collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
@@ -18,10 +17,19 @@ import { ProgressbarUpload } from '../progressbar/progressbar-upload';
 import axios from 'axios';
 import { getDurationFormat } from '@src/utils/utils';
 
+type UploadSmData = {
+    action: string;
+    id: string;
+    artworkUrl: string;
+    song: TableData;
+    it: number;
+};
+
 const UploadView: React.FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
+    const aborted = useSelector<CombinedStates>((state) => state.progressReducer.abort) as boolean;
     const [name, setName] = useState('');
     const [nameinvalid, setNameInvalid] = useState('');
     const [description, setDescription] = useState('');
@@ -33,10 +41,12 @@ const UploadView: React.FC = () => {
     const [tags, setTags] = useState('');
     const [tableInvalid, setTableInvalid] = useState('');
     const inputImg = useRef(null);
-    const tableObj: { function: any } = { function: null };
     const [categories, setCategories] = useState(['General']);
     const category = useRef('');
     const basicTxtColor = useRef('#00FFFF');
+    const [tableData, setTableData] = useState([]);
+    const [totalDuration, setTotalDuration] = useState('');
+    const uploadAbort = useRef(false);
 
     useEffect(() => {
         if (auth) {
@@ -48,6 +58,14 @@ const UploadView: React.FC = () => {
             history.push('/');
         }
     }, [getAuth(app).currentUser]);
+
+    useEffect(() => {
+        setTotalDuration(getTotalLength(tableData));
+    }, [tableData]);
+
+    useEffect(() => {
+        uploadAbort.current = aborted;
+    }, [aborted]);
 
     async function onFetchCategories(): Promise<Array<string>> {
         try {
@@ -159,7 +177,6 @@ const UploadView: React.FC = () => {
             setThumbnailInvalid('');
         }
 
-        const tableData = tableObj.function();
         if (tableData.length === 0) {
             setTableInvalid('Introduceti cel putin un audio');
         } else {
@@ -218,46 +235,61 @@ const UploadView: React.FC = () => {
         return getDurationFormat(totalLength);
     }
 
-    async function uploadSongs(albumId: string): Promise<any> {
-        const entries: TableData[] = tableObj.function();
-        const totalActions = 2 + entries.length;
-        const percent = Math.floor(100 / totalActions);
+    function cleanInternalStates(): void {
+        setName('');
+        setDescription('');
+        setTags('');
+        setThumbnail(null);
+        setTableData([]);
+        setTotalDuration('');
+    }
 
+    async function uploadSong(albumId: string, song: TableData, it: number): Promise<any> {
         try {
-            for (let i = 0; i < entries.length; i++) {
+            if (it < tableData.length) {
                 const docRef = doc(collection(db, `albums/${albumId}/songs`));
                 //Save each song at corresponding path in storage having firestore id as name
                 const storage = getStorage();
                 const storageRef = ref(storage, `albums/${albumId}/${docRef.id}`);
-                await uploadBytes(storageRef, entries[i].file);
+                await uploadBytes(storageRef, song.file);
                 //Get URL to store in firestore
                 const songUrl = await getDownloadURL(storageRef);
+                //Upload song general info
                 await setDoc(docRef, {
-                    name: entries[i].name,
-                    position: entries[i].pos,
-                    length: entries[i].length,
+                    name: song.name,
+                    position: song.pos,
+                    length: song.length,
+                    category: song.category,
                     file: songUrl,
                 });
-                //Upload song usage
-                await setDoc(doc(db, `albums/${albumId}/songs`, docRef.id), {
-                    likes: 0,
-                    favorites: 0,
-                    feedbacks: 0,
-                    total_listened: 0,
+                if (uploadAbort.current === false) {
+                    //Update progressbar
+                    uploadProgress(
+                        Math.floor(100 / (2 + tableData.length)),
+                        `Album song ${it + 1} uploaded`,
+                        basicTxtColor.current,
+                    );
+                }
+                it++;
+                uploadStateMachine({
+                    action: 'upload-song',
+                    id: albumId,
+                    artworkUrl: null,
+                    song: tableData[it],
+                    it: it,
                 });
-                //Update progressbar
-                dispatch({ type: 'progress/update', payload: percent });
-                dispatch({
-                    type: 'progress/log',
-                    payload: {
-                        type: basicTxtColor.current,
-                        value: `Album song ${i + 1} uploaded`,
-                    },
+            } else {
+                uploadStateMachine({
+                    action: 'upload-finish',
+                    id: albumId,
+                    artworkUrl: null,
+                    song: null,
+                    it: 0,
                 });
             }
         } catch (error) {
-            console.log(error);
-            throw error;
+            deleteAlbum(albumId);
+            dispatch({ type: 'progress/fail', payload: { type: 'red', value: error.message } });
         }
     }
 
@@ -269,29 +301,28 @@ const UploadView: React.FC = () => {
                 category: category.current,
                 description: description,
                 tags: parseTags(),
-                length: getTotalLength(tableObj.function()),
+                length: getTotalLength(tableData),
                 artwork: artworkUrl,
             });
-            return docRef.id;
+            uploadProgress(
+                Math.floor(100 / (2 + tableData.length)),
+                'Album information registered in database',
+                basicTxtColor.current,
+            );
+            uploadStateMachine({
+                action: 'upload-song',
+                id: docRef.id,
+                artworkUrl: null,
+                song: tableData[0],
+                it: 0,
+            });
         } catch (error) {
-            throw error;
+            deleteAlbum(docRef.id);
+            dispatch({ type: 'progress/fail', payload: { type: 'red', value: error.message } });
         }
     }
 
-    async function uploadAlbumUsage(docRef: any): Promise<void> {
-        try {
-            //Upload album usage
-            await setDoc(docRef, {
-                likes: 0,
-                favorites: 0,
-                feedbacks: 0,
-                total_listened: 0,
-            });
-        } catch (error) {
-            throw error;
-        }
-    }
-    async function uploadAlbumArtwork(id: string): Promise<string> {
+    async function uploadAlbumArtwork(id: string): Promise<void> {
         try {
             //Save album artwork at corresponding path provided by doc id
             const storage = getStorage();
@@ -299,77 +330,81 @@ const UploadView: React.FC = () => {
             await uploadBytes(storageRef, thumbnailFile.current);
             //Get URL to store in firestore
             const artworkUrl = await getDownloadURL(storageRef);
-            return artworkUrl;
+            uploadProgress(Math.floor(100 / (2 + tableData.length)), 'Album artwork uploaded', basicTxtColor.current);
+            uploadStateMachine({
+                action: 'upload-info',
+                id: id,
+                artworkUrl: artworkUrl,
+                song: null,
+                it: 0,
+            });
         } catch (error) {
-            throw error;
+            deleteAlbum(id);
+            dispatch({ type: 'progress/fail', payload: { type: 'red', value: error.message } });
         }
     }
 
-    async function onUpload(): Promise<void> {
-        let id;
-        const totalActions = 2 + tableObj.function().length;
-        const percent = Math.floor(100 / totalActions);
+    function uploadProgress(percent: number, log: string, type: string): void {
+        dispatch({ type: 'progress/update', payload: percent });
+        dispatch({
+            type: 'progress/log',
+            payload: {
+                type,
+                value: log,
+            },
+        });
+    }
 
+    async function onUpload(): Promise<void> {
+        console.log(tableData);
         if (verifyInputs() === 0) {
-            try {
-                // Open modal to track upload progress
-                dispatch({ type: 'progress/open', payload: true });
-                //Create general doc reference
-                const docRef = doc(collection(db, 'albums'));
-                id = docRef.id;
-                //Upload album artwork
-                const artworkRef = await uploadAlbumArtwork(id);
-                dispatch({ type: 'progress/update', payload: percent });
-                dispatch({
-                    type: 'progress/log',
-                    payload: {
-                        type: basicTxtColor.current,
-                        value: 'Album registered in db',
-                    },
-                });
-                //Upload album info in db
-                await uploadAlbumInfo(docRef, artworkRef);
-                await uploadAlbumUsage(doc(collection(db, 'albums-usage'), id));
-                //Update progress bar
-                dispatch({ type: 'progress/update', payload: percent });
-                dispatch({
-                    type: 'progress/log',
-                    payload: {
-                        type: basicTxtColor.current,
-                        value: 'Album artwork stored',
-                    },
-                });
-                await uploadSongs(id);
-                //All album data uploaded successfully
-                dispatch({ type: 'progress/progress', payload: 100 });
-                dispatch({
-                    type: 'progress/log',
-                    payload: {
-                        type: 'green',
-                        value: 'All album data uploaded successfully',
-                    },
-                });
-                // deleteAlbum('C9t72F5JP2JzbYGZmWRW');
-            } catch (error) {
-                console.log(error);
-                //Delete album from db
-                deleteAlbum(id);
-                //Mark upload as failed
-                dispatch({
-                    type: 'progress/fail',
-                    payload: {
-                        type: 'red',
-                        value: error.message,
-                    },
-                });
-                dispatch({
-                    type: 'progress/log',
-                    payload: {
-                        type: 'red',
-                        value: 'Upload reverted',
-                    },
-                });
+            const docRef = doc(collection(db, 'albums'));
+            dispatch({ type: 'progress/open', payload: true });
+            uploadStateMachine({
+                action: 'upload-artwork',
+                id: docRef.id,
+                artworkUrl: null,
+                song: null,
+                it: 0,
+            });
+        }
+    }
+
+    async function uploadStateMachine(smData: UploadSmData): Promise<void> {
+        if (!uploadAbort.current) {
+            switch (smData.action) {
+                case 'upload-artwork': {
+                    uploadAlbumArtwork(smData.id);
+                    break;
+                }
+                case 'upload-info': {
+                    uploadAlbumInfo(doc(db, `albums/${smData.id}`), smData.artworkUrl);
+                    break;
+                }
+                case 'upload-song': {
+                    uploadSong(smData.id, smData.song, smData.it);
+                    break;
+                }
+                case 'upload-finish': {
+                    dispatch({ type: 'progress/progress', payload: 100 });
+                    dispatch({
+                        type: 'progress/log',
+                        payload: {
+                            type: 'green',
+                            value: 'All album data uploaded successfully',
+                        },
+                    });
+                    //Clean states to avoid uploading same album again
+                    cleanInternalStates();
+                    break;
+                }
+                default: {
+                    throw new Error('Invalid action');
+                }
             }
+        } else {
+            deleteAlbum(smData.id);
+            dispatch({ type: 'progress/abort', payload: false });
         }
     }
 
@@ -456,10 +491,16 @@ const UploadView: React.FC = () => {
                                 onChange={(event): void => setNotification(event.target.value)}
                             />
                         </InputGroup>
+                        <p className="album-total-duration">Duration: {totalDuration}</p>
                     </div>
                 </div>
                 {/* Table with songs */}
-                <TableEdit table={tableObj} setInvalid={setTableInvalid} categories={categories} />
+                <TableEdit
+                    tableData={tableData}
+                    setInvalid={setTableInvalid}
+                    categories={categories}
+                    setTableData={setTableData}
+                />
                 <p className="invalid-input invalid-table">{tableInvalid}</p>
                 <button className="upload-btn-album" onClick={onUpload}>
                     Upload
