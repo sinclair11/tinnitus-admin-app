@@ -16,6 +16,8 @@ export type TableData = {
     pos: string | number;
     length: string;
     category: string;
+    likes: number;
+    favorites: number;
 };
 
 export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
@@ -51,6 +53,8 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                             pos: props.tableData.length + 1,
                             length: getDurationFormat(duration),
                             category: 'General',
+                            likes: 0,
+                            favorites: 0,
                         },
                     ]);
                     props.setInvalid('');
