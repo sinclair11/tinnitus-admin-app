@@ -16,6 +16,7 @@ const initialState: ProgState = {
  * @description Available actions regarding progressbar state are:
  * - progress/open
  * - progress/update
+ * - progress/progress
  * - progress/log
  * - progress/variant
  * - progress/abort
@@ -72,7 +73,6 @@ export function progressReducer(state: ProgState = initialState, action: action)
                 progress: 0,
                 variant: 'success',
                 log: Array<{ type: string; value: unknown }>(),
-                abort: false,
             };
         default:
             //Just return the state
