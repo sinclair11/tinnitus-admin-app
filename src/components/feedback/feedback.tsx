@@ -72,6 +72,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
                 method: 'get',
                 timeout: 30000,
                 timeoutErrorMessage: 'timeout',
+                // eslint-disable-next-line max-len
                 url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks?id=${selected}&month=${month}&year=${year}`,
                 headers: {
                     'Content-Type': 'application/json',

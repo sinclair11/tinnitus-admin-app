@@ -216,6 +216,7 @@ const SoundView: React.FC = () => {
             blurTemp = soundData.current.blur;
         }
         setRender(!render);
+        // eslint-disable-next-line max-len
         return `position:${soundData.current.position} color:${soundData.current.color} font:${fontTemp} opacity:${opacTemp} blur:${blurTemp}`;
     }
 
