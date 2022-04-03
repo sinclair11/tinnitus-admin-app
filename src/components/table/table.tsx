@@ -144,7 +144,7 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
     }
 
     function onMoveDown(id: number): void {
-        const temp = Object.assign([], props.setTableData);
+        const temp = Object.assign([], props.tableData);
         const tempEl = temp[id];
         let currentRowHtml;
 
