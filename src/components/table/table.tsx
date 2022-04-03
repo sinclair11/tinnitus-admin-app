@@ -1,9 +1,10 @@
 import { Icons } from '@src/utils/icons';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Dropdown from '@components/dropdown/dropdown';
 
 type TableProps = {
-    table: any;
+    tableData: TableData[];
+    setTableData: any;
     setInvalid: any;
     categories?: Array<string>;
     data?: Array<TableData>;
@@ -17,13 +18,6 @@ export type TableData = {
     category: string;
 };
 
-type RowEditProps = {
-    name: string;
-    position: number;
-    length: string;
-    categories: Array<string>;
-};
-
 export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
     const inputSong = useRef(null);
     const loadingEl = (
@@ -31,11 +25,7 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
             <img src={Icons.Loading} className="table-loading-anim" />
         </div>
     );
-    const [entries, setEntries] = useState(Array<TableData>());
     const headers = ['Nume', 'Pozitie', 'Durata', 'Categorie', loadingEl];
-    const [update, setUpdate] = useState(false);
-    //Assign function to pass table data to Upload component
-    props.table.function = getData;
 
     function getSong(event: any): void {
         const reader = new FileReader();
@@ -53,12 +43,12 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                 audio.onloadedmetadata = (): void => {
                     const duration = Math.round(audio.duration);
                     //Set all required data
-                    setEntries([
-                        ...entries,
+                    props.setTableData([
+                        ...props.tableData,
                         {
                             file: file,
                             name: file.name.slice(0, file.name.lastIndexOf('.')),
-                            pos: entries.length + 1,
+                            pos: props.tableData.length + 1,
                             length: getDurationFormat(duration),
                             category: 'General',
                         },
@@ -67,7 +57,7 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                     //Loading ended
                     document.getElementById('table-loading').style.display = 'none';
                     //Trigger animation for new inserted entry
-                    document.getElementById(`${entries.length}`).classList.add('table-row-animation');
+                    document.getElementById(`${props.tableData.length}`).classList.add('table-row-animation');
                 };
             };
         }
@@ -75,13 +65,8 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
         event.target.value = null;
     }
 
-    //Function used to pass data to Upload component
-    function getData(): TableData[] {
-        return entries;
-    }
-
     function deleteEntry(id: number): void {
-        const temp = entries;
+        const temp = Object.assign([], props.tableData);
 
         temp.splice(id, 1);
 
@@ -90,22 +75,19 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
             temp[i].pos = i + 1;
         }
 
-        setEntries(temp);
-        setUpdate(!update);
+        props.setTableData(temp);
     }
 
     function onDisplayName(id: number): string {
-        return entries[id].name;
+        return props.tableData[id].name;
     }
 
     function onChangeName(event: any, id: number): void {
-        const temp = entries;
+        const temp = Object.assign([], props.tableData);
 
         temp[id].name = event.target.value;
 
-        setEntries(temp);
-        //Idk why is not rendering on first change state
-        setUpdate(!update);
+        props.setTableData(temp);
     }
 
     function onPlusClick(): void {
@@ -114,11 +96,10 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
     }
 
     function onCategoryChange(value: string, id: string): void {
-        const temp = entries;
+        const temp = Object.assign([], props.tableData);
         const index = id[id.length - 1] as unknown as number;
         temp[index].category = value;
-        setEntries(temp);
-        setUpdate(!update);
+        props.setTableData(temp);
     }
 
     function getDurationFormat(duration: number): string {
@@ -143,7 +124,7 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
     }
 
     function onMoveUp(id: number): void {
-        const temp = entries;
+        const temp = Object.assign([], props.tableData);
         const tempEl = temp[id];
         let currentRowHtml;
 
@@ -158,17 +139,16 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
             //Set highlight animation
             currentRowHtml = document.getElementById(`${id - 1}`);
             currentRowHtml.classList.add('table-row-animation');
-            setEntries(temp);
-            setUpdate(!update);
+            props.setTableData(temp);
         }
     }
 
     function onMoveDown(id: number): void {
-        const temp = entries;
+        const temp = Object.assign([], props.setTableData);
         const tempEl = temp[id];
         let currentRowHtml;
 
-        if (id == entries.length - 1) {
+        if (id == temp.length - 1) {
             //Already the last position
         } else {
             //Interchange elements and change positions in album
@@ -179,8 +159,7 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
             //Set highlight animation
             currentRowHtml = document.getElementById(`${id + 1}`);
             currentRowHtml.classList.add('table-row-animation');
-            setEntries(temp);
-            setUpdate(!update);
+            props.setTableData(temp);
         }
     }
 
@@ -210,7 +189,7 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {entries.map((row, i) => {
+                    {props.tableData.map((row, i) => {
                         return (
                             <tr
                                 key={`${i}`}
@@ -238,7 +217,7 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                                         items={props.categories}
                                         className="dropdown-category"
                                         onChange={onCategoryChange}
-                                        current={entries[i].category}
+                                        current={props.tableData[i].category}
                                     />
                                 </td>
                                 <td>
