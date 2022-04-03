@@ -13,9 +13,7 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
     const [toggle, setToggle] = useState(true);
     const listDiv = useRef(null);
     const list = useRef(null);
-    const [selected, setSelected] = useState(
-        props.current !== null ? props.current : 'General',
-    );
+    const [selected, setSelected] = useState(props.current !== null ? props.current : 'General');
 
     useEffect(() => {
         setSelected(props.current);
@@ -41,11 +39,7 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
     }
 
     return (
-        <div
-            id={props.id}
-            className={`dropdown ${props.className}`}
-            onClick={onDropdownClick}
-        >
+        <div id={props.id} className={`dropdown ${props.className}`} onClick={onDropdownClick}>
             <p>{selected}</p>
             <img src={Icons.ArrowDown} />
             <div
@@ -57,10 +51,7 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
                 <ul ref={list}>
                     {props.items.map((item, key) => {
                         return (
-                            <li
-                                key={key}
-                                onClick={(): void => onListClick(item)}
-                            >
+                            <li key={key} onClick={(): void => onListClick(item)}>
                                 {item}
                             </li>
                         );

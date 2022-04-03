@@ -16,12 +16,8 @@ import { CombinedStates } from '@src/store/reducers/custom';
 export const VideoView: React.FC = () => {
     const [isVisible, setIsVisible] = useState(true);
     const dispatch = useDispatch();
-    const selected = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.selected,
-    ) as string;
-    const thumbnail = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.thumbnail,
-    ) as string;
+    const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
+    const thumbnail = useSelector<CombinedStates>((state) => state.resdataReducer.thumbnail) as string;
 
     useEffect(() => {
         //No resource data on first rendering
@@ -53,10 +49,7 @@ export const VideoView: React.FC = () => {
                 // 	controls={true}
                 // />
                 <div className="ThumbPlaceholder">
-                    <img
-                        src={`data:image/png;base64,${thumbnail}`}
-                        className="ThumbImg"
-                    />
+                    <img src={`data:image/png;base64,${thumbnail}`} className="ThumbImg" />
                 </div>
             );
         }
@@ -83,12 +76,7 @@ export const VideoView: React.FC = () => {
     return (
         <div>
             <div id="View">
-                <ReactTooltip
-                    place="top"
-                    type="dark"
-                    effect="float"
-                    delayShow={1000}
-                />
+                <ReactTooltip place="top" type="dark" effect="float" delayShow={1000} />
                 <MenuMemo page="Page" outer="View" />
                 <div id="Page">
                     {isVisible && (
@@ -105,14 +93,8 @@ export const VideoView: React.FC = () => {
                                     <Graph container="Graph" />
                                 </Col>
                                 <Col className="ColInfo">
-                                    <InfoFile
-                                        title="Informatii generale"
-                                        type={'general'}
-                                    />
-                                    <InfoFile
-                                        title="Informatii utilizare"
-                                        type={'usage'}
-                                    />
+                                    <InfoFile title="Informatii generale" type={'general'} />
+                                    <InfoFile title="Informatii utilizare" type={'usage'} />
                                 </Col>
                             </Row>
                         </Container>
@@ -131,11 +113,7 @@ export const VideoView: React.FC = () => {
                             <Feedback type="video" />
                         </div>
                     )}
-                    <img
-                        src={Icons['SwitchIcon']}
-                        className="SwitchIcon"
-                        onClick={(): void => moveToFeedback()}
-                    />
+                    <img src={Icons['SwitchIcon']} className="SwitchIcon" onClick={(): void => moveToFeedback()} />
                 </div>
             </div>
         </div>

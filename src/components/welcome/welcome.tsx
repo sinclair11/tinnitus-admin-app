@@ -43,17 +43,11 @@ const GridActions: React.FC = () => {
     return (
         <div className={'GridActions GridMove'}>
             <ButtonGroup vertical className="ButtonGroup">
-                <Button
-                    className="GridButton GridButtonText"
-                    onClick={(): void => goToRoute('/audio')}
-                >
+                <Button className="GridButton GridButtonText" onClick={(): void => goToRoute('/audio')}>
                     <img src={Icons['AudioIcon']} className="ButtonIcon" />
                     Administreaza albume audio
                 </Button>
-                <Button
-                    className="GridButton GridButtonText"
-                    onClick={(): void => goToRoute('/generator')}
-                >
+                <Button className="GridButton GridButtonText" onClick={(): void => goToRoute('/generator')}>
                     <img src={Icons['GeneratorIcon']} className="ButtonIcon" />
                     Administreaza generator
                 </Button>
@@ -63,12 +57,7 @@ const GridActions: React.FC = () => {
                 </Button>
                 <Button
                     className="GridButton GridButtonText"
-                    onClick={(): Window =>
-                        window.open(
-                            'https://www.youtube.com/c/TinnitusSounds',
-                            'modal',
-                        )
-                    }
+                    onClick={(): Window => window.open('https://www.youtube.com/c/TinnitusSounds', 'modal')}
                 >
                     <img src={Icons['ChannelIcon']} className="ButtonIcon" />
                     Canal YouTube

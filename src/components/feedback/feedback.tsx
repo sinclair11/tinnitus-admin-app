@@ -39,9 +39,7 @@ type FbackToolbarProps = {
 };
 
 export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
-    const selected = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.selected,
-    ) as string;
+    const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
     const dispatch = useDispatch();
     //Map which contains all feedbacks
     const [feedbacks, setFeedbacks] = useState(new Map<string, FeedbackData>());
@@ -49,18 +47,14 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
     const [error, setError] = useState('');
     const [viewMsg, setViewMsg] = useState('');
     const [loading, setLoading] = useState(false);
-    const feedbackItems = useRef(
-        new Array<{ id: string; value: FeedbackData }>(),
-    );
+    const feedbackItems = useRef(new Array<{ id: string; value: FeedbackData }>());
 
     //* Use effect to update feedbacks when a resource is selected
     useEffect(() => {
         if (selected != '') {
             // buildFeedbackMap('dec', '2021');
         } else {
-            setViewMsg(
-                'Selectati o resursa intai pentru a vedea feedback-uri.',
-            );
+            setViewMsg('Selectati o resursa intai pentru a vedea feedback-uri.');
         }
     }, [selected]);
 
@@ -68,10 +62,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
      * @function buildFeedbackMap
      * @param data Feedbacks received from server
      */
-    async function buildFeedbackMap(
-        month: string,
-        year: string,
-    ): Promise<void> {
+    async function buildFeedbackMap(month: string, year: string): Promise<void> {
         try {
             //Show loading screen
             setLoading(true);
@@ -81,6 +72,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
                 method: 'get',
                 timeout: 30000,
                 timeoutErrorMessage: 'timeout',
+                // eslint-disable-next-line max-len
                 url: `http://127.0.0.1:3000/api/admin/${props.type}/feedbacks?id=${selected}&month=${month}&year=${year}`,
                 headers: {
                     'Content-Type': 'application/json',
@@ -115,9 +107,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
                 //No feedbacks for this resource
                 setFeedbacks(new Map<string, FeedbackData>());
                 dispatch({ type: 'resdata/checks', payload: {} });
-                setViewMsg(
-                    'Aceasta resursa nu are niciun feedback pentru perioada selectata.',
-                );
+                setViewMsg('Aceasta resursa nu are niciun feedback pentru perioada selectata.');
             }
             //Hide loading screen
             setLoading(false);
@@ -195,11 +185,7 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
     return (
         <div className="FbContainer">
             {displayFeedbacks()}
-            <Modal
-                isOpen={messageOpen}
-                style={dialogStyles}
-                ariaHideApp={false}
-            >
+            <Modal isOpen={messageOpen} style={dialogStyles} ariaHideApp={false}>
                 <MessageBox setIsOpen={setMessageOpen} message={error} />
             </Modal>
             <Modal isOpen={loading} style={hourglassStyle} ariaHideApp={false}>
@@ -209,14 +195,10 @@ export const Feedback: React.FC<FeedbackProps> = (props: FeedbackProps) => {
     );
 };
 
-export const FeedbackItem: React.FC<FeedbackItemProps> = (
-    props: FeedbackItemProps,
-) => {
+export const FeedbackItem: React.FC<FeedbackItemProps> = (props: FeedbackItemProps) => {
     const id = props.data.id;
     const dispatch = useDispatch();
-    const checks = useSelector<CombinedStates>(
-        (state) => state.resdataReducer.checks,
-    ) as any;
+    const checks = useSelector<CombinedStates>((state) => state.resdataReducer.checks) as any;
 
     function toggle(): void {
         //Create deep clone
@@ -229,12 +211,7 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = (
 
     return (
         <div className="Fback">
-            <ReactTooltip
-                place="top"
-                type="dark"
-                effect="float"
-                delayShow={1000}
-            />
+            <ReactTooltip place="top" type="dark" effect="float" delayShow={1000} />
             <div className="FbackHeader">
                 <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                     <p className="FbackMail">{props.data.email}</p>
@@ -257,9 +234,7 @@ export const FeedbackItem: React.FC<FeedbackItemProps> = (
     );
 };
 
-const FeedbackToolbar: React.FC<FbackToolbarProps> = (
-    props: FbackToolbarProps,
-) => {
+const FeedbackToolbar: React.FC<FbackToolbarProps> = (props: FbackToolbarProps) => {
     const months = [
         'Ianuarie',
         'Februarie',
@@ -449,12 +424,7 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (
             />
             <Button
                 className="FbackToolbarBtnDisplay"
-                onClick={(): void =>
-                    displayFeedbacks(
-                        MonthsMap.get(month.current).text,
-                        year.current,
-                    )
-                }
+                onClick={(): void => displayFeedbacks(MonthsMap.get(month.current).text, year.current)}
             >
                 Afiseaza
             </Button>

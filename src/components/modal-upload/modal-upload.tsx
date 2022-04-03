@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    InputGroup,
-    FormControl,
-    Button,
-    Row,
-    Col,
-    Form,
-} from 'react-bootstrap';
+import { InputGroup, FormControl, Button, Row, Col, Form } from 'react-bootstrap';
 import axios, { CancelTokenSource } from 'axios';
 import fs from 'fs';
 import { useDispatch } from 'react-redux';
@@ -54,8 +47,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
     //Error messages
     const fieldEmpty = 'Acest camp este obligatoriu';
     const formatInvalid = 'Formatul acestui camp este invalid';
-    const pathInvalid =
-        'Calea catre fisier este invalida sau fisierul nu exista';
+    const pathInvalid = 'Calea catre fisier este invalida sau fisierul nu exista';
     let transactionToken = '';
     //Progress of transaction
     let progress = 0;
@@ -82,54 +74,32 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
                 <Row className="IRow">
                     <Col className="ColPath">
                         <div className="Section SectionPath">
-                            <InputGroup
-                                className="InputGroupPath"
-                                hasValidation
-                            >
-                                <InputGroup.Text className="Label">
-                                    Fisier
-                                </InputGroup.Text>
+                            <InputGroup className="InputGroupPath" hasValidation>
+                                <InputGroup.Text className="Label">Fisier</InputGroup.Text>
                                 <FormControl
                                     required
                                     className="InputText"
                                     value={filePath}
                                     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-                                    onChange={(e: any) =>
-                                        setFilePath(e.target.value)
-                                    }
+                                    onChange={(e: any) => setFilePath(e.target.value)}
                                 />
-                                <Button
-                                    variant="outline-secondary"
-                                    className="BrowseBtn"
-                                    onClick={browseFile}
-                                >
+                                <Button variant="outline-secondary" className="BrowseBtn" onClick={browseFile}>
                                     Browse
                                 </Button>
                             </InputGroup>
                             <p className="InvalidField">{filePathInvalid}</p>
                         </div>
                         <div className="Section SectionPath">
-                            <InputGroup
-                                className="InputGroupPath"
-                                hasValidation
-                            >
-                                <InputGroup.Text className="Label">
-                                    Coperta
-                                </InputGroup.Text>
+                            <InputGroup className="InputGroupPath" hasValidation>
+                                <InputGroup.Text className="Label">Coperta</InputGroup.Text>
                                 <FormControl
                                     className="InputThmb"
                                     value={thmbPath}
                                     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-                                    onChange={(e: any) =>
-                                        setThmbPath(e.target.value)
-                                    }
+                                    onChange={(e: any) => setThmbPath(e.target.value)}
                                     required
                                 />
-                                <Button
-                                    variant="outline-secondary"
-                                    className="BrowseBtn"
-                                    onClick={browseThumbnail}
-                                >
+                                <Button variant="outline-secondary" className="BrowseBtn" onClick={browseThumbnail}>
                                     Browse
                                 </Button>
                             </InputGroup>
@@ -177,9 +147,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
         if (value === '') {
             setState(fieldEmpty);
             result++;
-        } else if (
-            !value.match(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/)
-        ) {
+        } else if (!value.match(/(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)/)) {
             setState(formatInvalid);
             result.value++;
         } else {
@@ -371,22 +339,10 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
         event.preventDefault();
         isAborted = false;
 
-        verifyPathInput(
-            event.target[0].value,
-            setFilePathInvalid,
-            failedCounter,
-        );
-        verifyPathInput(
-            event.target[2].value,
-            setThmbPathInvalid,
-            failedCounter,
-        );
+        verifyPathInput(event.target[0].value, setFilePathInvalid, failedCounter);
+        verifyPathInput(event.target[2].value, setThmbPathInvalid, failedCounter);
         verifyEmptyInput(event.target[4].value, setNameInvalid, failedCounter);
-        verifyLengthInput(
-            event.target[5].value,
-            setLengthInvalid,
-            failedCounter,
-        );
+        verifyLengthInput(event.target[5].value, setLengthInvalid, failedCounter);
         verifyEmptyInput(event.target[7].value, setDescInvalid, failedCounter);
 
         if (failedCounter.value == 0) {
@@ -495,9 +451,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
                 //Open file and get size
                 const fd = fs.openSync(transactionData.pathVideo, 'r');
                 //Round number of requests per size
-                const totalRequests = Math.round(
-                    fs.statSync(transactionData.pathVideo).size / (1000 * 100),
-                );
+                const totalRequests = Math.round(fs.statSync(transactionData.pathVideo).size / (1000 * 100));
                 responsesProgress = Math.round((totalRequests * 2) / 100);
                 //Close file after operation
                 fs.closeSync(fd);
@@ -533,9 +487,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
      *
      * @param transactionData
      */
-    async function storeThumbnail(
-        transactionData: TransactionData,
-    ): Promise<void> {
+    async function storeThumbnail(transactionData: TransactionData): Promise<void> {
         // const bytesToRead = 1000 * 100;
         // let done = false;
         // let startPosition = 0;
@@ -641,9 +593,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
      *
      * @param transactionData
      */
-    async function storeInfoInDb(
-        transactionData: TransactionData,
-    ): Promise<void> {
+    async function storeInfoInDb(transactionData: TransactionData): Promise<void> {
         try {
             const response = await axios({
                 method: 'post',
@@ -696,10 +646,7 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
      * @param transactionData
      * @param startPosition
      */
-    async function sendVideoInChunks(
-        transactionData: TransactionData,
-        startPosition: number,
-    ): Promise<void> {
+    async function sendVideoInChunks(transactionData: TransactionData, startPosition: number): Promise<void> {
         // let finished = false;
         // const bytesToRead = 1000 * 100;
         // const chunk = await readChunk(transactionData.pathVideo, {
@@ -848,31 +795,20 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
     }
 
     return (
-        <Form
-            noValidate
-            className="UploadFormContainerr"
-            onSubmit={handleSubmit}
-        >
+        <Form noValidate className="UploadFormContainerr" onSubmit={handleSubmit}>
             <div className="Form">
                 {createPathElements()}
                 <Row className={'IRow'}>
                     <Col className="ColInfo">
                         <div className="Section SectionInput">
-                            <InputGroup
-                                className="InputInfoGroup"
-                                hasValidation
-                            >
-                                <InputGroup.Text className="Label">
-                                    Nume
-                                </InputGroup.Text>
+                            <InputGroup className="InputInfoGroup" hasValidation>
+                                <InputGroup.Text className="Label">Nume</InputGroup.Text>
                                 <FormControl
                                     className="InputText"
                                     required
                                     value={name}
                                     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-                                    onChange={(event) =>
-                                        setName(event.target.value)
-                                    }
+                                    onChange={(event) => setName(event.target.value)}
                                 />
                             </InputGroup>
                             <p className="InvalidField">{nameInvalid}</p>
@@ -881,18 +817,9 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
                     {props.action === 'upload' && (
                         <Col className="ColInfo">
                             <div className="Section SectionInput">
-                                <InputGroup
-                                    className="InputInfoGroup"
-                                    hasValidation
-                                >
-                                    <InputGroup.Text className="Label">
-                                        Lungime
-                                    </InputGroup.Text>
-                                    <FormControl
-                                        className="InputText"
-                                        placeholder="hh:mm:ss"
-                                        required
-                                    />
+                                <InputGroup className="InputInfoGroup" hasValidation>
+                                    <InputGroup.Text className="Label">Lungime</InputGroup.Text>
+                                    <FormControl className="InputText" placeholder="hh:mm:ss" required />
                                 </InputGroup>
                                 <p className="InvalidField">{lengthInvalid}</p>
                             </div>
@@ -903,18 +830,14 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
                 <Row className={'IRow'}>
                     <Col className="ColPath">
                         <InputGroup className="InputTagDescGroup">
-                            <InputGroup.Text className="LabelArea">
-                                Tags
-                            </InputGroup.Text>
+                            <InputGroup.Text className="LabelArea">Tags</InputGroup.Text>
                             <FormControl
                                 className="InputArea"
                                 as="textarea"
                                 placeholder="#tag1 #tag2 #tag3"
                                 value={tags}
                                 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-                                onChange={(event) =>
-                                    setTags(event.target.value)
-                                }
+                                onChange={(event) => setTags(event.target.value)}
                             />
                         </InputGroup>
                     </Col>
@@ -922,18 +845,14 @@ export const UploadForm: React.FC<UploadProps> = (props?: UploadProps) => {
                 <Row className={'IRow LastRow'}>
                     <Col className="ColDesc">
                         <InputGroup hasValidation className="InputTagDescGroup">
-                            <InputGroup.Text className="LabelArea">
-                                Descriere
-                            </InputGroup.Text>
+                            <InputGroup.Text className="LabelArea">Descriere</InputGroup.Text>
                             <FormControl
                                 className="InputArea"
                                 as="textarea"
                                 required
                                 value={desc}
                                 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-                                onChange={(event) =>
-                                    setDesc(event.target.value)
-                                }
+                                onChange={(event) => setDesc(event.target.value)}
                             />
                         </InputGroup>
                         <p className="InvalidField">{descInvalid}</p>

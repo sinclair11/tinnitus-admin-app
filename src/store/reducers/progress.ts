@@ -4,7 +4,7 @@ const initialState: ProgState = {
     open: false,
     progress: 0,
     variant: 'success',
-    log: Array<{ type: string; value: unknown }>(),
+    log: new Array<{ type: string; value: unknown }>(),
     abort: false,
 };
 
@@ -16,16 +16,14 @@ const initialState: ProgState = {
  * @description Available actions regarding progressbar state are:
  * - progress/open
  * - progress/update
+ * - progress/progress
  * - progress/log
  * - progress/variant
  * - progress/abort
  * - progress/fail
  * - progress/clean
  */
-export function progressReducer(
-    state: ProgState = initialState,
-    action: action,
-): ProgState {
+export function progressReducer(state: ProgState = initialState, action: action): ProgState {
     const payload = action.payload;
     switch (action.type) {
         case 'progress/open': {
@@ -40,13 +38,16 @@ export function progressReducer(
                 progress: (payload as number) + state.progress,
             };
         }
+        case 'progress/progress': {
+            return {
+                ...state,
+                progress: payload as number,
+            };
+        }
         case 'progress/log':
             return {
                 ...state,
-                log: [
-                    ...state.log,
-                    payload as { type: string; value: unknown },
-                ],
+                log: [...state.log, payload as { type: string; value: unknown }],
             };
         case 'progress/variant':
             return {
@@ -63,10 +64,7 @@ export function progressReducer(
                 ...state,
                 variant: 'danger',
                 progress: 100,
-                log: [
-                    ...state.log,
-                    payload as { type: string; value: unknown },
-                ],
+                log: [...state.log, payload as { type: string; value: unknown }],
             };
         case 'progress/clean':
             return {
@@ -75,7 +73,6 @@ export function progressReducer(
                 progress: 0,
                 variant: 'success',
                 log: Array<{ type: string; value: unknown }>(),
-                abort: false,
             };
         default:
             //Just return the state

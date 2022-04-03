@@ -24,6 +24,9 @@ import Up from '../icons/up.png';
 import Down from '../icons/down.png';
 import Loading from '../icons/loading.png';
 import ArrowDown from '../icons/arrow-down.png';
+import InfoProgress from '../icons/info-progress.png';
+import SuccessProgress from '../icons/success-progress.png';
+import ErrorProgress from '../icons/error-progress.png';
 
 export const Icons = {
     HomeIcon: Home,
@@ -45,6 +48,9 @@ export const Icons = {
     Down: Down,
     Loading: Loading,
     ArrowDown: ArrowDown,
+    InfoProgress: InfoProgress,
+    SuccessProgress: SuccessProgress,
+    ErrorProgress: ErrorProgress,
 };
 
 export const ToolbarIcons = {

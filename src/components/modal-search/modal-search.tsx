@@ -8,9 +8,7 @@ type ModalSearchProps = {
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const ModalSearch: React.FC<ModalSearchProps> = (
-    props: ModalSearchProps,
-) => {
+export const ModalSearch: React.FC<ModalSearchProps> = (props: ModalSearchProps) => {
     return (
         <Modal isOpen={props.isOpen} style={hourglassStyle} ariaHideApp={false}>
             <div className="hourglass"></div>
