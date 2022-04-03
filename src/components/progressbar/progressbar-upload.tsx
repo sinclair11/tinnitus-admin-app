@@ -9,6 +9,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { CombinedStates } from '@store/reducers/custom';
 
 export const ProgressbarUpload: React.FC = () => {
+    const btnDisabled = useRef('0.5');
+    const btnEnabled = useRef('1');
     const dispatch = useDispatch();
     const btnContinue = useRef(null);
     const btnAbort = useRef(null);
@@ -21,43 +23,40 @@ export const ProgressbarUpload: React.FC = () => {
     }>;
 
     useEffect(() => {
-        if (btnContinue.current != null) {
-            btnContinue.current.disabled = true;
+        if (btnContinue.current != null && btnAbort.current != null) {
+            btnContinue.current.style.opacity = btnDisabled.current;
+            btnAbort.current.style.opacity = btnEnabled.current;
         }
-    }, [btnContinue.current]);
+    }, [btnContinue.current, btnAbort.current]);
 
     useEffect(() => {
         if (progress === 100) {
-            btnContinue.current.disabled = false;
-            btnAbort.current.disabled = true;
+            if (btnContinue.current != null && btnAbort.current != null) {
+                btnContinue.current.style.opacity = btnEnabled.current;
+                btnAbort.current.style.opacity = btnDisabled.current;
+            }
         }
     }, [progress]);
 
     function close(): void {
         dispatch({ type: 'progress/clean', payload: null });
+        dispatch({ type: 'progress/abort', payload: true });
     }
 
     function onContinue(): void {
-        if (btnContinue.current.disabled === false) {
-            btnContinue.current.disabled = true;
-            btnAbort.current.disabled = false;
+        if (btnContinue.current.style.opacity === btnEnabled.current) {
+            btnContinue.current.style.opacity = btnDisabled.current;
+            btnAbort.current.style.opacity = btnEnabled.current;
             dispatch({ type: 'progress/clean', payload: null });
         }
     }
 
     function onAbort(): void {
-        if (btnAbort.current.disabled == false) {
-            btnAbort.current.disabled = true;
-            btnContinue.current.disabled = false;
-            dispatch({ type: 'progress/progress', payload: 100 });
-            dispatch({ type: 'progress/variant', payload: 'danger' });
-            dispatch({
-                type: 'progress/log',
-                payload: {
-                    type: 'red',
-                    value: 'Upload aborted',
-                },
-            });
+        if (btnAbort.current.style.opacity === btnEnabled.current) {
+            btnContinue.current.style.opacity = btnEnabled.current;
+            btnAbort.current.style.opacity = btnDisabled.current;
+            dispatch({ type: 'progress/abort', payload: true });
+            dispatch({ type: 'progress/fail', payload: { type: 'red', value: 'Upload aborted' } });
         }
     }
 
