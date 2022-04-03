@@ -4,7 +4,7 @@ const initialState: ProgState = {
     open: false,
     progress: 0,
     variant: 'success',
-    log: Array<{ type: string; value: unknown }>(),
+    log: new Array<{ type: string; value: unknown }>(),
     abort: false,
 };
 
