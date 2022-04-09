@@ -9,18 +9,16 @@ import { useHistory } from 'react-router-dom';
 import { db, app } from '@config/firebase';
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
-import { CombinedStates } from '@src/store/reducers/custom';
+import { CombinedStates, OciState } from '@src/store/reducers/custom';
 import { getAuth } from 'firebase/auth';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useDispatch } from 'react-redux';
 import { ProgressbarUpload } from '../progressbar/progressbar-upload';
 import axios from 'axios';
-import { getDurationFormat } from '@src/utils/utils';
+import { getDurationFormat } from '@src/utils/helpers';
 
 type UploadSmData = {
     action: string;
     id: string;
-    artworkUrl: string;
     song: TableData;
     it: number;
 };
@@ -29,6 +27,7 @@ const UploadView: React.FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
+    const oci = useSelector<CombinedStates>((state) => state.ociReducer.config) as any;
     const aborted = useSelector<CombinedStates>((state) => state.progressReducer.abort) as boolean;
     const [name, setName] = useState('');
     const [nameinvalid, setNameInvalid] = useState('');
@@ -46,7 +45,7 @@ const UploadView: React.FC = () => {
     const [tableData, setTableData] = useState([]);
     const [totalDuration, setTotalDuration] = useState('');
     const uploadAbort = useRef(false);
-    const songsUrl = useRef([]);
+    const filesUploaded = useRef([]);
 
     useEffect(() => {
         if (auth) {
@@ -85,7 +84,7 @@ const UploadView: React.FC = () => {
         }
     }
 
-    function getImage(event: any): void {
+    async function getImage(event: any): Promise<void> {
         const reader = new FileReader();
         const file = event.target.files[0];
         let res = null;
@@ -203,31 +202,19 @@ const UploadView: React.FC = () => {
 
     async function deleteAlbum(id: string): Promise<void> {
         try {
-            let path = `albums/${id}/reviews`;
             //Delete everyting related to this album
-            await axios.post(
-                'https://us-central1-tinnitus-50627.cloudfunctions.net/deleteCollection',
-                {},
-                {
-                    params: {
-                        path,
-                    },
-                },
-            );
             await deleteDoc(doc(db, 'albums', id));
-            path = `albums/${id}`;
-            await axios.post(
-                'https://us-central1-tinnitus-50627.cloudfunctions.net/deleteAlbumFromStorage',
-                {},
-                {
-                    params: {
-                        path,
-                    },
-                },
-            );
+            await axios.post('http://127.0.0.1:5001/albums/delete', {
+                namespace: oci.namespace,
+                bucket: 'albums',
+                album: id,
+                songs: filesUploaded.current,
+            });
         } catch (error) {
-            console.log(error);
+            dispatch({ type: 'progress/fail', payload: { type: 'error', value: error.message } });
         }
+
+        filesUploaded.current = [];
     }
 
     function getSongsLength(songs: TableData[]): Array<string> {
@@ -257,26 +244,31 @@ const UploadView: React.FC = () => {
         try {
             if (it < tableData.length) {
                 //Save each song at corresponding path in storage having firestore id as name
-                const storage = getStorage();
-                const storageRef = ref(storage, `albums/${albumId}/${song.name}`);
-                await uploadBytes(storageRef, song.file);
-                //Get URL to store in firestore
-                const songUrl = await getDownloadURL(storageRef);
-                //Temporary object to store song URL
-                songsUrl.current.push(songUrl);
+                const formData = new FormData();
+                //Prepare form data
+                formData.append('album', albumId);
+                formData.append('namespace', 'lra4ojegcvqn');
+                formData.append('bucket', 'albums');
+                formData.append('name', `${song.name}.${song.extension}`);
+                formData.append('size', song.file.size.toString());
+                formData.append('song', song.file);
+                const res = await axios({
+                    method: 'post',
+                    url: 'http://127.0.0.1:5001/albums/upload/song',
+                    data: formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
                 if (uploadAbort.current === false) {
                     //Update progressbar
-                    uploadProgress(
-                        Math.floor(100 / (2 + tableData.length)),
-                        `Album song ${it + 1} uploaded`,
-                        'success',
-                    );
+                    uploadProgress(Math.floor(100 / tableData.length), res.data, 'success');
                 }
+                filesUploaded.current.push(`${song.name}.${song.extension}`);
                 it++;
                 uploadStateMachine({
                     action: 'upload-song',
                     id: albumId,
-                    artworkUrl: null,
                     song: tableData[it],
                     it: it,
                 });
@@ -284,7 +276,6 @@ const UploadView: React.FC = () => {
                 uploadStateMachine({
                     action: 'upload-artwork',
                     id: albumId,
-                    artworkUrl: null,
                     song: null,
                     it: 0,
                 });
@@ -295,13 +286,13 @@ const UploadView: React.FC = () => {
         }
     }
 
-    async function uploadAlbumInfo(id: string, artworkUrl: string): Promise<void> {
+    async function uploadAlbumInfo(id: string): Promise<void> {
         try {
             const infoDocRef = doc(db, 'albums', id);
             const temp = Object.assign([], tableData);
             //Copy songs URL
             for (let i = 0; i < temp.length; i++) {
-                temp[i].file = songsUrl.current[i];
+                delete temp[i].file;
             }
             //Upload general information about album
             await setDoc(infoDocRef, {
@@ -311,7 +302,6 @@ const UploadView: React.FC = () => {
                 description: description,
                 tags: parseTags(),
                 length: getTotalLength(tableData),
-                artwork: artworkUrl,
                 songs: temp,
                 total_songs: temp.length,
                 likes: 0,
@@ -320,7 +310,7 @@ const UploadView: React.FC = () => {
             });
             if (uploadAbort.current === false) {
                 uploadProgress(
-                    Math.floor(100 / (2 + tableData.length)),
+                    Math.floor(100 / tableData.length),
                     'Album information registered in database',
                     'success',
                 );
@@ -328,7 +318,6 @@ const UploadView: React.FC = () => {
             uploadStateMachine({
                 action: notification != '' ? 'upload-notification' : 'upload-finish',
                 id: id,
-                artworkUrl: null,
                 song: null,
                 it: 0,
             });
@@ -341,18 +330,30 @@ const UploadView: React.FC = () => {
     async function uploadAlbumArtwork(id: string): Promise<void> {
         try {
             //Save album artwork at corresponding path provided by doc id
-            const storage = getStorage();
-            const storageRef = ref(storage, `albums/${id}/artwork.jpg`);
-            await uploadBytes(storageRef, thumbnailFile.current);
-            //Get URL to store in firestore
-            const artworkUrl = await getDownloadURL(storageRef);
+            const formData = new FormData();
+            //Prepare form data
+            formData.append('album', id);
+            formData.append('namespace', 'lra4ojegcvqn');
+            formData.append('bucket', 'albums');
+            formData.append('size', thumbnailFile.current.size);
+            formData.append('artwork', thumbnailFile.current);
+
+            await axios({
+                method: 'post',
+                url: 'http://127.0.0.1:5001/albums/upload/artwork',
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            filesUploaded.current.push(`artwork.${thumbnailFile.current.name.split('.').pop()}`);
+
             if (uploadAbort.current === false) {
-                uploadProgress(Math.floor(100 / (2 + tableData.length)), 'Album artwork uploaded', 'success');
+                uploadProgress(Math.floor(100 / tableData.length), 'Album artwork uploaded', 'success');
             }
             uploadStateMachine({
                 action: 'upload-info',
                 id: id,
-                artworkUrl: artworkUrl,
                 song: null,
                 it: 0,
             });
@@ -365,7 +366,7 @@ const UploadView: React.FC = () => {
     async function uploadNotification(id: string): Promise<void> {
         try {
             //Send notification to all users
-            const response = await axios.post(
+            await axios.post(
                 'https://us-central1-tinnitus-50627.cloudfunctions.net/sendNotification',
                 {},
                 {
@@ -377,11 +378,9 @@ const UploadView: React.FC = () => {
                     },
                 },
             );
-            console.log(response);
             uploadStateMachine({
                 action: 'upload-finish',
                 id: id,
-                artworkUrl: null,
                 song: null,
                 it: 0,
             });
@@ -403,15 +402,16 @@ const UploadView: React.FC = () => {
     }
 
     async function onUpload(): Promise<void> {
-        console.log(tableData);
         if ((await verifyInputs()) === 0) {
+            //Reset list of uploaded files
+            filesUploaded.current = [];
             const docRef = doc(collection(db, 'albums'));
+            dispatch({ type: 'progress/abort', payload: false });
             dispatch({ type: 'progress/open', payload: true });
-            uploadProgress(0, 'Uploading album ...', 'info');
+            uploadProgress(10, 'Uploading album ...', 'info');
             uploadStateMachine({
                 action: 'upload-song',
                 id: docRef.id,
-                artworkUrl: null,
                 song: tableData[0],
                 it: 0,
             });
@@ -426,7 +426,7 @@ const UploadView: React.FC = () => {
                     break;
                 }
                 case 'upload-info': {
-                    uploadAlbumInfo(smData.id, smData.artworkUrl);
+                    uploadAlbumInfo(smData.id);
                     break;
                 }
                 case 'upload-song': {
@@ -456,7 +456,6 @@ const UploadView: React.FC = () => {
             }
         } else {
             deleteAlbum(smData.id);
-            dispatch({ type: 'progress/abort', payload: false });
         }
     }
 
@@ -476,7 +475,7 @@ const UploadView: React.FC = () => {
                                     className="input-plus"
                                     type="file"
                                     accept="image/*"
-                                    onChange={(event): void => getImage(event)}
+                                    onChange={(event): Promise<void> => getImage(event)}
                                 />
                             </div>
                             {displayThumbnail()}
