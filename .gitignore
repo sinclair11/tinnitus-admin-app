@@ -61,3 +61,8 @@ Thumbs.db
 .webpack/main/index.js.map
 make
 package-lock.json
+build/
+build/index.html
+build/assets/vendor.f90df071.js
+build/assets/index.764dec9c.css
+build/assets/index.2825e7b0.js
