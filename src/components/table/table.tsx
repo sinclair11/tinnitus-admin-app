@@ -11,7 +11,8 @@ type TableProps = {
 };
 
 export type TableData = {
-    file: Blob;
+    file: any;
+    extension: string;
     name: string;
     pos: string | number;
     length: string;
@@ -49,12 +50,14 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                         ...props.tableData,
                         {
                             file: file,
+                            extension: file.name.split('.').pop(),
                             name: file.name.slice(0, file.name.lastIndexOf('.')),
                             pos: props.tableData.length + 1,
                             length: getDurationFormat(duration),
                             category: 'General',
                             likes: 0,
                             favorites: 0,
+                            views: 0,
                         },
                     ]);
                     props.setInvalid('');
