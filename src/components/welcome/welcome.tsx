@@ -43,7 +43,7 @@ const GridActions: React.FC = () => {
     return (
         <div className={'GridActions GridMove'}>
             <ButtonGroup vertical className="ButtonGroup">
-                <Button className="GridButton GridButtonText" onClick={(): void => goToRoute('/audio')}>
+                <Button className="GridButton GridButtonText" onClick={(): void => goToRoute('/album')}>
                     <img src={Icons['AudioIcon']} className="ButtonIcon" />
                     Administreaza albume audio
                 </Button>

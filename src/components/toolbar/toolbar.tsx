@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
-import axios from 'axios';
 import Modal from 'react-modal';
 import { MessageBox } from '../messagebox/messagebox';
 import { DialogBox } from '../dialogbox/dialogbox';
@@ -34,122 +33,100 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
     const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
 
     useEffect(() => {
-        // if (accept == true) {
-        //     requestResourceDeletion();
-        //     //Reset action accept state
-        //     setAccept(false);
-        // }
+        if (accept == true) {
+            requestResourceDeletion();
+            //Reset action accept state
+            setAccept(false);
+        }
     }, [accept]);
 
-    // async function openModal(type: string): Promise<void> {
-    //     if (type === 'edit') {
-    //         //Check if there is a resource selected
-    //         if (store.getState().resdataReducer.selected !== '') {
-    //             try {
-    //                 //Activate loading screen
-    //                 setLoading(true);
-    //                 //First get the phase
-    //                 //Get info about resource from database
-    //                 const response = await axios({
-    //                     method: 'get',
-    //                     url: `http://127.0.0.1:3000/api/admin/${
-    //                         props.type
-    //                     }/infodb/general?id=${
-    //                         store.getState().resdataReducer.selected
-    //                     }`,
-    //                     headers: {
-    //                         'Content-Type': 'application/json',
-    //                         Authorization: `Bearer ${
-    //                             store.getState().generalReducer.token
-    //                         }`,
-    //                     },
-    //                 });
-    //                 //Set received editable data
-    //                 setEditData({
-    //                     name: response.data.name,
-    //                     tags: response.data.tags,
-    //                     description: response.data.description,
-    //                 });
-    //                 //Close loading screen
-    //                 setLoading(false);
-    //                 //Open edit modal and pass editable data of this resource
-    //                 setAction(type);
-    //                 setIsOpen(true);
-    //             } catch (error) {
-    //                 //Close loading screen
-    //                 setLoading(false);
-    //                 //Info could not be retrieved from database
-    //                 //Handle error and display message
-    //                 const result = ErrorHandler.getErrorType(error);
-    //                 //Notify user about occured error
-    //                 setMessageboxMsg(result);
-    //                 setMessageOpen(true);
-    //             }
-    //         } else {
-    //             //Notify user that he must select a resource first
-    //             setMessageboxMsg('Selectati un album intai!');
-    //             setMessageOpen(true);
-    //         }
-    //     } else if (type === 'upload') {
-    //         //Make sure editable data is clean
-    //         setEditData({
-    //             name: '',
-    //             tags: '',
-    //             description: '',
-    //         });
-    //         //Just open the upload modal
-    //         setAction(type);
-    //         setIsOpen(true);
-    //     }
-    // }
+    async function openModal(type: string): Promise<void> {
+        if (type === 'edit') {
+            //Check if there is a resource selected
+            if (selected !== '') {
+                try {
+                    //Activate loading screen
+                    setLoading(true);
+                    //First get the phase
+                    //Get info about resource from database
+                    // const response = await axios({
+                    //     method: 'get',
+                    //     url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/general?id=${selected}`,
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //         Authorization: `Bearer ${
+                    //             store.getState().generalReducer.token
+                    //         }`,
+                    //     },
+                    // });
+                    //Set received editable data
+                    // setEditData({
+                    //     name: response.data.name,
+                    //     tags: response.data.tags,
+                    //     description: response.data.description,
+                    // });
+                    //Close loading screen
+                    setLoading(false);
+                    //Open edit modal and pass editable data of this resource
+                    setAction(type);
+                    setIsOpen(true);
+                } catch (error) {
+                    //Close loading screen
+                    setLoading(false);
+                    //Info could not be retrieved from database
+                    //Handle error and display message
+                    const result = ErrorHandler.getErrorType(error);
+                    //Notify user about occured error
+                    setMessageboxMsg(result);
+                    setMessageOpen(true);
+                }
+            } else {
+                //Notify user that he must select a resource first
+                setMessageboxMsg('Selectati un album intai!');
+                setMessageOpen(true);
+            }
+        } else if (type === 'upload') {
+            //Make sure editable data is clean
+            setEditData({
+                name: '',
+                tags: '',
+                description: '',
+            });
+            //Just open the upload modal
+            setAction(type);
+            setIsOpen(true);
+        }
+    }
 
-    /**
-     *
-     */
-    // async function requestResourceDeletion(): Promise<void> {
-    //     //Activate loading screen
-    //     setLoading(true);
-    //     try {
-    //         const path = `http://127.0.0.1:3000/api/admin/${
-    //             props.type
-    //         }/del?id=${store.getState().resdataReducer.selected}`;
-    //         console.log(path);
-    //         //Request deletion of resource
-    //         await axios({
-    //             method: 'delete',
-    //             url: path,
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 Authorization: `Bearer ${
-    //                     store.getState().generalReducer.token
-    //                 }`,
-    //             },
-    //         });
-    //         //Reset selected resource state
-    //         dispatch({ type: 'resdata/selected', payload: '' });
-    //         //Close loading screen
-    //         setLoading(false);
-    //     } catch (error) {
-    //         //Close loading screen
-    //         setLoading(false);
-    //         //Retrieve message for corresponding status code
-    //         //Handle error and display message
-    //         const result = ErrorHandler.getErrorType(error);
-    //         //Set message and notify user about occured error
-    //         setMessageboxMsg(result);
-    //         setMessageOpen(true);
-    //     }
-    // }
+    async function requestResourceDeletion(): Promise<void> {
+        //Activate loading screen
+        setLoading(true);
+        try {
+            //Reset selected resource state
+            dispatch({ type: 'resdata/selected', payload: '' });
+            //Close loading screen
+            setLoading(false);
+        } catch (error) {
+            //Close loading screen
+            setLoading(false);
+            //Retrieve message for corresponding status code
+            //Handle error and display message
+            const result = ErrorHandler.getErrorType(error);
+            //Set message and notify user about occured error
+            setMessageboxMsg(result);
+            setMessageOpen(true);
+        }
+    }
 
     function onRequestDeleteClick(): void {
         //First check if a resource was selected
-        // if (store.getState().resdataReducer.selected != '') {
-        //     setDialogbox(true);
-        // } else {
-        //     //Notify user that he must select a resource first
-        //     setMessageboxMsg('Selectati un album intai!');
-        //     setMessageOpen(true);
-        // }
+        if (selected != '') {
+            setDialogbox(true);
+        } else {
+            //Notify user that he must select a resource first
+            setMessageboxMsg('Selectati un album intai!');
+            setMessageOpen(true);
+        }
     }
 
     return (
@@ -160,10 +137,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
                 <p>Incarca</p>
             </div>
 
-            <div
-                className="toolbar-action"
-                // onClick={(): Promise<void> => openModal('edit')}
-            >
+            <div className="toolbar-action" onClick={(): Promise<void> => openModal('edit')}>
                 <img src={ToolbarIcons['EditIcon']} className="ActionIcon" />
                 <p>Editeaza</p>
             </div>

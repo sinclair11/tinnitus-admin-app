@@ -6,7 +6,6 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import { CombinedStates } from '@src/store/reducers/custom';
 import axios from 'axios';
-import { MonthsMap } from '@src/utils/utils';
 import { MessageBox } from '../messagebox/messagebox';
 import { DialogBox } from '../dialogbox/dialogbox';
 import { dialogStyles, hourglassStyle } from '@src/styles/styles';
@@ -424,7 +423,7 @@ const FeedbackToolbar: React.FC<FbackToolbarProps> = (props: FbackToolbarProps) 
             />
             <Button
                 className="FbackToolbarBtnDisplay"
-                onClick={(): void => displayFeedbacks(MonthsMap.get(month.current).text, year.current)}
+                // onClick={(): void => displayFeedbacks(MonthsMap.get(month.current).text, year.current)}
             >
                 Afiseaza
             </Button>

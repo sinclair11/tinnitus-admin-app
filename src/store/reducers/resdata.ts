@@ -9,12 +9,6 @@ const initialState: ResdataState = {
     checks: {},
 };
 
-/**
- *
- * @param state
- * @param action
- * @returns
- */
 export function resdataReducer(
     state: ResdataState = initialState,
     action: { type: string; payload: unknown },

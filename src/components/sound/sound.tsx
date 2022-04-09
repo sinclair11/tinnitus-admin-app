@@ -6,7 +6,6 @@ import Modal from 'react-modal';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import { SketchPicker } from 'react-color';
 import { MessageBox } from '../messagebox/messagebox';
-import { store } from '@src/store/store';
 
 class SoundData {
     sound: string;
@@ -113,39 +112,38 @@ const SoundView: React.FC = () => {
     }
 
     async function onUploadClick(): Promise<void> {
-        if (checkInputs()) {
-            const secret = store.getState().generalReducer.token;
-            const data = {
-                name: soundData.current.name,
-                description: soundData.current.description,
-                sound: soundData.current.sound,
-                img: soundData.current.img,
-                style: parseStyle(),
-            };
-            try {
-                const res = await axios({
-                    method: 'post',
-                    timeout: 30000,
-                    timeoutErrorMessage: 'timeout',
-                    url: 'http://127.0.0.1:3000/api/admin/generator/sound',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${secret}`,
-                    },
-                    data: data,
-                });
-                //Let user know that resource has been uploaded
-                message.current = res.data.message;
-                setVisible(true);
-                //Clean states if upload is successful
-                cleanAfterUpload();
-            } catch (err) {
-                //Handle error and display message
-                message.current = ErrorHandler.getErrorType(err);
-                setVisible(true);
-                // console.log(error.current);
-            }
-        }
+        // if (checkInputs()) {
+        //     const secret = store.getState().generalReducer.token;
+        //     const data = {
+        //         name: soundData.current.name,
+        //         description: soundData.current.description,
+        //         sound: soundData.current.sound,
+        //         img: soundData.current.img,
+        //         style: parseStyle(),
+        //     };
+        //     try {
+        //         const res = await axios({
+        //             method: 'post',
+        //             timeout: 30000,
+        //             timeoutErrorMessage: 'timeout',
+        //             url: 'http://127.0.0.1:3000/api/admin/generator/sound',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //                 Authorization: `Bearer ${secret}`,
+        //             },
+        //             data: data,
+        //         });
+        //         //Let user know that resource has been uploaded
+        //         message.current = res.data.message;
+        //         setVisible(true);
+        //         //Clean states if upload is successful
+        //         cleanAfterUpload();
+        //     } catch (err) {
+        //         //Handle error and display message
+        //         message.current = ErrorHandler.getErrorType(err);
+        //         setVisible(true);
+        //     }
+        // }
     }
 
     function cleanAfterUpload(): void {
