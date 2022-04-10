@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { db, app } from '@config/firebase';
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
-import { CombinedStates, OciState } from '@src/store/reducers/custom';
+import { CombinedStates } from '@src/store/reducers/custom';
 import { getAuth } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { ProgressbarUpload } from '../progressbar/progressbar-upload';
