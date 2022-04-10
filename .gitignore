@@ -45,19 +45,11 @@ Thumbs.db
 *.mov
 *.wmv
 
-/.sdjkvneriuhweiubkdshbcvds
-/.webpack/renderer/309417bd3461cba3bdd0.hot-update.json
-/.webpack/renderer/5de8e132dcb3a3c0bfa8.hot-update.json
-/.webpack/renderer/a9a2a6609dc180d1149a.hot-update.json
-/.webpack/renderer/main_window.309417bd3461cba3bdd0.hot-update.js
-/.webpack/renderer/main_window.5de8e132dcb3a3c0bfa8.hot-update.js
-/.webpack/renderer/main_window.a9a2a6609dc180d1149a.hot-update.js
-.webpack/main/index.js
-.webpack/main/index.js.map
-.webpack/renderer/main_window/index.html
-.webpack/renderer/main_window/index.js
-.webpack/renderer/main_window/preload.js
-.webpack/main/index.js
-.webpack/main/index.js.map
 make
 package-lock.json
+build/
+build/index.html
+build/assets/vendor.f90df071.js
+build/assets/index.764dec9c.css
+build/assets/index.2825e7b0.js
+.env

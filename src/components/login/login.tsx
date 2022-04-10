@@ -3,8 +3,9 @@ import { InputGroup, FormControl, Button, Form } from 'react-bootstrap';
 import logo from '@icons/logo.png';
 import { useHistory } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth';
-import { app } from '@config/firebase';
+import { app, db } from '@config/firebase';
 import { useDispatch } from 'react-redux';
+import { doc, getDoc } from 'firebase/firestore';
 
 export const Login: React.FC = () => {
     const dispatch = useDispatch();
@@ -36,10 +37,24 @@ export const Login: React.FC = () => {
             //Send authentication request
             try {
                 await setPersistence(auth, browserSessionPersistence);
+                //Login in firebase
                 await signInWithEmailAndPassword(getAuth(), admin, passw);
                 dispatch({
                     type: 'general/auth',
                     payload: getAuth().currentUser.uid,
+                });
+                //Retrieve oci configuration
+                const docSnap = await getDoc(doc(db, 'misc', 'config'));
+                const ociConfig = docSnap.data();
+                dispatch({
+                    type: 'oci/config',
+                    payload: {
+                        fingerprint: ociConfig.oci_fingerprint,
+                        host: ociConfig.oci_host,
+                        tenancy: ociConfig.oci_tenancy,
+                        id: ociConfig.oci_id,
+                        namespace: ociConfig.oci_namespace,
+                    },
                 });
                 setAdmin('');
                 setPassw('');

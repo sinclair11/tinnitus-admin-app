@@ -9,8 +9,7 @@ import { CombinedStates } from '@src/store/reducers/custom';
 import Sidebar from '../sidebar/sidebar';
 import { useHistory } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
-import { db, app } from '@config/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { app } from '@config/firebase';
 
 type ArtworkProps = {
     img: any;
@@ -24,7 +23,7 @@ const AlbumArtwork: React.FC<ArtworkProps> = (props: ArtworkProps) => {
     );
 };
 
-export const AudioView: React.FC = () => {
+export const AlbumView: React.FC = () => {
     const dispatch = useDispatch();
     const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
     const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;

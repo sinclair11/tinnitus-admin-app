@@ -19,7 +19,12 @@ export type GeneralState = {
     auth: any;
 };
 
+export type OciState = {
+    config: { fingerprint: string; host: string; tenancy: string; id: string; namespace: string };
+};
+
 export type CombinedStates = {
+    ociReducer: OciState;
     resdataReducer: ResdataState;
     progressReducer: ProgState;
     generalReducer: GeneralState;
@@ -27,5 +32,5 @@ export type CombinedStates = {
 
 export type action = {
     type: string;
-    payload: unknown;
+    payload: any;
 };

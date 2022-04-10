@@ -8,21 +8,6 @@ const initialState: ProgState = {
     abort: false,
 };
 
-/**
- *
- * @param state Global state found in store
- * @param action Event triggered for state
- * @returns Global state of app
- * @description Available actions regarding progressbar state are:
- * - progress/open
- * - progress/update
- * - progress/progress
- * - progress/log
- * - progress/variant
- * - progress/abort
- * - progress/fail
- * - progress/clean
- */
 export function progressReducer(state: ProgState = initialState, action: action): ProgState {
     const payload = action.payload;
     switch (action.type) {

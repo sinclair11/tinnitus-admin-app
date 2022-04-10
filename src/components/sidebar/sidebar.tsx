@@ -12,7 +12,7 @@ const Sidebar: React.FC = () => {
                 <p>Tinnitus CMS Menu</p>
             </div>
             <div className="sidebar-menu-content">
-                <div className="sidebar-menu-item" onClick={(): void => history.push('/audio')}>
+                <div className="sidebar-menu-item" onClick={(): void => history.push('/album')}>
                     <img src={Icons.AudioIcon} />
                     <p>Administreaza albume</p>
                 </div>

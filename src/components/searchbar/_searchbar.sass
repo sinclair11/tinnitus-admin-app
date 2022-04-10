@@ -3,22 +3,60 @@
 
 .SearchGroup
 	display: flex
+	width: 100%
+	margin-bottom: 20px
+
+.searchbar-div
+	display: flex
+	flex-direction: column
+	position: relative
 	width: 90%
-	height: 70px
 
 .SearchBar
-	width: 90%
-	height: 40px
+	min-height: 40px
 	border-radius: 5px
 	border: 1px solid black
-	padding-left: 7px
+	padding-left: 10px
+	width: calc( 100% - 13px )
 
-.SearchBarDiv
-	display: flex
-	justify-content: center
-	align-items: center
+#searchbar-results
+	position: absolute
+	display: none
+	flex-direction: column
+	top: 45px
 	width: 100%
-	height: 70px
+	background-color: white
+	border: 1px solid colors.$border
+
+	&:last-child
+		border-bottom: 0px
+
+.searchbar-result-item
+	display: flex
+	position: relative
+	align-items: center
+	width: calc(100% - 20px)
+	color: black
+	cursor: pointer
+	padding: 10px
+	border-bottom: 1px solid colors.$border
+
+	img
+		width: 78px
+		height: 78px
+
+	&:hover
+		background-color: #cecece
+
+	.album-name
+		margin-left: 10px
+		margin-bottom: 50px
+
+	.album-upload-date
+		position: absolute
+		right: 20px
+		bottom: 0px
+
 
 .SearchButton
 	@include custom.btnStyle($width: 70px, $height: 45px)

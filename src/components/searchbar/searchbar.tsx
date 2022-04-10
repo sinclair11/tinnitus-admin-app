@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
-import axios from 'axios';
 import { Icons } from '@utils/icons';
 import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';
 import Modal from 'react-modal';
 import { MessageBox } from '@src/components/messagebox/messagebox';
-import { Reslist } from '@components/reslist/reslist';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
-import ErrorHandler from '@src/utils/errorhandler';
+import { collection, getDocs, limit, query, where } from 'firebase/firestore';
+import { db } from '@src/config/firebase';
 
 type SearchProps = {
     type: string;
@@ -22,33 +21,18 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     //Dialog message state
     const [message, setMessage] = useState('');
-    //Table resource index
-    const [tableElements, setTableElements] = useState([]);
-    //Table modal state
-    const [tableOpen, setTableOpen] = useState(false);
     //Selected resource
-    const [selected, setSelected] = useState('');
-    //Redux
+    const [selected, setSelected] = useState({ name: '' });
     const dispatch = useDispatch();
     const selectedRes = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
+    const [searchedAlbums, setSearchedAlbums] = useState<any[]>([]);
 
-    //* Use effect to change or reset searchbar value
     useEffect(() => {
-        //Reset searchbar value if no resourse is selected
-        if (selectedRes === '') {
-            setSearchVal('');
-        } else {
-            setSearchVal(selectedRes);
+        if (selected !== null && selected.name != searchVal) {
+            getResourceData();
         }
-    }, [selectedRes]);
+    }, [searchVal]);
 
-    /**
-     * @function updateInfoData
-     * @description Internal function to update view with resource information aquired from firestore
-     * @param dataInfo General information of resource
-     * @param dataUsage Usage information of resource
-     */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function updateInfoData(dataInfo: any, dataUsage: any): void {
         const arrInfo = [
             { name: 'Nume', value: dataInfo['name'] },
@@ -84,168 +68,122 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
         });
     }
 
-    /**
-     * @callback    getResourceData
-     * @description Callback function which aquires resource general and usage information
-     */
     async function getResourceData(): Promise<void> {
-        //Token
-        // const secret = store.getState().generalReducer.token;
-        // const secret = ipcRenderer.sendSync('eventReadJwt');
-        let dataInfo = [];
-        let dataUsage = [];
-
-        //Show loading modal
-        setIsOpen(true);
-        //Get general information about resource
-        try {
-            let response = await axios({
-                method: 'get',
-                url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/general?id=${searchVal}`,
-                headers: {
-                    Authorization: `Bearer`,
-                },
-            });
-            if (response.status === 200) {
-                //Update information about resource
-                dataInfo = response.data;
-                //Store in redux selected resource
-                //Get usage information about resource
-                response = await axios({
-                    method: 'get',
-                    url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/usage?id=${searchVal}`,
-                    headers: {
-                        Authorization: `Bearer`,
-                    },
-                });
-                if (response.status === 200) {
-                    //Update usage about resource
-                    dataUsage = response.data;
-                    //Update view with info from firestore
-                    updateInfoData(dataInfo, dataUsage);
-                    //Get image thumbnail
-                    response = await axios({
-                        method: 'get',
-                        url: `http://127.0.0.1:3000/api/admin/${props.type}/thumbnail?id=${searchVal}`,
+        if (searchVal != '') {
+            try {
+                //Convert first letter to uppercase
+                const temp = searchVal[0].toUpperCase() + searchVal.slice(1);
+                const albums = [];
+                //Search for album starting with the given string
+                const albumsRef = collection(db, 'albums');
+                const q = query(albumsRef, where('name', '>=', temp), limit(7));
+                const q1 = query(q, where('name', '<=', temp + '\uf8ff'), limit(7));
+                const querySnapshot = await getDocs(q1);
+                const docs = querySnapshot.docs;
+                //Take all data now to avoid doing an additional request
+                for (const doc of docs) {
+                    const data = doc.data();
+                    albums.push({
+                        id: doc.id,
+                        name: data.name,
+                        upload_date: data.upload_date.toDate().toDateString(),
+                        category: data.category,
+                        description: data.description,
+                        tags: data.tags,
+                        length: data.length,
+                        artwork: data.artwork,
+                        songs: data.songs,
+                        total_songs: data.total_songs,
+                        likes: data.likes,
+                        favorites: data.favorites,
+                        reviews: data.reviews,
                     });
-                    console.log(response);
-                    //Update thumbnail image
-                    dispatch({
-                        type: 'resdata/thumbnail',
-                        payload: response.data,
-                    });
-                    setIsOpen(false);
                 }
+                setSearchedAlbums(albums);
+                document.getElementById('searchbar-results').style.display = 'flex';
+            } catch (error) {
+                console.log(error);
             }
-        } catch (error) {
-            //Handle error and display message
-            const result = ErrorHandler.getErrorType(error);
-            //Notify user about error
-            setMessage(result);
-            //Hide loading screen
-            setIsOpen(false);
-            //Show dialog with error message
-            setDialogOpen(true);
+        } else {
+            setSearchedAlbums([]);
+            document.getElementById('searchbar-results').style.display = 'none';
         }
     }
 
-    /**
-     * @callback
-     * @description
-     */
     async function getListOfResources(): Promise<void> {
-        const secret = store.getState().generalReducer.token;
-        // const secret = ipcRenderer.sendSync('eventReadJwt');
-        //Show loading modal
-        setIsOpen(true);
-        //Get a list with all uploaded videos
-        try {
-            const response = await axios({
-                method: 'get',
-                url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/list`,
-                headers: {
-                    Authorization: `Bearer ${secret}`,
-                },
-            });
-            //Get all required data [name, thumbnail, creation date, upload date]
-            const files = response.data.files;
-            //Total number of entries
-            const length = files.length;
-            //Data containing the records name and upload date
-            for (let i = 0; i < length; i++) {
-                setTableElements((arr) => [
-                    ...arr,
-                    {
-                        name: files[i].name,
-                        data: {
-                            thumb: files[i].thumbnail,
-                            creation: files[i].creation,
-                            upload: files[i].upload,
-                        },
-                    },
-                ]);
-            }
-            //Hide loading screen
-            setIsOpen(false);
-            //Display table with data
-            setTableOpen(true);
-        } catch (error) {
-            //Handle error and display message
-            const result = ErrorHandler.getErrorType(error);
-            //Notify user about error
-            setMessage(result);
-            //Hide loading screen
-            setIsOpen(false);
-            //Show dialog message with error
-            setDialogOpen(true);
-        }
+        return;
     }
 
-    /**
-     *
-     */
     function clearListModal(): void {
-        setTableOpen(false);
-        setTableElements([]);
+        // setTableOpen(false);
+        // setTableElements([]);
     }
 
-    /**
-     *
-     */
     function closeListView(): void {
         clearListModal();
     }
 
-    /**
-     *
-     */
     function cancelList(): void {
         clearListModal();
     }
 
-    /**
-     *
-     */
     function okList(): void {
         clearListModal();
-        setSearchVal(selected);
+        // setSearchVal(selected);
+    }
+
+    function onItemClick(name: string): void {
+        setSearchVal(name);
+        const selectedItem = searchedAlbums.find((item) => item.name === name);
+        setSelected(selectedItem);
+        document.getElementById('searchbar-results').style.display = 'none';
+    }
+
+    async function onSearchBtnClick(): Promise<void> {
+        await getResourceData();
+        document.getElementById('searchbar-results').style.display = 'none';
+        const selectedItem = searchedAlbums.find((item) => item.name === searchVal);
+        setSelected(selectedItem);
     }
 
     return (
         <InputGroup className="SearchGroup">
-            <FormControl
-                placeholder={`Nume ${props.type}...`}
-                aria-label={`Nume ${props.type}`}
-                aria-describedby="basic-addon2"
-                className="SearchBar"
-                value={searchVal}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(e: any): void => setSearchVal(e.target.value)}
-            />
+            <div
+                className="searchbar-div"
+                // onBlur={(): void => {
+                //     document.getElementById('searchbar-results').style.display = 'none';
+                // }}
+            >
+                <FormControl
+                    id="searchbar-albums"
+                    placeholder={`Nume ${props.type}...`}
+                    aria-label={`Nume ${props.type}`}
+                    aria-describedby="basic-addon2"
+                    className="SearchBar"
+                    value={searchVal}
+                    onChange={(e: any): void => {
+                        setSearchVal(e.target.value);
+                    }}
+                />
+                <div id="searchbar-results">
+                    {searchedAlbums.map((album: any, key: number) => (
+                        <div
+                            className="searchbar-result-item"
+                            key={key}
+                            onClick={(): void => onItemClick(album.name)}
+                            id={album.name}
+                        >
+                            <img src={album.artwork} />
+                            <p className="album-name">{album.name}</p>
+                            <p className="album-upload-date">{album.upload_date}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
             <Button
                 // data-tip="Cauta"
                 className="SearchButton"
-                onClick={getResourceData}
+                onClick={onSearchBtnClick}
             >
                 <img src={Icons['MagnifierIcon']} className="SearchIcon"></img>
             </Button>
@@ -263,8 +201,8 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
             <Modal style={dialogStyles} isOpen={dialogOpen} ariaHideApp={false}>
                 <MessageBox setIsOpen={setDialogOpen} message={message} />
             </Modal>
-            <Modal style={tableStyles} isOpen={tableOpen} ariaHideApp={false}>
-                <Reslist entries={tableElements} selectFromList={setSelected} />
+            <Modal style={tableStyles} isOpen={false} ariaHideApp={false}>
+                {/* <Reslist entries={tableElements} selectFromList={setSelected} /> */}
                 <p className="modal-title">Lista {props.type}</p>
                 <img src={Icons['CancelIcon']} className="cancel-icon" onClick={closeListView} />
                 <Button className="ListOk" onClick={okList}>
