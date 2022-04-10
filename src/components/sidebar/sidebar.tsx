@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icons } from '@src/utils/icons';
 import { useHistory } from 'react-router-dom';
+import { routes } from '@src/router/routes';
 
 const Sidebar: React.FC = () => {
     const history = useHistory();
@@ -12,11 +13,11 @@ const Sidebar: React.FC = () => {
                 <p>Tinnitus CMS Menu</p>
             </div>
             <div className="sidebar-menu-content">
-                <div className="sidebar-menu-item" onClick={(): void => history.push('/album')}>
+                <div className="sidebar-menu-item" onClick={(): void => history.push(routes.ALBUM_VIEW)}>
                     <img src={Icons.AudioIcon} />
                     <p>Administreaza albume</p>
                 </div>
-                <div className="sidebar-menu-item" onClick={(): void => history.push('/generator')}>
+                <div className="sidebar-menu-item" onClick={(): void => history.push(routes.GENERATOR_VIEW)}>
                     <img src={Icons.GeneratorIcon} />
                     <p>Administreaza generator</p>
                 </div>

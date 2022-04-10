@@ -6,7 +6,7 @@ import { Toolbar } from '@src/components/toolbar/toolbar';
 import '@components/modal-search/modal-search.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
-import Sidebar from '../sidebar/sidebar';
+import Sidebar from '@components/sidebar/sidebar';
 import { useHistory } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import { app } from '@config/firebase';
@@ -23,7 +23,7 @@ const AlbumArtwork: React.FC<ArtworkProps> = (props: ArtworkProps) => {
     );
 };
 
-export const AlbumView: React.FC = () => {
+const AlbumView: React.FC = () => {
     const dispatch = useDispatch();
     const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
     const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
@@ -39,7 +39,7 @@ export const AlbumView: React.FC = () => {
         if (auth) {
             //Continue in page
         } else {
-            history.push('/');
+            history.push('/login');
         }
     }, [getAuth(app).currentUser]);
 
@@ -87,3 +87,5 @@ export const AlbumView: React.FC = () => {
         </div>
     );
 };
+
+export default AlbumView;

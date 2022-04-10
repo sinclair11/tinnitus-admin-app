@@ -2,7 +2,7 @@ import { Icons } from '@src/utils/icons';
 import React, { useState, useRef, useEffect } from 'react';
 import { FormControl } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
-import Sidebar from '../sidebar/sidebar';
+import Sidebar from '@components/sidebar/sidebar';
 import { TableData, TableEdit } from '@components/table/table';
 import Dropdown from '@components/dropdown/dropdown';
 import { useHistory } from 'react-router-dom';
@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import { getAuth } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
-import { ProgressbarUpload } from '../progressbar/progressbar-upload';
+import { ProgressbarUpload } from '@components/progressbar/progressbar-upload';
 import axios from 'axios';
 import { getDurationFormat } from '@src/utils/helpers';
 
@@ -23,7 +23,7 @@ type UploadSmData = {
     it: number;
 };
 
-const UploadView: React.FC = () => {
+const AlbumCreate: React.FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
@@ -562,4 +562,4 @@ const UploadView: React.FC = () => {
     );
 };
 
-export default UploadView;
+export default AlbumCreate;

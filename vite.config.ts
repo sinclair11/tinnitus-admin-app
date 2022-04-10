@@ -15,6 +15,8 @@ const devConfig = {
 		alias: {
 			'@src': resolve(projectRootDir, 'src'),
 			'@components': resolve(projectRootDir, 'src/components'),
+            '@pages': resolve(projectRootDir, 'src/pages'),
+            '@services': resolve(projectRootDir, 'src/services'),
 			'@config': resolve(projectRootDir, 'src/config'),
 			'@utils': resolve(projectRootDir, 'src/utils'),
 			'@store': resolve(projectRootDir, 'src/store'),
@@ -36,6 +38,8 @@ const prodConfig = {
 		alias: {
 			'@src': resolve(projectRootDir, 'src'),
 			'@components': resolve(projectRootDir, 'src/components'),
+            '@pages': resolve(projectRootDir, 'src/pages'),
+            '@services': resolve(projectRootDir, 'src/services'),
 			'@config': resolve(projectRootDir, 'src/config'),
 			'@utils': resolve(projectRootDir, 'src/utils'),
 			'@store': resolve(projectRootDir, 'src/store'),
