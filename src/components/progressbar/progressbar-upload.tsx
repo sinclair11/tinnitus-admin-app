@@ -1,26 +1,30 @@
-import React, { useEffect, useRef } from 'react';
+import React, { forwardRef, useEffect, useRef, useState, useImperativeHandle } from 'react';
 import './progressbar.css';
 import Modal from 'react-modal';
 import { progressStyles } from '@src/styles/styles';
 import { ProgressBar, Button } from 'react-bootstrap';
 import { Icons } from '@utils/icons';
-import { InfoLog } from '@src/components/infolog/infolog';
-import { useSelector, useDispatch } from 'react-redux';
-import { CombinedStates } from '@store/reducers/custom';
 
-export const ProgressbarUpload: React.FC = () => {
+type ProgressType = {
+    abort: CallableFunction;
+};
+
+const ProgressbarUpload = forwardRef((props: ProgressType, ref: any) => {
+    const types = React.useRef(
+        new Map<string, { color: string; img: string }>([
+            ['danger', { color: '#FF0000', img: Icons.ErrorProgress }],
+            ['success', { color: '#00FF00', img: Icons.SuccessProgress }],
+            ['info', { color: '#00FFFF', img: Icons.InfoProgress }],
+        ]),
+    );
     const btnDisabled = useRef('0.5');
     const btnEnabled = useRef('1');
-    const dispatch = useDispatch();
     const btnContinue = useRef(null);
     const btnAbort = useRef(null);
-    const isOpen = useSelector<CombinedStates>((state) => state.progressReducer.open) as boolean;
-    const progress = useSelector<CombinedStates>((state) => state.progressReducer.progress) as number;
-    const variant = useSelector<CombinedStates>((state) => state.progressReducer.variant) as string;
-    const log = useSelector<CombinedStates>((state) => state.progressReducer.log) as Array<{
-        type: string;
-        value: unknown;
-    }>;
+    const [isOpen, setIsOpen] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [variant, setVariant] = useState('');
+    const [log, setLog] = useState(Array<{ type: string; value: any }>());
 
     useEffect(() => {
         if (btnContinue.current != null && btnAbort.current != null) {
@@ -38,16 +42,52 @@ export const ProgressbarUpload: React.FC = () => {
         }
     }, [progress]);
 
+    useImperativeHandle(ref, () => ({
+        enable: (value: boolean): void => {
+            setIsOpen(value);
+        },
+
+        setProgress: (value: number): void => {
+            if (progress > 100) {
+                setProgress(100);
+            } else {
+                setProgress(value);
+            }
+        },
+
+        setVariant: (value: string): void => {
+            setVariant(value);
+        },
+
+        logMessage: (type: string, value: any): void => {
+            setLog((prev) => [...prev, { type, value }]);
+        },
+
+        operationFailed: (message: string): void => {
+            setVariant('danger');
+            setLog((prev) => [...prev, { type: 'danger', value: message }]);
+        },
+    }));
+
+    function cleanState(): void {
+        setProgress(0);
+        setVariant('success');
+        setLog(Array<{ type: string; value: any }>());
+        setIsOpen(false);
+    }
+
     function close(): void {
-        dispatch({ type: 'progress/clean', payload: null });
-        dispatch({ type: 'progress/abort', payload: true });
+        btnContinue.current.style.opacity = btnDisabled.current;
+        btnAbort.current.style.opacity = btnEnabled.current;
+        props.abort();
+        cleanState();
     }
 
     function onContinue(): void {
         if (btnContinue.current.style.opacity === btnEnabled.current) {
             btnContinue.current.style.opacity = btnDisabled.current;
             btnAbort.current.style.opacity = btnEnabled.current;
-            dispatch({ type: 'progress/clean', payload: null });
+            cleanState();
         }
     }
 
@@ -55,8 +95,26 @@ export const ProgressbarUpload: React.FC = () => {
         if (btnAbort.current.style.opacity === btnEnabled.current) {
             btnContinue.current.style.opacity = btnEnabled.current;
             btnAbort.current.style.opacity = btnDisabled.current;
-            dispatch({ type: 'progress/abort', payload: true });
-            dispatch({ type: 'progress/fail', payload: { type: 'error', value: 'Upload aborted' } });
+            setLog([...log, { type: 'danger', value: 'Upload cancelled by user' }]);
+            setVariant('danger');
+            setProgress(100);
+            props.abort();
+        }
+    }
+
+    function getColor(type: string): string {
+        if (type != '') {
+            return types.current.get(type).color;
+        } else {
+            return '#FFFFFF';
+        }
+    }
+
+    function getImg(type: string): string {
+        if (type != '') {
+            return types.current.get(type).img;
+        } else {
+            return Icons.InfoProgress;
         }
     }
 
@@ -65,7 +123,23 @@ export const ProgressbarUpload: React.FC = () => {
             <div className="progress-container">
                 <ProgressBar variant={variant} className="progressbar" animated now={progress} label={`${progress}%`} />
             </div>
-            <InfoLog messages={log} />
+            <div className="progress-log">
+                <ul className="progress-log-info">
+                    {log.map((item, index) => (
+                        <li
+                            key={index}
+                            style={{
+                                color: getColor(item.type),
+                                fontSize: '15px',
+                                marginBottom: '10px',
+                            }}
+                        >
+                            <img src={getImg(item.type)} />
+                            {item.value}
+                        </li>
+                    ))}
+                </ul>
+            </div>
             <p className="modal-title">Upload</p>
             <img src={Icons['CancelIcon']} className="cancel-icon" onClick={(): void => close()} />
             <Button ref={btnAbort} className="btn-progress-abort" onClick={onAbort}>
@@ -76,4 +150,6 @@ export const ProgressbarUpload: React.FC = () => {
             </Button>
         </Modal>
     );
-};
+});
+
+export default ProgressbarUpload;
