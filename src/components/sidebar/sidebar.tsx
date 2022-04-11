@@ -13,24 +13,29 @@ const Sidebar: React.FC = () => {
                 <p>Tinnitus CMS Menu</p>
             </div>
             <div className="sidebar-menu-content">
-                <div className="sidebar-menu-item" onClick={(): void => history.push(routes.ALBUM_VIEW)}>
+                <div
+                    className="sidebar-menu-item"
+                    onClick={(): void =>
+                        history.push(routes.ALBUM_VIEW.slice(0, routes.ALBUM_VIEW.lastIndexOf(':')) + '0')
+                    }
+                >
                     <img src={Icons.AudioIcon} />
-                    <p>Administreaza albume</p>
+                    <p>Albums</p>
                 </div>
                 <div className="sidebar-menu-item" onClick={(): void => history.push(routes.GENERATOR_VIEW)}>
                     <img src={Icons.GeneratorIcon} />
-                    <p>Administreaza generator</p>
+                    <p>Generator</p>
                 </div>
                 <div className="sidebar-menu-item" onClick={(): void => history.push('/statistics')}>
                     <img src={Icons.StatisticsIcon} />
-                    <p>Statistici si rapoarte</p>
+                    <p>Statistics and reports</p>
                 </div>
                 <div
                     className="sidebar-menu-item"
                     onClick={(): Window => window.open('https://www.youtube.com/channel/UCIygYFvZg8xH3S05mS7xzNg')}
                 >
                     <img src={Icons.ChannelIcon} />
-                    <p>Canal de Youtube</p>
+                    <p>YouTube channel</p>
                 </div>
                 <div className="sidebar-menu-item" onClick={(): Window => window.open('https://www.earsbuzzing.com')}>
                     <img src={Icons.EarsbuzzingSite} />
