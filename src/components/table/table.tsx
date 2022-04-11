@@ -1,34 +1,82 @@
 import { Icons } from '@src/utils/icons';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
 import Dropdown from '@components/dropdown/dropdown';
+import { SongData } from '@src/types/album';
 
 type TableProps = {
-    tableData: TableData[];
-    setTableData: any;
-    setInvalid: any;
-    categories?: Array<string>;
-    data?: Array<TableData>;
+    type: string;
+    headers: Array<any>;
+    data?: Array<SongData>;
+    calculateDuration?: CallableFunction;
 };
 
-export type TableData = {
-    file: any;
-    extension: string;
-    name: string;
-    pos: string | number;
-    length: string;
-    category: string;
-    likes: number;
-    favorites: number;
-};
-
-export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
+export const Table = forwardRef((props: TableProps, ref: any) => {
+    const [invalid, setInvalid] = useState('');
+    const table = useRef(null);
+    const [tableData, setTableData] = useState(Array<SongData>());
+    const [categories, setCategories] = useState(Array<string>());
     const inputSong = useRef(null);
     const loadingEl = (
         <div id="table-loading">
             <img src={Icons.Loading} className="table-loading-anim" />
         </div>
     );
-    const headers = ['Nume', 'Pozitie', 'Durata', 'Categorie', loadingEl];
+
+    useEffect(() => {
+        if (props.type === 'view' || props.type === 'edit') {
+            setTableData(props.data);
+        } else {
+            //No data to be displayed
+        }
+    }, []);
+
+    useEffect(() => {
+        const durations = new Array<string>();
+        for (const song of tableData) {
+            durations.push(song.length);
+        }
+        props.calculateDuration(durations);
+    }, [tableData]);
+
+    function verifyHeaders(): Array<any> {
+        const temp = Object.assign([], props.headers);
+        if (props.type === 'create') {
+            temp.push(loadingEl);
+        }
+
+        return temp;
+    }
+
+    useImperativeHandle(ref, () => ({
+        setCategories: (value: Array<string>): void => {
+            setCategories(value);
+        },
+
+        getData: (): Array<SongData> => {
+            return tableData;
+        },
+
+        clearInternalStates: (): void => {
+            setTableData([]);
+        },
+
+        getInputValidation: async (): Promise<boolean> => {
+            if (tableData.length === 0) {
+                setInvalid('Please add at least one item');
+                return false;
+            } else {
+                for (const entry of tableData) {
+                    if (entry.name === '' || entry.category === '') {
+                        setInvalid('All fields are mandatory');
+                        return false;
+                    } else {
+                        setInvalid('');
+                        return true;
+                    }
+                }
+            }
+        },
+    }));
 
     function getSong(event: any): void {
         const reader = new FileReader();
@@ -46,25 +94,26 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                 audio.onloadedmetadata = (): void => {
                     const duration = Math.round(audio.duration);
                     //Set all required data
-                    props.setTableData([
-                        ...props.tableData,
+                    setTableData([
+                        ...tableData,
                         {
                             file: file,
                             extension: file.name.split('.').pop(),
                             name: file.name.slice(0, file.name.lastIndexOf('.')),
-                            pos: props.tableData.length + 1,
+                            pos: tableData.length + 1,
                             length: getDurationFormat(duration),
-                            category: 'General',
+                            category: categories[0],
                             likes: 0,
                             favorites: 0,
                             views: 0,
                         },
                     ]);
-                    props.setInvalid('');
+                    setInvalid('');
                     //Loading ended
                     document.getElementById('table-loading').style.display = 'none';
                     //Trigger animation for new inserted entry
-                    document.getElementById(`${props.tableData.length}`).classList.add('table-row-animation');
+                    document.getElementById(`${tableData.length}`).classList.add('table-row-animation');
+                    //Callback parent to calculate total duration
                 };
             };
         }
@@ -72,41 +121,79 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
         event.target.value = null;
     }
 
+    function onCategoryChange(value: string, id: string): void {
+        const temp = Object.assign([], tableData);
+        const index = id[id.length - 1] as unknown as number;
+        temp[index].category = value;
+        setTableData(temp);
+    }
+
+    function onRowAnimationStart(id: number): void {
+        //Also set animation to the input fields in the row
+        document.getElementById(`row-name-${id}`).classList.add('table-row-animation');
+        document.getElementById(`row-category-${id}`).classList.add('table-row-animation');
+    }
+
+    function onRowAnimationEnd(id: number): void {
+        //Remove animations from row level and inputs inside the row
+        document.getElementById(`row-name-${id}`).classList.remove('table-row-animation');
+        document.getElementById(`row-category-${id}`).classList.remove('table-row-animation');
+        document.getElementById(`${id}`).classList.remove('table-row-animation');
+    }
+
+    function displayName(type: string, index: number, name: string): any {
+        if (type === 'view') {
+            return <p>{name}</p>;
+        } else if (type === 'create' || type === 'edit') {
+            return (
+                <td>
+                    <input
+                        id={`row-name-${index}`}
+                        className="input-name"
+                        value={name}
+                        onChange={(event): void => onChangeName(event, index)}
+                    />
+                </td>
+            );
+        }
+    }
+
+    function onChangeName(event: any, id: number): void {
+        const temp = Object.assign([], tableData);
+        temp[id].name = event.target.value;
+        setTableData(temp);
+    }
+
+    function displayCategory(type: string, id: number, category?: string): any {
+        if (type === 'view') {
+            return <p>{category}</p>;
+        } else if (type === 'create' || type === 'edit') {
+            return (
+                <Dropdown
+                    id={`row-category-${id}`}
+                    items={categories}
+                    className="dropdown-category"
+                    onChange={onCategoryChange}
+                    current={tableData[id].category}
+                />
+            );
+        }
+    }
+
     function deleteEntry(id: number): void {
-        const temp = Object.assign([], props.tableData);
-
+        const temp = Object.assign([], tableData);
         temp.splice(id, 1);
-
         //Replace all positions
         for (let i = 0; i < temp.length; i++) {
             temp[i].pos = i + 1;
         }
 
-        props.setTableData(temp);
-    }
-
-    function onDisplayName(id: number): string {
-        return props.tableData[id].name;
-    }
-
-    function onChangeName(event: any, id: number): void {
-        const temp = Object.assign([], props.tableData);
-
-        temp[id].name = event.target.value;
-
-        props.setTableData(temp);
+        setTableData(temp);
     }
 
     function onPlusClick(): void {
         //Trigger choose file dialog
         inputSong.current.click();
-    }
-
-    function onCategoryChange(value: string, id: string): void {
-        const temp = Object.assign([], props.tableData);
-        const index = id[id.length - 1] as unknown as number;
-        temp[index].category = value;
-        props.setTableData(temp);
     }
 
     function getDurationFormat(duration: number): string {
@@ -130,8 +217,8 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
         return retVal;
     }
 
-    function onMoveUp(id: number): void {
-        const temp = Object.assign([], props.tableData);
+    function moveUp(id: number): void {
+        const temp = Object.assign([], tableData);
         const tempEl = temp[id];
         let currentRowHtml;
 
@@ -146,12 +233,12 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
             //Set highlight animation
             currentRowHtml = document.getElementById(`${id - 1}`);
             currentRowHtml.classList.add('table-row-animation');
-            props.setTableData(temp);
+            setTableData(temp);
         }
     }
 
-    function onMoveDown(id: number): void {
-        const temp = Object.assign([], props.tableData);
+    function moveDown(id: number): void {
+        const temp = Object.assign([], tableData);
         const tempEl = temp[id];
         let currentRowHtml;
 
@@ -166,29 +253,16 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
             //Set highlight animation
             currentRowHtml = document.getElementById(`${id + 1}`);
             currentRowHtml.classList.add('table-row-animation');
-            props.setTableData(temp);
+            setTableData(temp);
         }
-    }
-
-    function onRowAnimationStart(id: number): void {
-        //Also set animation to the input fields in the row
-        document.getElementById(`row-name-${id}`).classList.add('table-row-animation');
-        document.getElementById(`row-category-${id}`).classList.add('table-row-animation');
-    }
-
-    function onRowAnimationEnd(id: number): void {
-        //Remove animations from row level and inputs inside the row
-        document.getElementById(`row-name-${id}`).classList.remove('table-row-animation');
-        document.getElementById(`row-category-${id}`).classList.remove('table-row-animation');
-        document.getElementById(`${id}`).classList.remove('table-row-animation');
     }
 
     return (
         <div className="table-section">
-            <table className="table" id="album-table">
+            <table className="table" id="album-table" ref={table}>
                 <thead>
                     <tr>
-                        {headers.map((header, i) => (
+                        {verifyHeaders().map((header, i) => (
                             <th id={`table-edit-header-${i}`} key={`${i}`}>
                                 {header}
                             </th>
@@ -196,11 +270,11 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {props.tableData.map((row, i) => {
+                    {tableData.map((row, i) => {
                         return (
                             <tr
-                                key={`${i}`}
                                 id={`${i}`}
+                                key={`${i}`}
                                 onAnimationStart={(): void => {
                                     onRowAnimationStart(i);
                                 }}
@@ -208,49 +282,40 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
                                     onRowAnimationEnd(i);
                                 }}
                             >
-                                <td>
-                                    <input
-                                        id={`row-name-${i}`}
-                                        className="input-name"
-                                        value={onDisplayName(i)}
-                                        onChange={(event): void => onChangeName(event, i)}
-                                    />
-                                </td>
+                                {displayName(props.type, i, row.name)}
                                 <td>{row.pos}</td>
                                 <td>{row.length}</td>
-                                <td className="category">
-                                    <Dropdown
-                                        id={`row-category-${i}`}
-                                        items={props.categories}
-                                        className="dropdown-category"
-                                        onChange={onCategoryChange}
-                                        current={props.tableData[i].category}
-                                    />
-                                </td>
-                                <td>
-                                    <div className="table-row-func">
-                                        {/* Delete icon */}
-                                        <img
-                                            src={Icons.DeleteRow}
-                                            className="remove-icon"
-                                            onClick={(): void => deleteEntry(i)}
-                                        />
-                                        {/* Up & Down buttons */}
-                                        <div className="nav-section">
-                                            <img src={Icons.Up} onClick={(): void => onMoveUp(i)} />
+                                <td className="category">{displayCategory(props.type, i, row.category)}</td>
+                                {props.type === 'view' ? <td> {row.views}</td> : null}
+                                {props.type === 'view' ? <td> {row.likes}</td> : null}
+                                {props.type === 'view' ? <td> {row.favorites}</td> : null}
+                                {props.type === 'create' || props.type === 'edit' ? (
+                                    <td>
+                                        <div className="table-row-func">
+                                            {/* Delete icon */}
                                             <img
-                                                src={Icons.Down}
-                                                className="down"
-                                                onClick={(): void => onMoveDown(i)}
+                                                src={Icons.DeleteRow}
+                                                className="remove-icon"
+                                                onClick={(): void => deleteEntry(i)}
                                             />
+                                            {/* Up & Down buttons */}
+                                            <div className="nav-section">
+                                                <img src={Icons.Up} onClick={(): void => moveUp(i)} />
+                                                <img
+                                                    src={Icons.Down}
+                                                    className="down"
+                                                    onClick={(): void => moveDown(i)}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
+                                    </td>
+                                ) : null}
                             </tr>
                         );
                     })}
                 </tbody>
             </table>
+            <p className="invalid-input invalid-table">{invalid}</p>
             <div className="plus-body" onClick={onPlusClick}>
                 <img src={Icons.Plus} className="plus" />
                 <input
@@ -263,4 +328,4 @@ export const TableEdit: React.FC<TableProps> = (props: TableProps) => {
             </div>
         </div>
     );
-};
+});
