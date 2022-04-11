@@ -77,13 +77,3 @@ export function getDurationFormat(duration: number): string {
 
     return retVal;
 }
-
-export function createStringForSignature(params: any): string {
-    let retVal = '';
-    for (const key in params) {
-        if (params.hasOwnProperty(key)) {
-            retVal += `${key}=${params[key]}&`;
-        }
-    }
-    return retVal.slice(0, -1);
-}
