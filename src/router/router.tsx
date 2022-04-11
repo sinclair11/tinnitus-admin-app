@@ -12,7 +12,7 @@ const Router: React.FC = () => {
         <BrowserRouter>
             <Route exact path={routes.HOME} component={Welcome} />
             <Route exact path={routes.LOGIN} component={Login} />
-            <Route path={routes.ALBUM_VIEW} component={AlbumView} />
+            <Route exact path={routes.ALBUM_VIEW} component={AlbumView} />
             <Route exact path={routes.ALBUM_CREATE} component={AlbumCreate} />
         </BrowserRouter>
     );

@@ -135,17 +135,17 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
             <ReactTooltip place="top" type="dark" effect="float" delayShow={500} />
             <div className="toolbar-action" onClick={(): void => history.push(routes.ALBUM_CREATE)}>
                 <img src={ToolbarIcons['UploadIcon']} className="ActionIcon" />
-                <p>Incarca</p>
+                <p>Upload</p>
             </div>
 
             <div className="toolbar-action" onClick={(): Promise<void> => openModal('edit')}>
                 <img src={ToolbarIcons['EditIcon']} className="ActionIcon" />
-                <p>Editeaza</p>
+                <p>Edit</p>
             </div>
 
             <div className="toolbar-action" onClick={onRequestDeleteClick}>
                 <img data-tip="Sterge" src={ToolbarIcons['DeleteIcon']} className="ActionIcon" />
-                <p>Sterge</p>
+                <p>Delete</p>
             </div>
             <Modal isOpen={messageOpen} style={dialogStyles} contentLabel="Upload" ariaHideApp={false}>
                 <MessageBox setIsOpen={setMessageOpen} message={messageboxMsg} />

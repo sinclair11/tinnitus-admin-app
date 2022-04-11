@@ -66,7 +66,7 @@ const AlbumView: React.FC = () => {
                         color: 'black',
                     }}
                 >
-                    <p>Selectati un album pentru a vedea informatii despre el</p>
+                    <p>Select an album to see more information</p>
                 </div>
             );
         }
