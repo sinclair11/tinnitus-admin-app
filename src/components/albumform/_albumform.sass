@@ -1,55 +1,6 @@
 @use '../../styles/colors'
 @use '../../styles/custom'
 
-.upload-section
-  display: flex
-  flex-direction: column
-  width: calc(100% - 300px - 80px)
-  padding: 40px
-  margin-left: 300px
-  overflow: auto
-
-  .invalid-table
-    margin-top: 5px
-
-.upload-album
-  display: flex
-  width: 100%
-
-  .invalid-thumbnail
-    margin-top: 10px
-
-.upload-album-artwork
-  position: relative
-  display: flex
-  justify-content: center
-  align-items: center
-  width: 400px
-  height: 400px
-  background: colors.$albumArtwork
-  border: 2px solid #fcac00
-  box-shadow: custom.$boxshadow
-
-  .plus-body
-    position: absolute
-    right: -24px
-    bottom: -24px
-    width: 42px
-    height: 42px
-    cursor: pointer
-
-  .plus
-    width: 32px
-    height: 32px
-
-  .input-plus
-    display: none
-
-  img
-    width: 400px
-    height: 400px
-    object-fit: cover
-
 .upload-album-info
   display: flex
   flex-direction: column
@@ -123,21 +74,6 @@
     .dropdown-margin
       margin-top: 4px
       margin-left: 1rem
-
-.upload-btn-album
-  text-align: center
-  width: 100px
-  height: 40px
-  border: 1px solid colors.$border
-  background: colors.$btn
-  color: white
-  font-size: 14px
-  margin-left: 50%
-  margin-top: 5%
-  border-radius: 7px
-
-  &:hover
-    opacity: 0.8
 
 .invalid-input
   font-size: 14px

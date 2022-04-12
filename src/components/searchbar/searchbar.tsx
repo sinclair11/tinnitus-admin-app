@@ -30,6 +30,8 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
     useEffect(() => {
         if (selected !== null && selected.name != searchVal) {
             getResourceData();
+        } else {
+            document.getElementById('searchbar-results').style.display = 'none';
         }
     }, [searchVal]);
 
@@ -105,8 +107,8 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
                 console.log(error);
             }
         } else {
-            setSearchedAlbums([]);
             document.getElementById('searchbar-results').style.display = 'none';
+            setSearchedAlbums([]);
         }
     }
 
@@ -156,7 +158,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
             >
                 <FormControl
                     id="searchbar-albums"
-                    placeholder={`Nume ${props.type}...`}
+                    placeholder={'Album name...'}
                     aria-label={`Nume ${props.type}`}
                     aria-describedby="basic-addon2"
                     className="SearchBar"
@@ -203,7 +205,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
             </Modal>
             <Modal style={tableStyles} isOpen={false} ariaHideApp={false}>
                 {/* <Reslist entries={tableElements} selectFromList={setSelected} /> */}
-                <p className="modal-title">Lista {props.type}</p>
+                <p className="modal-title">List {props.type}</p>
                 <img src={Icons['CancelIcon']} className="cancel-icon" onClick={closeListView} />
                 <Button className="ListOk" onClick={okList}>
                     OK

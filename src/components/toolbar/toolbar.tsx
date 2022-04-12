@@ -9,6 +9,7 @@ import { dialogStyles, hourglassStyle } from '@src/styles/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import ErrorHandler from '@src/utils/errorhandler';
+import { routes } from '@src/router/routes';
 
 type ToolbarProps = {
     container?: string;
@@ -132,19 +133,19 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
     return (
         <div className={props.container + ' ToolbarContainer '}>
             <ReactTooltip place="top" type="dark" effect="float" delayShow={500} />
-            <div className="toolbar-action" onClick={(): void => history.push('/audio/upload')}>
+            <div className="toolbar-action" onClick={(): void => history.push(routes.ALBUM_CREATE)}>
                 <img src={ToolbarIcons['UploadIcon']} className="ActionIcon" />
-                <p>Incarca</p>
+                <p>Upload</p>
             </div>
 
             <div className="toolbar-action" onClick={(): Promise<void> => openModal('edit')}>
                 <img src={ToolbarIcons['EditIcon']} className="ActionIcon" />
-                <p>Editeaza</p>
+                <p>Edit</p>
             </div>
 
             <div className="toolbar-action" onClick={onRequestDeleteClick}>
                 <img data-tip="Sterge" src={ToolbarIcons['DeleteIcon']} className="ActionIcon" />
-                <p>Sterge</p>
+                <p>Delete</p>
             </div>
             <Modal isOpen={messageOpen} style={dialogStyles} contentLabel="Upload" ariaHideApp={false}>
                 <MessageBox setIsOpen={setMessageOpen} message={messageboxMsg} />

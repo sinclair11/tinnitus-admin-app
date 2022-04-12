@@ -4,17 +4,22 @@ import { useHistory } from 'react-router-dom';
 import logoIcon from '@icons/logo.png';
 import { Icons } from '@utils/icons';
 import { getAuth } from 'firebase/auth';
+import { app } from '@src/config/firebase';
+import { CombinedStates } from '@store/reducers/custom';
+import { useSelector } from 'react-redux';
+import { routes } from '@src/router/routes';
 
-const Welcome: React.FC = () => {
+const Home: React.FC = () => {
     const history = useHistory();
+    const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
 
     useEffect(() => {
-        if (getAuth().currentUser) {
+        if (auth) {
             //Continue in page
         } else {
-            history.push('/');
+            history.push('/login');
         }
-    });
+    }, [getAuth(app).currentUser]);
 
     return (
         <div className="Stack">
@@ -43,11 +48,16 @@ const GridActions: React.FC = () => {
     return (
         <div className={'GridActions GridMove'}>
             <ButtonGroup vertical className="ButtonGroup">
-                <Button className="GridButton GridButtonText" onClick={(): void => goToRoute('/album')}>
+                <Button
+                    className="GridButton GridButtonText"
+                    onClick={(): void =>
+                        goToRoute(routes.ALBUM_VIEW.slice(0, routes.ALBUM_VIEW.lastIndexOf(':')) + '0')
+                    }
+                >
                     <img src={Icons['AudioIcon']} className="ButtonIcon" />
                     Administreaza albume audio
                 </Button>
-                <Button className="GridButton GridButtonText" onClick={(): void => goToRoute('/generator')}>
+                <Button className="GridButton GridButtonText" onClick={(): void => goToRoute(routes.GENERATOR_VIEW)}>
                     <img src={Icons['GeneratorIcon']} className="ButtonIcon" />
                     Administreaza generator
                 </Button>
@@ -69,4 +79,4 @@ const GridActions: React.FC = () => {
 
 const GridActionsMemo = React.memo(GridActions);
 
-export default Welcome;
+export default Home;

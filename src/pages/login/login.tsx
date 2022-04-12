@@ -7,7 +7,7 @@ import { app, db } from '@config/firebase';
 import { useDispatch } from 'react-redux';
 import { doc, getDoc } from 'firebase/firestore';
 
-export const Login: React.FC = () => {
+const Login: React.FC = () => {
     const dispatch = useDispatch();
     const [admin, setAdmin] = useState('');
     const [passw, setPassw] = useState('');
@@ -58,7 +58,7 @@ export const Login: React.FC = () => {
                 });
                 setAdmin('');
                 setPassw('');
-                history.push('/welcome');
+                history.push('/');
             } catch (error) {
                 //Handle error and display message
                 setPasswInvalid('Invalid username or password');
@@ -113,3 +113,5 @@ export const Login: React.FC = () => {
         </div>
     );
 };
+
+export default Login;

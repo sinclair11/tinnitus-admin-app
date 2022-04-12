@@ -12,6 +12,7 @@
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "alwaysStrict": false,
     "paths": {
       "*": ["node_modules/*"],
       "@src/*": ["./src/*"],
@@ -20,6 +21,8 @@
 	  "@utils/*": ["./src/utils/*"],
 	  "@icons/*": ["./src/icons/*"],
 	  "@store/*": ["./src/store/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@services/*": ["./src/services/*"],
     "@config/*": ["./src/config/*"],
     },
     "typeRoots": [
