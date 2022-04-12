@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, createRef } from 'react';
+import React, { useRef, useEffect, createRef, useState } from 'react';
 import Sidebar from '@components/sidebar/sidebar';
 import { Table } from '@components/table/table';
 import { useHistory } from 'react-router-dom';
@@ -10,24 +10,30 @@ import { getAuth } from 'firebase/auth';
 import ProgressbarUpload from '@components/progressbar/progressbar-upload';
 import AlbumForm from '@src/components/albumform/albumform';
 import Artwork from '@components/artwork/artwork';
-import { uploadAlbumArtwork, uploadAlbumInfo, uploadSong } from '@services/upload';
+import { deleteAlbum, uploadAlbumArtwork, uploadAlbumInfo, uploadSong } from '@services/upload';
+import axios from 'axios';
+import { SongData } from '@src/types/album';
 
 const AlbumCreate: React.FC = () => {
     const history = useHistory();
     const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
     const oci = useSelector<CombinedStates>((state) => state.ociReducer.config) as any;
-    const uploadAbort = useRef(false);
     const filesUploaded = useRef([]);
     const tableRef = createRef<any>();
     const formRef = createRef<any>();
     const artworkRef = createRef<any>();
     const progressbarRef = createRef<any>();
+    const cancelSource = useRef(axios.CancelToken.source());
+    const content = useRef(null);
 
     useEffect(() => {
         if (auth) {
             onFetchCategories().then((data) => {
+                //Pass categories to child components
                 tableRef.current.setCategories(data);
                 formRef.current.setCategories(data);
+                //Done loading
+                content.current.style.display = 'flex';
             });
         } else {
             history.push('/');
@@ -48,6 +54,21 @@ const AlbumCreate: React.FC = () => {
         formRef.current.setTotalDuration(songs);
     }
 
+    function onUploadCancelled(): void {
+        cancelSource.current.cancel('User cancelled upload');
+    }
+
+    function clearChildrenStates(): void {
+        formRef.current.clearInternalStates();
+        tableRef.current.clearInternalStates();
+        artworkRef.current.clearInternalStates();
+    }
+
+    function updateProgress(progress: number, type: string, message: string): void {
+        progressbarRef.current.setProgress(progress);
+        progressbarRef.current.logMessage(type, message);
+    }
+
     async function onUpload(): Promise<void> {
         //Verify if all inputs are valid
         const formValidation = await formRef.current.getInputValidation();
@@ -62,42 +83,39 @@ const AlbumCreate: React.FC = () => {
                 let progress = 10;
                 //Iniitialize progress bar and start uploading
                 progressbarRef.current.enable(true);
-                progressbarRef.current.setVariant('success');
-                progressbarRef.current.setProgress(progress);
-                progressbarRef.current.logMessage('info', 'Uploading album...');
+                updateProgress(progress, 'info', 'Uploading album...');
                 //Upload album songs to OCI storage
-                const tableData = tableRef.current.getData();
+                const tableData: SongData[] = tableRef.current.getData();
                 const step = Math.floor(80 / tableData.length);
                 for (const song of tableData) {
-                    const res = await uploadSong(docRef.id, song);
-                    progressbarRef.current.setProgress((progress += step));
-                    progressbarRef.current.logMessage('success', res);
+                    filesUploaded.current.push(`${song.name}.${song.extension}`);
+                    const res = await uploadSong(docRef.id, song, cancelSource.current.token);
+                    updateProgress((progress += step), 'success', res);
                 }
                 //Upload album artwork to OCI storage
                 const artwork = artworkRef.current.getData();
-                let res = await uploadAlbumArtwork(docRef.id, artwork);
-                progressbarRef.current.setProgress(95);
-                progressbarRef.current.logMessage('success', res);
+                let res = await uploadAlbumArtwork(docRef.id, artwork, cancelSource.current.token);
+                updateProgress(95, 'success', res);
                 //Register album in database
                 const albumData = formRef.current.getData();
                 res = await uploadAlbumInfo(docRef.id, albumData, tableData);
-                progressbarRef.current.setProgress(100);
-                progressbarRef.current.logMessage('success', res);
+                updateProgress(100, 'success', res);
                 progressbarRef.current.logMessage('info', 'All album data uploaded successfully!');
                 //Clear all states to avoid uploading the same album again
-                formRef.current.clearInternalStates();
-                tableRef.current.clearInternalStates();
-                artworkRef.current.clearInternalStates();
+                clearChildrenStates();
             } catch (error) {
-                progressbarRef.current.operationFailed(error);
+                deleteAlbum(docRef.id, oci, filesUploaded.current);
+                progressbarRef.current.operationFailed(error.message);
+                //Create a new cancel token
+                cancelSource.current = axios.CancelToken.source();
             }
         }
     }
 
     return (
-        <div className="page">
+        <div className="page" id="page-upload-create">
             <Sidebar />
-            <div className="upload-section">
+            <div className="upload-section" ref={content}>
                 {/* Album details */}
                 <div className="upload-album">
                     {/* Artwork */}
@@ -116,7 +134,7 @@ const AlbumCreate: React.FC = () => {
                     Upload
                 </button>
             </div>
-            <ProgressbarUpload ref={progressbarRef} abort={undefined} />
+            <ProgressbarUpload ref={progressbarRef} abort={onUploadCancelled} />
         </div>
     );
 };

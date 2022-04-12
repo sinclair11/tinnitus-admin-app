@@ -1,9 +1,9 @@
 import { db } from '@src/config/firebase';
 import { AlbumFormData, SongData } from '@src/types/album';
-import axios from 'axios';
+import axios, { CancelToken } from 'axios';
 import { deleteDoc, doc, setDoc } from 'firebase/firestore';
 
-export async function uploadSong(albumId: string, song: SongData, cancel?: any): Promise<string> {
+export async function uploadSong(albumId: string, song: SongData, cancel?: CancelToken): Promise<string> {
     try {
         //Save each song at corresponding path in storage having firestore id as name
         const formData = new FormData();
@@ -21,8 +21,9 @@ export async function uploadSong(albumId: string, song: SongData, cancel?: any):
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
+            cancelToken: cancel,
         });
-        return res.data.message;
+        return res.data;
     } catch (error) {
         throw error;
     }
@@ -56,7 +57,7 @@ export async function uploadAlbumInfo(id: string, info: AlbumFormData, tableData
     }
 }
 
-export async function uploadAlbumArtwork(id: string, artwork: File, cancel?: any): Promise<string> {
+export async function uploadAlbumArtwork(id: string, artwork: File, cancel?: CancelToken): Promise<string> {
     try {
         //Save album artwork at corresponding path provided by doc id
         const formData = new FormData();
@@ -74,8 +75,9 @@ export async function uploadAlbumArtwork(id: string, artwork: File, cancel?: any
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
+            cancelToken: cancel,
         });
-        return res.data.message;
+        return res.data;
     } catch (error) {
         throw error;
     }

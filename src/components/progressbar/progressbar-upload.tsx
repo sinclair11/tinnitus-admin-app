@@ -23,7 +23,7 @@ const ProgressbarUpload = forwardRef((props: ProgressType, ref: any) => {
     const btnAbort = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [variant, setVariant] = useState('');
+    const [variant, setVariant] = useState('success');
     const [log, setLog] = useState(Array<{ type: string; value: any }>());
 
     useEffect(() => {
@@ -67,12 +67,19 @@ const ProgressbarUpload = forwardRef((props: ProgressType, ref: any) => {
             setVariant('danger');
             setLog((prev) => [...prev, { type: 'danger', value: message }]);
         },
+
+        cleanState: (): void => {
+            setProgress(0);
+            setVariant('success');
+            setLog([]);
+            setIsOpen(false);
+        },
     }));
 
     function cleanState(): void {
         setProgress(0);
         setVariant('success');
-        setLog(Array<{ type: string; value: any }>());
+        setLog([]);
         setIsOpen(false);
     }
 
@@ -95,7 +102,6 @@ const ProgressbarUpload = forwardRef((props: ProgressType, ref: any) => {
         if (btnAbort.current.style.opacity === btnEnabled.current) {
             btnContinue.current.style.opacity = btnEnabled.current;
             btnAbort.current.style.opacity = btnDisabled.current;
-            setLog([...log, { type: 'danger', value: 'Upload cancelled by user' }]);
             setVariant('danger');
             setProgress(100);
             props.abort();
