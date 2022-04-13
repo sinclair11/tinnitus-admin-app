@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
@@ -16,8 +16,9 @@ type ToolbarProps = {
     type: string;
 };
 
-export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
+const Toolbar = forwardRef((props: ToolbarProps, ref?: any) => {
     const history = useHistory();
+    const [selected, setSelected] = useState(false);
     const [modalIsOpen, setIsOpen] = useState(false);
     const [action, setAction] = useState('');
     const [editData, setEditData] = useState({
@@ -31,7 +32,12 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
     const [dialogbox, setDialogbox] = useState(false);
     const [accept, setAccept] = useState(false);
     const dispatch = useDispatch();
-    const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
+
+    useImperativeHandle(ref, () => ({
+        setSelected: (value: boolean): void => {
+            setSelected(value);
+        },
+    }));
 
     useEffect(() => {
         if (accept == true) {
@@ -44,7 +50,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
     async function openModal(type: string): Promise<void> {
         if (type === 'edit') {
             //Check if there is a resource selected
-            if (selected !== '') {
+            if (selected === true) {
                 try {
                     //Activate loading screen
                     setLoading(true);
@@ -83,7 +89,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
                 }
             } else {
                 //Notify user that he must select a resource first
-                setMessageboxMsg('Selectati un album intai!');
+                setMessageboxMsg('Please select an album first!');
                 setMessageOpen(true);
             }
         } else if (type === 'upload') {
@@ -121,11 +127,11 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
 
     function onRequestDeleteClick(): void {
         //First check if a resource was selected
-        if (selected != '') {
+        if (selected === true) {
             setDialogbox(true);
         } else {
             //Notify user that he must select a resource first
-            setMessageboxMsg('Selectati un album intai!');
+            setMessageboxMsg('Please select an album first!');
             setMessageOpen(true);
         }
     }
@@ -144,7 +150,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
             </div>
 
             <div className="toolbar-action" onClick={onRequestDeleteClick}>
-                <img data-tip="Sterge" src={ToolbarIcons['DeleteIcon']} className="ActionIcon" />
+                <img src={ToolbarIcons['DeleteIcon']} className="ActionIcon" />
                 <p>Delete</p>
             </div>
             <Modal isOpen={messageOpen} style={dialogStyles} contentLabel="Upload" ariaHideApp={false}>
@@ -162,4 +168,6 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
             </Modal>
         </div>
     );
-};
+});
+
+export default Toolbar;
