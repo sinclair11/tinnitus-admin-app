@@ -13,8 +13,26 @@ export type SongData = {
 export type AlbumFormData = {
     name: string;
     description: string;
+    ext: string;
     tags: string[];
     length: string;
     category: string;
     notification?: string;
+};
+
+export type AlbumInfo = {
+    id: string;
+    name: string;
+    ext: string;
+    description: string;
+    tags: string[];
+    length: string;
+    category: string;
+    likes: number;
+    reviews: number;
+    upload_date: any;
+    artwork: string;
+    total_songs: number;
+    favorites: number;
+    songs: Array<SongData>;
 };
