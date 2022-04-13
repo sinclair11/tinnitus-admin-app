@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import { Icons } from '@utils/icons';
 import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';
 import Modal from 'react-modal';
 import { MessageBox } from '@src/components/messagebox/messagebox';
-import { useDispatch, useSelector } from 'react-redux';
-import { CombinedStates } from '@src/store/reducers/custom';
-import { collection, getDocs, limit, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, query, where } from 'firebase/firestore';
 import { db } from '@src/config/firebase';
+import { useHistory } from 'react-router-dom';
 
 type SearchProps = {
     type: string;
 };
 
-export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
+const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
+    const history = useHistory();
     const [searchVal, setSearchVal] = useState('');
     //Hourglass modal state
     const [isOpen, setIsOpen] = useState(false);
@@ -23,8 +23,6 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
     const [message, setMessage] = useState('');
     //Selected resource
     const [selected, setSelected] = useState({ name: '' });
-    const dispatch = useDispatch();
-    const selectedRes = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
     const [searchedAlbums, setSearchedAlbums] = useState<any[]>([]);
 
     useEffect(() => {
@@ -35,40 +33,11 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
         }
     }, [searchVal]);
 
-    function updateInfoData(dataInfo: any, dataUsage: any): void {
-        const arrInfo = [
-            { name: 'Nume', value: dataInfo['name'] },
-            { name: 'Lungime', value: dataInfo['length'] },
-            { name: 'Data upload', value: dataInfo['upload'] },
-            { name: 'Tags', value: dataInfo['tags'] },
-            { name: 'Descriere', value: dataInfo['description'] },
-        ];
-        const arrUsage = [
-            {
-                name: 'Total durata vizionari',
-                value: dataUsage['views_length'],
-            },
-            { name: 'Total vizionari', value: dataUsage['views'] },
-            {
-                name: 'Durata per utilizator',
-                value: dataUsage['views_per_user'],
-            },
-            { name: 'Aprecieri', value: dataUsage['likes'] },
-            { name: 'Favorizari', value: dataUsage['favs'] },
-            { name: 'Feedback-uri', value: dataUsage['nr_feedback'] },
-        ];
-        //* Store resource general information in redux
-        dispatch({ type: 'resdata/info', payload: arrInfo });
-        //* Store resource usage ingormation in redux
-        dispatch({ type: 'resdata/usage', payload: arrUsage });
-        //* Store general information as raw data in redux
-        dispatch({ type: 'resdata/infodata', payload: dataInfo });
-        //* Store name of selected resource
-        dispatch({
-            type: 'resdata/selected',
-            payload: searchVal,
-        });
-    }
+    useImperativeHandle(ref, () => ({
+        setSearchValue: (value: string): void => {
+            setSearchVal(value);
+        },
+    }));
 
     async function getResourceData(): Promise<void> {
         if (searchVal != '') {
@@ -82,9 +51,12 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
                 const q1 = query(q, where('name', '<=', temp + '\uf8ff'), limit(7));
                 const querySnapshot = await getDocs(q1);
                 const docs = querySnapshot.docs;
+                const reqRef = doc(collection(db, 'misc'), 'oci-req');
+                const docReq = await getDoc(reqRef);
                 //Take all data now to avoid doing an additional request
                 for (const doc of docs) {
                     const data = doc.data();
+                    const arworkUrl = `${docReq.data().value}${doc.id}/artwork.${data.ext}`;
                     albums.push({
                         id: doc.id,
                         name: data.name,
@@ -93,7 +65,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
                         description: data.description,
                         tags: data.tags,
                         length: data.length,
-                        artwork: data.artwork,
+                        artwork: arworkUrl,
                         songs: data.songs,
                         total_songs: data.total_songs,
                         likes: data.likes,
@@ -139,6 +111,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
         const selectedItem = searchedAlbums.find((item) => item.name === name);
         setSelected(selectedItem);
         document.getElementById('searchbar-results').style.display = 'none';
+        history.push(`/album/view/${selectedItem.id}`, selectedItem);
     }
 
     async function onSearchBtnClick(): Promise<void> {
@@ -146,6 +119,7 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
         document.getElementById('searchbar-results').style.display = 'none';
         const selectedItem = searchedAlbums.find((item) => item.name === searchVal);
         setSelected(selectedItem);
+        history.push(`/album/view/${selectedItem.id}`, selectedItem);
     }
 
     return (
@@ -159,6 +133,9 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
                 <FormControl
                     id="searchbar-albums"
                     placeholder={'Album name...'}
+                    autoComplete="off"
+                    autoCapitalize="on"
+                    autoCorrect="off"
                     aria-label={`Nume ${props.type}`}
                     aria-describedby="basic-addon2"
                     className="SearchBar"
@@ -216,4 +193,6 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
             </Modal>
         </InputGroup>
     );
-};
+});
+
+export default SearchBar;
