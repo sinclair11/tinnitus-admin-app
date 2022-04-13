@@ -1,72 +1,57 @@
-import React, { useEffect } from 'react';
+import React, { createRef, useEffect, useRef } from 'react';
 import { Container } from 'react-bootstrap';
-import { SearchBar } from '@src/components/searchbar/searchbar';
-import { InfoFile } from '@src/components/infofile/infofile';
-import { Toolbar } from '@src/components/toolbar/toolbar';
-import '@components/modal-search/modal-search.css';
-import { useDispatch, useSelector } from 'react-redux';
+import SearchBar from '@src/components/searchbar/searchbar';
+import Toolbar from '@src/components/toolbar/toolbar';
+import { useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import Sidebar from '@components/sidebar/sidebar';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import { app } from '@config/firebase';
+import { SongData } from '@src/types/album';
+import Artwork from '@components/artwork/artwork';
+import '@components/modal-search/modal-search.css';
 
-type ArtworkProps = {
-    img: any;
+type AlbumViewProps = {
+    location: any;
 };
 
-const AlbumArtwork: React.FC<ArtworkProps> = (props: ArtworkProps) => {
-    return (
-        <div className="section-album-artwork">
-            <img src={`data:image/png;base64,${props.img}`} />
-        </div>
-    );
-};
-
-const AlbumView: React.FC = () => {
-    const dispatch = useDispatch();
+const AlbumView: React.FC<AlbumViewProps> = (props: AlbumViewProps) => {
+    const { id } = useParams<{ id: string }>();
+    const albumData = useRef();
     const auth = useSelector<CombinedStates>((state) => state.generalReducer.auth) as any;
-    const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
-    const thumbnail = useSelector<CombinedStates>((state) => state.resdataReducer.thumbnail) as string;
     const history = useHistory();
-
-    useEffect(() => {
-        //No resource data on first rendering
-        dispatch({ type: 'resdata/selected', payload: '' });
-    }, []);
+    const searchbarRef = createRef<any>();
 
     useEffect(() => {
         if (auth) {
-            //Continue in page
         } else {
             history.push('/login');
         }
     }, [getAuth(app).currentUser]);
 
+    useEffect(() => {
+        //Continue in page
+        if (id !== '0') {
+            //Load data for selected album
+            albumData.current = props.location.state;
+        } else {
+            //Reset value of searchbar
+            searchbarRef.current.setSearchValue('');
+        }
+    }, [id]);
+
     function displayContent(): JSX.Element {
-        //Check if a resource was selected
-        if (selected !== '') {
-            //Insert video player
+        if (id === '0') {
             return (
-                <div className="section-album-content">
-                    <AlbumArtwork img={thumbnail} />
-                    <InfoFile title="Informatii generale" type={'general'} />
+                <div className="section-no-content">
+                    <p>Please select an album to see more information</p>
                 </div>
             );
-        }
-        //Functionality N/A
-        else {
+        } else {
             return (
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '100%',
-                        color: 'black',
-                    }}
-                >
-                    <p>Select an album to see more information</p>
+                <div className="section-album-content">
+                    {id !== '0' ? <Artwork type="view" img={props.location.state.artwork} /> : null}
                 </div>
             );
         }
@@ -77,7 +62,7 @@ const AlbumView: React.FC = () => {
             <Sidebar />
             <div className="section-album">
                 <div className="SearchBarDiv">
-                    <SearchBar type="album" />
+                    <SearchBar type="album" ref={searchbarRef} />
                 </div>
                 <Container id="content" className="ContentPlaceholder">
                     <Toolbar type="audio" />
