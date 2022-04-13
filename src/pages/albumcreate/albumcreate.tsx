@@ -98,6 +98,7 @@ const AlbumCreate: React.FC = () => {
                 updateProgress(95, 'success', res);
                 //Register album in database
                 const albumData = formRef.current.getData();
+                albumData.ext = artwork.name.split('.').pop();
                 res = await uploadAlbumInfo(docRef.id, albumData, tableData);
                 updateProgress(100, 'success', res);
                 progressbarRef.current.logMessage('info', 'All album data uploaded successfully!');
@@ -119,7 +120,7 @@ const AlbumCreate: React.FC = () => {
                 {/* Album details */}
                 <div className="upload-album">
                     {/* Artwork */}
-                    <Artwork ref={artworkRef} />
+                    <Artwork ref={artworkRef} type="create" />
                     {/* General info */}
                     <AlbumForm type={'create'} ref={formRef} />
                 </div>

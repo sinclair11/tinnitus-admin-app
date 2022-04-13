@@ -23,7 +23,7 @@ export async function uploadSong(albumId: string, song: SongData, cancel?: Cance
             },
             cancelToken: cancel,
         });
-        return res.data;
+        return res.data.message;
     } catch (error) {
         throw error;
     }
@@ -41,6 +41,7 @@ export async function uploadAlbumInfo(id: string, info: AlbumFormData, tableData
         await setDoc(infoDocRef, {
             name: info.name,
             upload_date: new Date(),
+            ext: info.ext,
             category: info.category,
             description: info.description,
             tags: info.tags,
@@ -77,7 +78,7 @@ export async function uploadAlbumArtwork(id: string, artwork: File, cancel?: Can
             },
             cancelToken: cancel,
         });
-        return res.data;
+        return res.data.message;
     } catch (error) {
         throw error;
     }
