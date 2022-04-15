@@ -14,7 +14,7 @@ export type AlbumFormData = {
     name: string;
     description: string;
     ext: string;
-    tags: string[];
+    tags?: string[];
     length: string;
     category: string;
     notification?: string;

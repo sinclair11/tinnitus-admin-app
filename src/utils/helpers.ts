@@ -63,9 +63,14 @@ export function getDurationFormat(duration: number): string {
     const hoursRemSec = duration - hours * 3600;
     const minutes = Math.floor(hoursRemSec / 60);
     const seconds = hoursRemSec - minutes * 60;
+    let retVal = '';
 
-    //Append a 0
-    let retVal = `0${hours}:`;
+    if (hours > 0) {
+        if (hours < 10) {
+            retVal += '0';
+        }
+        retVal += `${hours}:`;
+    }
     if (minutes < 10) {
         retVal += '0';
     }

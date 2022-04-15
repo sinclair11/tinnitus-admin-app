@@ -31,6 +31,7 @@ const AlbumForm = forwardRef((props: FormProps, ref?: any) => {
             return {
                 name: name,
                 description: description,
+                ext: '',
                 tags: parseTags(),
                 length: length,
                 notification: notification,
