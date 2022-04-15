@@ -27,6 +27,12 @@ import ArrowDown from '../icons/arrow-down.png';
 import InfoProgress from '../icons/info-progress.png';
 import SuccessProgress from '../icons/success-progress.png';
 import ErrorProgress from '../icons/error-progress.png';
+import Views from '../icons/views.png';
+import Favorites from '../icons/favorites.png';
+import Likes from '../icons/likes.png';
+import Feedbacks from '../icons/feedbacks.png';
+import Play from '../icons/play.png';
+import Pause from '../icons/pause.png';
 
 export const Icons = {
     HomeIcon: Home,
@@ -51,6 +57,12 @@ export const Icons = {
     InfoProgress: InfoProgress,
     SuccessProgress: SuccessProgress,
     ErrorProgress: ErrorProgress,
+    Views: Views,
+    Favorites: Favorites,
+    Likes: Likes,
+    Feedbacks: Feedbacks,
+    Play: Play,
+    Pause: Pause,
 };
 
 export const ToolbarIcons = {
