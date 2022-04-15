@@ -1,0 +1,91 @@
+@use '../../styles/colors'
+@use '../../styles/custom'
+
+.audio-player
+    display: flex
+    width: 410px
+    height: 50px
+    background: colors.$player
+    margin-left: 10px
+    border-radius: 10px
+    margin-top: 20px
+    box-shadow: custom.$player-shadow
+
+.controls
+    display: flex
+    flex-direction: row
+    align-items: center
+    padding: 1rem
+    width: 100%
+
+.time-duration
+    display: flex
+    align-items: center
+    color: colors.$playerItem
+    margin-left: 1rem
+
+    p
+        font-size: 12px
+
+.player-button
+    display: flex
+    justify-content: center
+    align-items: center
+    border: 0
+    min-width: 32px
+    min-height: 32px
+    cursor: pointer
+    padding: 0
+    background-color: colors.$playerItem
+
+    img
+        width: 16px
+        height: 16px
+
+.timeline
+    display: flex
+    align-items: center
+    width: 60%
+    height: .5em
+    background-color: #e5e5e5
+    border-radius: 5px
+    margin-right: 5px
+    margin-left: 1rem
+
+    .slider
+        height: .5em
+        background-color: colors.$playerItem
+        border-radius: 5px
+
+    .thumb
+        border-radius: 50%
+        width: 16px
+        height: 16px
+        background-color: colors.$playerItem
+
+        &:hover
+            background-color: #00baba
+            cursor: pointer
+
+.player-btn-bounce
+    animation: bounce 0.3s alternate
+    animation-timing-function: ease-in-out
+
+@keyframes bounce
+    0%
+        transform: scale(1.05)
+
+    20%
+        transform: scale(1.1)
+
+    40%
+        transform: scale(1.15)
+
+    60%
+        transform: scale(1.1)
+
+    80%
+        transform: scale(1.05)
+
+    100%
+        transform: scale(1.0)
