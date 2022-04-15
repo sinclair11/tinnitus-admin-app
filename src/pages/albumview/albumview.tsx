@@ -122,6 +122,7 @@ const AlbumView: React.FC<AlbumViewProps> = (props: AlbumViewProps) => {
                                         <img data-tip="Favorites" data-delay-show="500" src={Icons.Favorites} />,
                                     ]}
                                     data={albumData.songs}
+                                    onRowSelected={getSongUrl}
                                 />
                             </Container>
                         </div>

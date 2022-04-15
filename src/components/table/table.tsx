@@ -10,6 +10,7 @@ type TableProps = {
     headers: Array<any>;
     data?: Array<SongData>;
     calculateDuration?: CallableFunction;
+    onRowSelected?: CallableFunction;
 };
 
 export const Table = forwardRef((props: TableProps, ref: any) => {
@@ -39,6 +40,19 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
                 durations.push(song.length);
             }
             props.calculateDuration(durations);
+        } else if (props.type === 'view') {
+            //For view mode double-click event needs to be set to pass selected song back to parent
+            for (let i = 0; i < tableData.length; i++) {
+                const element = document.getElementById(i.toString());
+                //Set
+                element.style.cursor = 'pointer';
+                element.addEventListener('dblclick', () => {
+                    //Pass selected song back to parent
+                    props.onRowSelected(tableData[i]);
+                    //Start animation
+                    element.classList.add('table-row-animation');
+                });
+            }
         }
     }, [tableData]);
 
@@ -133,15 +147,19 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
     }
 
     function onRowAnimationStart(id: number): void {
-        //Also set animation to the input fields in the row
-        document.getElementById(`row-name-${id}`).classList.add('table-row-animation');
-        document.getElementById(`row-category-${id}`).classList.add('table-row-animation');
+        if (props.type === 'edit' || props.type === 'create') {
+            //Also set animation to the input fields in the row
+            document.getElementById(`row-name-${id}`).classList.add('table-row-animation');
+            document.getElementById(`row-category-${id}`).classList.add('table-row-animation');
+        }
     }
 
     function onRowAnimationEnd(id: number): void {
-        //Remove animations from row level and inputs inside the row
-        document.getElementById(`row-name-${id}`).classList.remove('table-row-animation');
-        document.getElementById(`row-category-${id}`).classList.remove('table-row-animation');
+        if (props.type === 'edit' || props.type === 'create') {
+            //Remove animations from row level and inputs inside the row
+            document.getElementById(`row-name-${id}`).classList.remove('table-row-animation');
+            document.getElementById(`row-category-${id}`).classList.remove('table-row-animation');
+        }
         document.getElementById(`${id}`).classList.remove('table-row-animation');
     }
 
