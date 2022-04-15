@@ -9,6 +9,7 @@ type PlayerProps = {
 
 const Player = forwardRef((props: PlayerProps, ref: any) => {
     const [song, setSong] = useState(props.song);
+    const [songName, setSongName] = useState('');
     const [currentTime, setCurrentTime] = useState('0:00');
     const [duration, setDuration] = useState('0:00');
     const isSongLoaded = useRef(false);
@@ -27,11 +28,21 @@ const Player = forwardRef((props: PlayerProps, ref: any) => {
 
     useEffect(() => {
         //Init player state
-        isSongLoaded.current = false;
-        playIcon.current.src = Icons.Play;
-        setCurrentTime(getDurationFormat(Math.floor(audio.current.currentTime)));
-        slider.current.style.width = '0px';
+        if (song !== undefined) {
+            isSongLoaded.current = false;
+            playIcon.current.src = Icons.Play;
+            setCurrentTime(getDurationFormat(Math.floor(audio.current.currentTime)));
+            slider.current.style.width = '0px';
+            setSongName(getSongName(song));
+        }
     }, [song]);
+
+    function getSongName(song: string): string {
+        let name = song.slice(song.lastIndexOf('/') + 1);
+        name = name.slice(0, name.lastIndexOf('.'));
+
+        return name;
+    }
 
     function toggleAudio(): void {
         if (audio.current.paused) {
@@ -157,6 +168,9 @@ const Player = forwardRef((props: PlayerProps, ref: any) => {
                     <div className="slider" ref={slider}></div>
                     <div className="thumb" onMouseDown={onThumbMouseDown}></div>
                 </div>
+            </div>
+            <div className="song-name-section">
+                <p>{songName}</p>
             </div>
         </div>
     );
