@@ -53,28 +53,32 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
                 const docs = querySnapshot.docs;
                 const reqRef = doc(collection(db, 'misc'), 'oci-req');
                 const docReq = await getDoc(reqRef);
-                //Take all data now to avoid doing an additional request
-                for (const doc of docs) {
-                    const data = doc.data();
-                    const arworkUrl = `${docReq.data().value}${doc.id}/artwork.${data.ext}`;
-                    albums.push({
-                        id: doc.id,
-                        name: data.name,
-                        upload_date: data.upload_date.toDate().toDateString(),
-                        category: data.category,
-                        description: data.description,
-                        tags: data.tags,
-                        length: data.length,
-                        artwork: arworkUrl,
-                        songs: data.songs,
-                        total_songs: data.total_songs,
-                        likes: data.likes,
-                        favorites: data.favorites,
-                        reviews: data.reviews,
-                    });
+                if (docs.length > 0) {
+                    //Take all data now to avoid doing an additional request
+                    for (const doc of docs) {
+                        const data = doc.data();
+                        const arworkUrl = `${docReq.data().value}${doc.id}/artwork.${data.ext}`;
+                        albums.push({
+                            id: doc.id,
+                            name: data.name,
+                            upload_date: data.upload_date.toDate().toDateString(),
+                            category: data.category,
+                            description: data.description,
+                            tags: data.tags,
+                            length: data.length,
+                            artwork: arworkUrl,
+                            songs: data.songs,
+                            total_songs: data.total_songs,
+                            likes: data.likes,
+                            favorites: data.favorites,
+                            reviews: data.reviews,
+                        });
+                    }
+                    setSearchedAlbums(albums);
+                    document.getElementById('searchbar-results').style.display = 'flex';
+                } else {
+                    document.getElementById('searchbar-results').style.display = 'none';
                 }
-                setSearchedAlbums(albums);
-                document.getElementById('searchbar-results').style.display = 'flex';
             } catch (error) {
                 console.log(error);
             }
@@ -108,18 +112,26 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
 
     function onItemClick(name: string): void {
         setSearchVal(name);
-        const selectedItem = searchedAlbums.find((item) => item.name === name);
-        setSelected(selectedItem);
-        document.getElementById('searchbar-results').style.display = 'none';
-        history.push(`/album/view/${selectedItem.id}`, selectedItem);
+        if (searchedAlbums.length > 0) {
+            const selectedItem = searchedAlbums.find((item) => item.name === name);
+            setSelected(selectedItem);
+            document.getElementById('searchbar-results').style.display = 'none';
+            setSearchVal('');
+            history.push(`/album/view/${selectedItem.id}`);
+        }
     }
 
     async function onSearchBtnClick(): Promise<void> {
         await getResourceData();
-        document.getElementById('searchbar-results').style.display = 'none';
-        const selectedItem = searchedAlbums.find((item) => item.name === searchVal);
-        setSelected(selectedItem);
-        history.push(`/album/view/${selectedItem.id}`, selectedItem);
+        if (searchedAlbums.length > 0) {
+            const selectedItem = searchedAlbums.find((item) => item.name === searchVal);
+            document.getElementById('searchbar-results').style.display = 'none';
+            if (selectedItem !== undefined) {
+                setSelected(selectedItem);
+                setSearchVal('');
+                history.push(`/album/view/${selectedItem.id}`);
+            }
+        }
     }
 
     return (
@@ -140,8 +152,8 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
                     aria-describedby="basic-addon2"
                     className="SearchBar"
                     value={searchVal}
-                    onChange={(e: any): void => {
-                        setSearchVal(e.target.value);
+                    onChange={(event: any): void => {
+                        setSearchVal(event.target.value.charAt(0).toUpperCase() + event.target.value.slice(1));
                     }}
                 />
                 <div id="searchbar-results">
