@@ -2,6 +2,8 @@ import { Icons } from '@src/utils/icons';
 import React, { useState, useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
 import Dropdown from '@components/dropdown/dropdown';
 import { SongData } from '@src/types/album';
+import ReactTooltip from 'react-tooltip';
+import { getDurationFormat } from '@utils/helpers';
 
 type TableProps = {
     type: string;
@@ -28,14 +30,16 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
         } else {
             //No data to be displayed
         }
-    }, []);
+    }, [props.data]);
 
     useEffect(() => {
-        const durations = new Array<string>();
-        for (const song of tableData) {
-            durations.push(song.length);
+        if (props.type === 'create' || props.type === 'edit') {
+            const durations = new Array<string>();
+            for (const song of tableData) {
+                durations.push(song.length);
+            }
+            props.calculateDuration(durations);
         }
-        props.calculateDuration(durations);
     }, [tableData]);
 
     function verifyHeaders(): Array<any> {
@@ -143,7 +147,7 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
 
     function displayName(type: string, index: number, name: string): any {
         if (type === 'view') {
-            return <p>{name}</p>;
+            return <td>{name}</td>;
         } else if (type === 'create' || type === 'edit') {
             return (
                 <td>
@@ -194,27 +198,6 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
     function onPlusClick(): void {
         //Trigger choose file dialog
         inputSong.current.click();
-    }
-
-    function getDurationFormat(duration: number): string {
-        //Calculate duration in HH:MM:SS format
-        const hours = Math.floor(duration / 3600);
-        const hoursRemSec = duration - hours * 3600;
-        const minutes = Math.floor(hoursRemSec / 60);
-        const seconds = hoursRemSec - minutes * 60;
-
-        //Append a 0
-        let retVal = `0${hours}:`;
-        if (minutes < 10) {
-            retVal += '0';
-        }
-        retVal += `${minutes}:`;
-        if (seconds < 10) {
-            retVal += '0';
-        }
-        retVal += `${seconds}`;
-
-        return retVal;
     }
 
     function moveUp(id: number): void {
@@ -316,16 +299,19 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
                 </tbody>
             </table>
             <p className="invalid-input invalid-table">{invalid}</p>
-            <div className="plus-body" onClick={onPlusClick}>
-                <img src={Icons.Plus} className="plus" />
-                <input
-                    ref={inputSong}
-                    className="input-plus"
-                    type="file"
-                    accept="audio/*"
-                    onChange={(event): void => getSong(event)}
-                />
-            </div>
+            {props.type === 'create' ? (
+                <div className="plus-body" onClick={onPlusClick}>
+                    <img src={Icons.Plus} className="plus" />
+                    <input
+                        ref={inputSong}
+                        className="input-plus"
+                        type="file"
+                        accept="audio/*"
+                        onChange={(event): void => getSong(event)}
+                    />
+                </div>
+            ) : null}
+            <ReactTooltip />
         </div>
     );
 });

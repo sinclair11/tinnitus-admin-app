@@ -65,12 +65,10 @@ export function getDurationFormat(duration: number): string {
     const seconds = hoursRemSec - minutes * 60;
     let retVal = '';
 
-    if (hours > 0) {
-        if (hours < 10) {
-            retVal += '0';
-        }
-        retVal += `${hours}:`;
+    if (hours < 10) {
+        retVal += '0';
     }
+    retVal += `${hours}:`;
     if (minutes < 10) {
         retVal += '0';
     }
