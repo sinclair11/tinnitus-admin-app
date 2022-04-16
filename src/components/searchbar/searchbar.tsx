@@ -75,15 +75,19 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
                         });
                     }
                     setSearchedAlbums(albums);
+                    //Show search results
                     document.getElementById('searchbar-results').style.display = 'flex';
                 } else {
+                    //No results found
                     document.getElementById('searchbar-results').style.display = 'none';
                 }
             } catch (error) {
+                //Notify user about error
                 setMessage(error.message);
                 setIsOpen(true);
             }
         } else {
+            //No input given
             document.getElementById('searchbar-results').style.display = 'none';
             setSearchedAlbums([]);
         }
@@ -95,7 +99,7 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
         const reqRef = doc(collection(db, 'misc'), 'oci-req');
         const ociReq = await getDoc(reqRef);
         const temp = [];
-
+        //Get all albums documents
         for (const doc of docs.docs) {
             const data = doc.data();
             temp.push({
@@ -103,11 +107,24 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
                 name: data.name,
                 artwork: `${ociReq.data().value}${doc.id}/artwork.${data.ext}`,
                 upload_date: data.upload_date.toDate().toDateString(),
+                upload_sort: data.upload_date.toDate(),
             });
         }
-
+        //Sort elements by date
+        temp.sort(compareByDateDesc);
+        //Provide data to basic resource table
         setTableElements(temp);
         setTableOpen(true);
+    }
+
+    function compareByDateDesc(a: any, b: any): number {
+        if (a.upload_sort < b.upload_sort) {
+            return 1;
+        }
+        if (a.upload_sort > b.upload_sort) {
+            return -1;
+        }
+        return 0;
     }
 
     function closeListView(): void {
@@ -119,6 +136,7 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
     }
 
     function okList(): void {
+        //Get selected item from resource table
         const item = reslistRef.current.getSelectedItem();
         if (item !== undefined) {
             history.push(`/album/view/${item.id}`);
@@ -129,6 +147,7 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
     function onItemClick(name: string): void {
         setSearchVal(name);
         if (searchedAlbums.length > 0) {
+            //Get selected album from search results
             const selectedItem = searchedAlbums.find((item) => item.name === name);
             setSelected(selectedItem);
             document.getElementById('searchbar-results').style.display = 'none';
@@ -140,6 +159,7 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
     async function onSearchBtnClick(): Promise<void> {
         await getResourceData();
         if (searchedAlbums.length > 0) {
+            //Get selected album from given input
             const selectedItem = searchedAlbums.find((item) => item.name === searchVal);
             document.getElementById('searchbar-results').style.display = 'none';
             if (selectedItem !== undefined) {
