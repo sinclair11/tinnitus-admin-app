@@ -86,7 +86,13 @@ const AlbumView: React.FC<AlbumViewProps> = (props: AlbumViewProps) => {
                         </div>
                         <Container>
                             <div className="section-no-content">
-                                <p>Please select an album to see more information.</p>
+                                <p>Please select an album to see more information or create a new one.</p>
+                                <button
+                                    className="btn-create-album"
+                                    onClick={(): void => history.push('/album/create')}
+                                >
+                                    Create
+                                </button>
                             </div>
                         </Container>
                     </div>
@@ -102,7 +108,7 @@ const AlbumView: React.FC<AlbumViewProps> = (props: AlbumViewProps) => {
                                 <SearchBar type="album" ref={searchbarRef} />
                             </div>
                             <Container>
-                                <Toolbar type="audio" />
+                                <Toolbar itemId={id} item={albumData} />
                                 <div className="section-album-content">
                                     <div>
                                         <Artwork type="view" img={albumData.artwork} />
