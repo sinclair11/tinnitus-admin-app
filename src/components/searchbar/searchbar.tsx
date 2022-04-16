@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, { createRef, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import { Icons } from '@utils/icons';
 import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';
@@ -7,6 +7,7 @@ import { MessageBox } from '@src/components/messagebox/messagebox';
 import { collection, doc, getDoc, getDocs, limit, query, where } from 'firebase/firestore';
 import { db } from '@src/config/firebase';
 import { useHistory } from 'react-router-dom';
+import Reslist from '../reslist/reslist';
 
 type SearchProps = {
     type: string;
@@ -15,15 +16,14 @@ type SearchProps = {
 const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
     const history = useHistory();
     const [searchVal, setSearchVal] = useState('');
-    //Hourglass modal state
     const [isOpen, setIsOpen] = useState(false);
-    //Dialog modal state
+    const [tableOpen, setTableOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
-    //Dialog message state
     const [message, setMessage] = useState('');
-    //Selected resource
+    const [tableElements, setTableElements] = useState([]);
     const [selected, setSelected] = useState({ name: '' });
     const [searchedAlbums, setSearchedAlbums] = useState<any[]>([]);
+    const reslistRef = createRef<any>();
 
     useEffect(() => {
         if (selected !== null && selected.name != searchVal) {
@@ -80,7 +80,8 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
                     document.getElementById('searchbar-results').style.display = 'none';
                 }
             } catch (error) {
-                console.log(error);
+                setMessage(error.message);
+                setIsOpen(true);
             }
         } else {
             document.getElementById('searchbar-results').style.display = 'none';
@@ -89,25 +90,40 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
     }
 
     async function getListOfResources(): Promise<void> {
-        return;
-    }
+        const albumsRef = collection(db, 'albums');
+        const docs = await getDocs(albumsRef);
+        const reqRef = doc(collection(db, 'misc'), 'oci-req');
+        const ociReq = await getDoc(reqRef);
+        const temp = [];
 
-    function clearListModal(): void {
-        // setTableOpen(false);
-        // setTableElements([]);
+        for (const doc of docs.docs) {
+            const data = doc.data();
+            temp.push({
+                id: doc.id,
+                name: data.name,
+                artwork: `${ociReq.data().value}${doc.id}/artwork.${data.ext}`,
+                upload_date: data.upload_date.toDate().toDateString(),
+            });
+        }
+
+        setTableElements(temp);
+        setTableOpen(true);
     }
 
     function closeListView(): void {
-        clearListModal();
+        setTableOpen(false);
     }
 
     function cancelList(): void {
-        clearListModal();
+        setTableOpen(false);
     }
 
     function okList(): void {
-        clearListModal();
-        // setSearchVal(selected);
+        const item = reslistRef.current.getSelectedItem();
+        if (item !== undefined) {
+            history.push(`/album/view/${item.id}`);
+        }
+        setTableOpen(false);
     }
 
     function onItemClick(name: string): void {
@@ -192,9 +208,9 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
             <Modal style={dialogStyles} isOpen={dialogOpen} ariaHideApp={false}>
                 <MessageBox setIsOpen={setDialogOpen} message={message} />
             </Modal>
-            <Modal style={tableStyles} isOpen={false} ariaHideApp={false}>
-                {/* <Reslist entries={tableElements} selectFromList={setSelected} /> */}
-                <p className="modal-title">List {props.type}</p>
+            <Modal style={tableStyles} isOpen={tableOpen} ariaHideApp={false}>
+                <Reslist ref={reslistRef} entries={tableElements} onSelectFromList={onItemClick} />
+                <p className="modal-title">Albums</p>
                 <img src={Icons['CancelIcon']} className="cancel-icon" onClick={closeListView} />
                 <Button className="ListOk" onClick={okList}>
                     OK
