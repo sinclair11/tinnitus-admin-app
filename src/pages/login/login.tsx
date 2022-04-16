@@ -58,7 +58,7 @@ const Login: React.FC = () => {
                 });
                 setAdmin('');
                 setPassw('');
-                history.push('/');
+                history.push('/album/view/0');
             } catch (error) {
                 //Handle error and display message
                 setPasswInvalid('Invalid username or password');

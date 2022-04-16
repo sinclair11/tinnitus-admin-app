@@ -171,7 +171,7 @@ const AlbumForm = forwardRef((props: FormProps, ref?: any) => {
                 <p className="invalid-input invalid-desc">{descInvalid}</p>
             </InputGroup>
             <InputGroup hasValidation className="input-group input-group-area">
-                <InputGroup.Text className="label">Tags(optional)</InputGroup.Text>
+                <InputGroup.Text className="label">Tags (optional)</InputGroup.Text>
                 <FormControl
                     className="input-tag"
                     required
@@ -182,7 +182,7 @@ const AlbumForm = forwardRef((props: FormProps, ref?: any) => {
                 />
             </InputGroup>
             <InputGroup hasValidation className="input-group input-group-area">
-                <InputGroup.Text className="label">Notification(optional)</InputGroup.Text>
+                <InputGroup.Text className="label">Notification (optional)</InputGroup.Text>
                 <FormControl
                     className="input-notification"
                     required
