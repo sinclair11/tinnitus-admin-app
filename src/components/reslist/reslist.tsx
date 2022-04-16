@@ -1,39 +1,54 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import './_reslist.sass';
 
 type ReslistProps = {
-    entries?: { name: string; data: any }[];
-    selectFromList?: any;
+    entries?: any[];
+    onSelectFromList?: any;
 };
 
-export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
-    /**
-     *
-     * @param name
-     */
+type AlbumItem = {
+    id: string;
+    name: string;
+    artwork: string;
+    upload_date: string;
+};
+
+const Reslist = forwardRef((props: ReslistProps, ref?: any) => {
+    const [selected, setSelected] = useState('');
+    const history = useHistory();
+
+    useImperativeHandle(ref, () => ({
+        getSelectedItem: (): AlbumItem => {
+            return props.entries.find((entry: AlbumItem) => entry.name === selected);
+        },
+    }));
+
     function itemSelected(name: string): void {
-        //Pass selected item to parent
-        if (props.selectFromList !== undefined) {
-            props.selectFromList(name);
-        }
+        setSelected(name);
     }
 
-    /**
-     *
-     * @returns
-     */
+    function onItemDblClick(id: string): void {
+        history.push(`/album/view/${id}`);
+    }
+
     function displayList(): JSX.Element {
         if (props.entries.length > 0) {
             //Return a list of resources for this category
             return (
                 <ul className="ListView">
                     {props.entries.map((item, index) => (
-                        <li key={index} tabIndex={-1} onClick={(): void => itemSelected(item.name)}>
+                        <li
+                            key={index}
+                            tabIndex={-1}
+                            onClick={(): void => itemSelected(item.name)}
+                            onDoubleClick={(): void => onItemDblClick(item.id)}
+                        >
                             <div className="ListItem">
-                                <img src={`data:image/png;base64,${item.data.thumb}`} className="ListItemThumb" />
+                                <img src={item.artwork} className="list-item-artwork" />
                                 <div className="ListItemInfo">
                                     <h4>{item.name}</h4>
-                                    <p>{'Upload: ' + item.data.upload}</p>
+                                    <p>{'Upload date: ' + item.upload_date}</p>
                                 </div>
                             </div>
                         </li>
@@ -43,9 +58,11 @@ export const Reslist: React.FC<ReslistProps> = (props: ReslistProps) => {
         }
         //Let user know that there is no resource for this category
         else {
-            return <p>Nu exista nicio resursa inregistrata pentru aceasta categorie</p>;
+            return <p>There is no item in the album collection or application failed to fetch data.</p>;
         }
     }
 
     return <div className="ListContainer">{displayList()}</div>;
-};
+});
+
+export default Reslist;
