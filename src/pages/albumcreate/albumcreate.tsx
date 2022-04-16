@@ -127,7 +127,7 @@ const AlbumCreate: React.FC = () => {
                 {/* Table with songs */}
                 <Table
                     type="create"
-                    headers={['Name', 'Position', 'Category', 'Duration']}
+                    headers={['Position', 'Name', 'Duration', 'Category']}
                     ref={tableRef}
                     calculateDuration={calculateDuration}
                 />

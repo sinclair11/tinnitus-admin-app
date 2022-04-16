@@ -15,7 +15,7 @@ const Artwork = forwardRef((props: ArtworkProps, ref: any) => {
     useImperativeHandle(ref, () => ({
         getInputValidation: (): boolean => {
             if (thumbnail === null) {
-                setThumbnailInvalid('Album artwork is mandatory');
+                setThumbnailInvalid('Album cover art is mandatory');
                 return false;
             } else {
                 setThumbnailInvalid('');
@@ -59,7 +59,7 @@ const Artwork = forwardRef((props: ArtworkProps, ref: any) => {
         if (thumbnail) {
             return <img src={thumbnail} />;
         } else {
-            return <p>Please select an artwork for album</p>;
+            return <p>Please select a cover art for album</p>;
         }
     }
 

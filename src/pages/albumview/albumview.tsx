@@ -86,7 +86,7 @@ const AlbumView: React.FC<AlbumViewProps> = (props: AlbumViewProps) => {
                         </div>
                         <Container>
                             <div className="section-no-content">
-                                <p>Please select an album to see more information</p>
+                                <p>Please select an album to see more information.</p>
                             </div>
                         </Container>
                     </div>

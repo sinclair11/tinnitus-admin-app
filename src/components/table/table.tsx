@@ -283,8 +283,8 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
                                     onRowAnimationEnd(i);
                                 }}
                             >
-                                {displayName(props.type, i, row.name)}
                                 <td>{row.pos}</td>
+                                {displayName(props.type, i, row.name)}
                                 <td>{row.length}</td>
                                 <td className="category">{displayCategory(props.type, i, row.category)}</td>
                                 {props.type === 'view' ? <td> {row.views}</td> : null}
