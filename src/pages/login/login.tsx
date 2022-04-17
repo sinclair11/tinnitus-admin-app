@@ -43,30 +43,45 @@ const Login: React.FC = () => {
                     type: 'general/auth',
                     payload: getAuth().currentUser.uid,
                 });
-                //Retrieve oci configuration
-                const docSnap = await getDoc(doc(db, 'misc', 'config'));
-                const ociConfig = docSnap.data();
-                dispatch({
-                    type: 'oci/config',
-                    payload: {
-                        fingerprint: ociConfig.oci_fingerprint,
-                        host: ociConfig.oci_host,
-                        tenancy: ociConfig.oci_tenancy,
-                        id: ociConfig.oci_id,
-                        namespace: ociConfig.oci_namespace,
-                    },
-                });
+                await fetchConfig();
                 setAdmin('');
                 setPassw('');
                 history.push('/album/view/0');
             } catch (error) {
                 //Handle error and display message
-                setPasswInvalid('Invalid username or password');
+                setPasswInvalid(error.message);
                 setAdmin('');
                 setPassw('');
             }
         } else {
             /*Do nothing*/
+        }
+    }
+
+    async function fetchConfig(): Promise<void> {
+        try {
+            //Retrieve oci configuration
+            let docSnap = await getDoc(doc(db, 'misc', 'config'));
+            const ociConfig = docSnap.data();
+            dispatch({
+                type: 'oci/config',
+                payload: {
+                    fingerprint: ociConfig.oci_fingerprint,
+                    host: ociConfig.oci_host,
+                    tenancy: ociConfig.oci_tenancy,
+                    id: ociConfig.oci_id,
+                    namespace: ociConfig.oci_namespace,
+                    prereq: ociConfig.oci_prereq,
+                },
+            });
+            docSnap = await getDoc(doc(db, 'misc', 'albums'));
+            const albumsConfig = docSnap.data();
+            dispatch({
+                type: 'general/categories',
+                payload: albumsConfig.categories,
+            });
+        } catch (error) {
+            throw error;
         }
     }
 

@@ -1,13 +1,15 @@
 import React, { createRef, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import { Icons } from '@utils/icons';
-import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';
+import { dialogStyles, tableStyles } from '@src/styles/styles';
 import Modal from 'react-modal';
 import { MessageBox } from '@src/components/messagebox/messagebox';
-import { collection, doc, getDoc, getDocs, limit, query, where } from 'firebase/firestore';
+import { collection, getDocs, limit, query, where } from 'firebase/firestore';
 import { db } from '@src/config/firebase';
 import { useHistory } from 'react-router-dom';
 import Reslist from '../reslist/reslist';
+import { useSelector } from 'react-redux';
+import { CombinedStates } from '@store/reducers/custom';
 
 type SearchProps = {
     type: string;
@@ -16,7 +18,6 @@ type SearchProps = {
 const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
     const history = useHistory();
     const [searchVal, setSearchVal] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
     const [tableOpen, setTableOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [message, setMessage] = useState('');
@@ -24,6 +25,7 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
     const [selected, setSelected] = useState({ name: '' });
     const [searchedAlbums, setSearchedAlbums] = useState<any[]>([]);
     const reslistRef = createRef<any>();
+    const prereq = useSelector<CombinedStates>((state) => state.ociReducer.config.prereq) as string;
 
     useEffect(() => {
         if (selected !== null && selected.name != searchVal) {
@@ -51,13 +53,11 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
                 const q1 = query(q, where('name', '<=', temp + '\uf8ff'), limit(7));
                 const querySnapshot = await getDocs(q1);
                 const docs = querySnapshot.docs;
-                const reqRef = doc(collection(db, 'misc'), 'oci-req');
-                const docReq = await getDoc(reqRef);
                 if (docs.length > 0) {
                     //Take all data now to avoid doing an additional request
                     for (const doc of docs) {
                         const data = doc.data();
-                        const arworkUrl = `${docReq.data().value}${doc.id}/artwork.${data.ext}`;
+                        const arworkUrl = `${prereq}${doc.id}/artwork.${data.ext}`;
                         albums.push({
                             id: doc.id,
                             name: data.name,
@@ -84,7 +84,7 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
             } catch (error) {
                 //Notify user about error
                 setMessage(error.message);
-                setIsOpen(true);
+                setDialogOpen(true);
             }
         } else {
             //No input given
@@ -96,8 +96,6 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
     async function getListOfResources(): Promise<void> {
         const albumsRef = collection(db, 'albums');
         const docs = await getDocs(albumsRef);
-        const reqRef = doc(collection(db, 'misc'), 'oci-req');
-        const ociReq = await getDoc(reqRef);
         const temp = [];
         //Get all albums documents
         for (const doc of docs.docs) {
@@ -105,7 +103,7 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
             temp.push({
                 id: doc.id,
                 name: data.name,
-                artwork: `${ociReq.data().value}${doc.id}/artwork.${data.ext}`,
+                artwork: `${prereq}${doc.id}/artwork.${data.ext}`,
                 upload_date: data.upload_date.toDate().toDateString(),
                 upload_sort: data.upload_date.toDate(),
             });
@@ -222,9 +220,6 @@ const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
             >
                 <img src={Icons['ListIcon']} className="SearchIcon"></img>
             </Button>
-            <Modal isOpen={isOpen} style={hourglassStyle} ariaHideApp={false}>
-                <div className="hourglass"></div>
-            </Modal>
             <Modal style={dialogStyles} isOpen={dialogOpen} ariaHideApp={false}>
                 <MessageBox setIsOpen={setDialogOpen} message={message} />
             </Modal>

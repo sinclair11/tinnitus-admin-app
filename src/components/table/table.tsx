@@ -4,6 +4,8 @@ import Dropdown from '@components/dropdown/dropdown';
 import { SongData } from '@src/types/album';
 import ReactTooltip from 'react-tooltip';
 import { getDurationFormat } from '@utils/helpers';
+import { CombinedStates } from '@store/reducers/custom';
+import { useSelector } from 'react-redux';
 
 type TableProps = {
     type: string;
@@ -14,10 +16,10 @@ type TableProps = {
 };
 
 export const Table = forwardRef((props: TableProps, ref: any) => {
+    const categories = useSelector<CombinedStates>((state) => state.generalReducer.categories) as string[];
     const [invalid, setInvalid] = useState('');
     const table = useRef(null);
     const [tableData, setTableData] = useState(Array<SongData>());
-    const [categories, setCategories] = useState(Array<string>());
     const inputSong = useRef(null);
     const loadingEl = (
         <div id="table-loading">
@@ -58,7 +60,7 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
 
     function verifyHeaders(): Array<any> {
         const temp = Object.assign([], props.headers);
-        if (props.type === 'create') {
+        if (props.type === 'create' || props.type === 'edit') {
             temp.push(loadingEl);
         }
 
@@ -66,10 +68,6 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
     }
 
     useImperativeHandle(ref, () => ({
-        setCategories: (value: Array<string>): void => {
-            setCategories(value);
-        },
-
         getData: (): Array<SongData> => {
             return tableData;
         },
@@ -294,11 +292,13 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
                                     <td>
                                         <div className="table-row-func">
                                             {/* Delete icon */}
-                                            <img
-                                                src={Icons.DeleteRow}
-                                                className="remove-icon"
-                                                onClick={(): void => deleteEntry(i)}
-                                            />
+                                            {props.type === 'create' ? (
+                                                <img
+                                                    src={Icons.DeleteRow}
+                                                    className="remove-icon"
+                                                    onClick={(): void => deleteEntry(i)}
+                                                />
+                                            ) : null}
                                             {/* Up & Down buttons */}
                                             <div className="nav-section">
                                                 <img src={Icons.Up} onClick={(): void => moveUp(i)} />
