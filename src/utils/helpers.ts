@@ -80,3 +80,37 @@ export function getDurationFormat(duration: number): string {
 
     return retVal;
 }
+
+export function parseTags(type: string, params: any): any {
+    if (type === 'string') {
+        let retVal = '';
+        for (const item of params) {
+            retVal += item + ' ';
+        }
+        return retVal;
+    } else if (type === 'array') {
+        const retVal = new Array<string>();
+        const hashIndexes = new Array<number>();
+
+        //Get indexes of all hash characters
+        for (let i = 0; i < params.length; i++) {
+            if (params[i] === '#') {
+                hashIndexes.push(i);
+            }
+        }
+        //Extract hash tags
+        for (let i = 0; i < hashIndexes.length - 1; i++) {
+            for (let j = hashIndexes[i] + 1; j < params.length; j++) {
+                if (params[j] === '#') {
+                    retVal.push(params.slice(hashIndexes[i], j).trim());
+                    break;
+                }
+            }
+        }
+        //Last hash tag goes until the eng of string
+        retVal.push(params.slice(hashIndexes[hashIndexes.length - 1]).trim());
+        return retVal;
+    } else {
+        return params;
+    }
+}
