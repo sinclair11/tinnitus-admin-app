@@ -11,7 +11,7 @@ import { app, db } from '@config/firebase';
 import Artwork from '@components/artwork/artwork';
 import AlbumInfoView from '@components/albuminfo/albuminfo';
 import '@components/modal-search/modal-search.css';
-import { AlbumInfo, SongData } from '@src/types/album';
+import { SongData } from '@src/types/album';
 import { Table } from '@components/table/table';
 import { Icons } from '@src/utils/icons';
 import { doc, getDoc, collection } from 'firebase/firestore';
@@ -21,7 +21,7 @@ type AlbumViewProps = {
     location: any;
 };
 
-const AlbumView: React.FC<AlbumViewProps> = (props: AlbumViewProps) => {
+const AlbumView: React.FC<AlbumViewProps> = () => {
     const { id } = useParams<{ id: string }>();
     const [albumData, setAlbumData] = useState(null);
     const [dataFetched, setDataFetched] = useState(false);
@@ -30,6 +30,7 @@ const AlbumView: React.FC<AlbumViewProps> = (props: AlbumViewProps) => {
     const searchbarRef = createRef<any>();
     const playerRef = createRef<any>();
     const container = useRef(null);
+    const prereq = useSelector<CombinedStates>((state) => state.ociReducer.config.prereq) as string;
 
     useEffect(() => {
         if (auth) {
@@ -51,14 +52,14 @@ const AlbumView: React.FC<AlbumViewProps> = (props: AlbumViewProps) => {
 
     async function fetchAlbumData(id: string): Promise<void> {
         try {
+            //Fetch all album data
             const docRef = doc(collection(db, 'albums'), id);
             const docRes = await getDoc(docRef);
-            const reqRef = doc(collection(db, 'misc'), 'oci-req');
-            const docReq = await getDoc(reqRef);
             const data = docRes.data();
-            data.artwork = `${docReq.data().value}${id}/artwork.${data.ext}`;
+            data.artwork = `${prereq}${id}/artwork.${data.ext}`;
             data.upload_date = data.upload_date.toDate().toDateString();
             setAlbumData(data);
+            //Loading is done
             setDataFetched(true);
         } catch (error) {
             console.log(error);
@@ -67,9 +68,7 @@ const AlbumView: React.FC<AlbumViewProps> = (props: AlbumViewProps) => {
 
     async function getSongUrl(song: SongData): Promise<void> {
         try {
-            const reqRef = doc(collection(db, 'misc'), 'oci-req');
-            const docReq = await getDoc(reqRef);
-            playerRef.current.setSong(`${docReq.data().value}${id}/${song.name}.${song.extension}`);
+            playerRef.current.setSong(`${prereq}${id}/${song.name}.${song.extension}`);
         } catch (error) {
             console.log(error);
         }
