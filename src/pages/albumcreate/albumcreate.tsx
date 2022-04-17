@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, createRef, useState } from 'react';
+import React, { useRef, useEffect, createRef } from 'react';
 import Sidebar from '@components/sidebar/sidebar';
 import { Table } from '@components/table/table';
 import { useHistory } from 'react-router-dom';
 import { db, app } from '@config/firebase';
-import { collection, doc, getDoc } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import { getAuth } from 'firebase/auth';
@@ -28,27 +28,11 @@ const AlbumCreate: React.FC = () => {
 
     useEffect(() => {
         if (auth) {
-            onFetchCategories().then((data) => {
-                //Pass categories to child components
-                tableRef.current.setCategories(data);
-                formRef.current.setCategories(data);
-                //Done loading
-                content.current.style.display = 'flex';
-            });
+            //Done loading
         } else {
             history.push('/');
         }
     }, [getAuth(app).currentUser]);
-
-    async function onFetchCategories(): Promise<Array<string>> {
-        try {
-            const docRef = doc(db, 'misc', 'albums');
-            const docSnap = await getDoc(docRef);
-            return docSnap.data().categories;
-        } catch (err) {
-            return ['General'];
-        }
-    }
 
     function calculateDuration(songs: Array<string>): void {
         formRef.current.setTotalDuration(songs);

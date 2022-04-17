@@ -13,7 +13,7 @@ export type SongData = {
 export type AlbumFormData = {
     name: string;
     description: string;
-    ext: string;
+    ext?: string;
     tags?: string[];
     length: string;
     category: string;

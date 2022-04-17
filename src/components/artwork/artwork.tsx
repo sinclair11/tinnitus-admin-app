@@ -64,7 +64,7 @@ const Artwork = forwardRef((props: ArtworkProps, ref: any) => {
     }
 
     function display(): JSX.Element {
-        if (props.type === 'view') {
+        if (props.type === 'view' || props.type === 'edit') {
             return (
                 <div className="upload-album-artwork">
                     <img src={props.img} />

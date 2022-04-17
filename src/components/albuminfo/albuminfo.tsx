@@ -2,6 +2,7 @@ import React from 'react';
 import { AlbumInfo } from '@src/types/album';
 import { Icons } from '@src/utils/icons';
 import ReactTooltip from 'react-tooltip';
+import { parseTags } from '@utils/helpers';
 
 type AlbumInfoProps = {
     data: AlbumInfo;
@@ -17,7 +18,7 @@ const AlbumInfoView: React.FC<AlbumInfoProps> = (props: AlbumInfoProps) => {
                     <p>{`Total songs: ${props.data.total_songs}`}</p>
                     <p>{`Duration: ${props.data.length}`}</p>
                     <p>{`Upload date: ${props.data.upload_date}`}</p>
-                    <p>{`Tags: ${props.data.tags[0] === '' ? 'N/A' : props.data.tags}`}</p>
+                    <p>{`Tags: ${props.data.tags[0] === '' ? 'N/A' : parseTags('string', props.data.tags)}`}</p>
                 </div>
                 <div className="usage-info">
                     <div className="usage-info-block">

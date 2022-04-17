@@ -9,10 +9,11 @@ export type ResdataState = {
 
 export type GeneralState = {
     auth: any;
+    categories: Array<string>;
 };
 
 export type OciState = {
-    config: { fingerprint: string; host: string; tenancy: string; id: string; namespace: string };
+    config: { fingerprint: string; host: string; tenancy: string; id: string; namespace: string; prereq: string };
 };
 
 export type CombinedStates = {
