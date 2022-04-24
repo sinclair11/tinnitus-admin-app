@@ -23,7 +23,7 @@ export async function uploadSong(albumId: string, song: SongData, cancel?: Cance
             },
             cancelToken: cancel,
         });
-        return res.data;
+        return res.data.message;
     } catch (error) {
         throw error;
     }
@@ -31,16 +31,17 @@ export async function uploadSong(albumId: string, song: SongData, cancel?: Cance
 
 export async function uploadAlbumInfo(id: string, info: AlbumFormData, tableData: SongData[]): Promise<string> {
     try {
-        const infoDocRef = doc(db, 'albums', id);
+        const albumDocRef = doc(db, 'albums', id);
         const temp = Object.assign([], tableData);
         //Copy songs URL
         for (let i = 0; i < temp.length; i++) {
             delete temp[i].file;
         }
         //Upload general information about album
-        await setDoc(infoDocRef, {
+        await setDoc(albumDocRef, {
             name: info.name,
             upload_date: new Date(),
+            ext: info.ext,
             category: info.category,
             description: info.description,
             tags: info.tags,
@@ -77,9 +78,30 @@ export async function uploadAlbumArtwork(id: string, artwork: File, cancel?: Can
             },
             cancelToken: cancel,
         });
-        return res.data;
+        return res.data.message;
     } catch (error) {
         throw error;
+    }
+}
+
+export async function editAlbumData(id: string, info: AlbumFormData, tableData: SongData[]): Promise<string> {
+    try {
+        const albumDocRef = doc(db, 'albums', id);
+        await setDoc(
+            albumDocRef,
+            {
+                name: info.name,
+                description: info.description,
+                tags: info.tags,
+                category: info.category,
+                length: info.length,
+                songs: tableData,
+            },
+            { merge: true },
+        );
+        return 'Album updated in database';
+    } catch (error) {
+        return error.message;
     }
 }
 
@@ -113,6 +135,14 @@ export async function deleteAlbum(id: string, oci: any, fileNames: string[]): Pr
             album: id,
             songs: fileNames,
         });
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function getAlbumReviews(id: string, date: Date): Promise<any[]> {
+    try {
+        return [];
     } catch (error) {
         throw error;
     }

@@ -2,19 +2,24 @@ import { Icons } from '@src/utils/icons';
 import React, { useState, useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
 import Dropdown from '@components/dropdown/dropdown';
 import { SongData } from '@src/types/album';
+import ReactTooltip from 'react-tooltip';
+import { getDurationFormat } from '@utils/helpers';
+import { CombinedStates } from '@store/reducers/custom';
+import { useSelector } from 'react-redux';
 
 type TableProps = {
     type: string;
     headers: Array<any>;
     data?: Array<SongData>;
     calculateDuration?: CallableFunction;
+    onRowSelected?: CallableFunction;
 };
 
 export const Table = forwardRef((props: TableProps, ref: any) => {
+    const categories = useSelector<CombinedStates>((state) => state.generalReducer.categories) as string[];
     const [invalid, setInvalid] = useState('');
     const table = useRef(null);
     const [tableData, setTableData] = useState(Array<SongData>());
-    const [categories, setCategories] = useState(Array<string>());
     const inputSong = useRef(null);
     const loadingEl = (
         <div id="table-loading">
@@ -28,19 +33,34 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
         } else {
             //No data to be displayed
         }
-    }, []);
+    }, [props.data]);
 
     useEffect(() => {
-        const durations = new Array<string>();
-        for (const song of tableData) {
-            durations.push(song.length);
+        if (props.type === 'create' || props.type === 'edit') {
+            const durations = new Array<string>();
+            for (const song of tableData) {
+                durations.push(song.length);
+            }
+            props.calculateDuration(durations);
+        } else if (props.type === 'view') {
+            //For view mode double-click event needs to be set to pass selected song back to parent
+            for (let i = 0; i < tableData.length; i++) {
+                const element = document.getElementById(i.toString());
+                //Set
+                element.style.cursor = 'pointer';
+                element.addEventListener('dblclick', () => {
+                    //Pass selected song back to parent
+                    props.onRowSelected(tableData[i]);
+                    //Start animation
+                    element.classList.add('table-row-animation');
+                });
+            }
         }
-        props.calculateDuration(durations);
     }, [tableData]);
 
     function verifyHeaders(): Array<any> {
         const temp = Object.assign([], props.headers);
-        if (props.type === 'create') {
+        if (props.type === 'create' || props.type === 'edit') {
             temp.push(loadingEl);
         }
 
@@ -48,10 +68,6 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
     }
 
     useImperativeHandle(ref, () => ({
-        setCategories: (value: Array<string>): void => {
-            setCategories(value);
-        },
-
         getData: (): Array<SongData> => {
             return tableData;
         },
@@ -129,21 +145,25 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
     }
 
     function onRowAnimationStart(id: number): void {
-        //Also set animation to the input fields in the row
-        document.getElementById(`row-name-${id}`).classList.add('table-row-animation');
-        document.getElementById(`row-category-${id}`).classList.add('table-row-animation');
+        if (props.type === 'edit' || props.type === 'create') {
+            //Also set animation to the input fields in the row
+            document.getElementById(`row-name-${id}`).classList.add('table-row-animation');
+            document.getElementById(`row-category-${id}`).classList.add('table-row-animation');
+        }
     }
 
     function onRowAnimationEnd(id: number): void {
-        //Remove animations from row level and inputs inside the row
-        document.getElementById(`row-name-${id}`).classList.remove('table-row-animation');
-        document.getElementById(`row-category-${id}`).classList.remove('table-row-animation');
+        if (props.type === 'edit' || props.type === 'create') {
+            //Remove animations from row level and inputs inside the row
+            document.getElementById(`row-name-${id}`).classList.remove('table-row-animation');
+            document.getElementById(`row-category-${id}`).classList.remove('table-row-animation');
+        }
         document.getElementById(`${id}`).classList.remove('table-row-animation');
     }
 
     function displayName(type: string, index: number, name: string): any {
         if (type === 'view') {
-            return <p>{name}</p>;
+            return <td>{name}</td>;
         } else if (type === 'create' || type === 'edit') {
             return (
                 <td>
@@ -194,27 +214,6 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
     function onPlusClick(): void {
         //Trigger choose file dialog
         inputSong.current.click();
-    }
-
-    function getDurationFormat(duration: number): string {
-        //Calculate duration in HH:MM:SS format
-        const hours = Math.floor(duration / 3600);
-        const hoursRemSec = duration - hours * 3600;
-        const minutes = Math.floor(hoursRemSec / 60);
-        const seconds = hoursRemSec - minutes * 60;
-
-        //Append a 0
-        let retVal = `0${hours}:`;
-        if (minutes < 10) {
-            retVal += '0';
-        }
-        retVal += `${minutes}:`;
-        if (seconds < 10) {
-            retVal += '0';
-        }
-        retVal += `${seconds}`;
-
-        return retVal;
     }
 
     function moveUp(id: number): void {
@@ -282,8 +281,8 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
                                     onRowAnimationEnd(i);
                                 }}
                             >
-                                {displayName(props.type, i, row.name)}
                                 <td>{row.pos}</td>
+                                {displayName(props.type, i, row.name)}
                                 <td>{row.length}</td>
                                 <td className="category">{displayCategory(props.type, i, row.category)}</td>
                                 {props.type === 'view' ? <td> {row.views}</td> : null}
@@ -293,11 +292,13 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
                                     <td>
                                         <div className="table-row-func">
                                             {/* Delete icon */}
-                                            <img
-                                                src={Icons.DeleteRow}
-                                                className="remove-icon"
-                                                onClick={(): void => deleteEntry(i)}
-                                            />
+                                            {props.type === 'create' ? (
+                                                <img
+                                                    src={Icons.DeleteRow}
+                                                    className="remove-icon"
+                                                    onClick={(): void => deleteEntry(i)}
+                                                />
+                                            ) : null}
                                             {/* Up & Down buttons */}
                                             <div className="nav-section">
                                                 <img src={Icons.Up} onClick={(): void => moveUp(i)} />
@@ -316,16 +317,19 @@ export const Table = forwardRef((props: TableProps, ref: any) => {
                 </tbody>
             </table>
             <p className="invalid-input invalid-table">{invalid}</p>
-            <div className="plus-body" onClick={onPlusClick}>
-                <img src={Icons.Plus} className="plus" />
-                <input
-                    ref={inputSong}
-                    className="input-plus"
-                    type="file"
-                    accept="audio/*"
-                    onChange={(event): void => getSong(event)}
-                />
-            </div>
+            {props.type === 'create' ? (
+                <div className="plus-body" onClick={onPlusClick}>
+                    <img src={Icons.Plus} className="plus" />
+                    <input
+                        ref={inputSong}
+                        className="input-plus"
+                        type="file"
+                        accept="audio/*"
+                        onChange={(event): void => getSong(event)}
+                    />
+                </div>
+            ) : null}
+            <ReactTooltip />
         </div>
     );
 });

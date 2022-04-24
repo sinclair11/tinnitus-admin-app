@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { createRef, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import { Icons } from '@utils/icons';
-import { dialogStyles, hourglassStyle, tableStyles } from '@src/styles/styles';
+import { dialogStyles, tableStyles } from '@src/styles/styles';
 import Modal from 'react-modal';
 import { MessageBox } from '@src/components/messagebox/messagebox';
-import { useDispatch, useSelector } from 'react-redux';
-import { CombinedStates } from '@src/store/reducers/custom';
 import { collection, getDocs, limit, query, where } from 'firebase/firestore';
 import { db } from '@src/config/firebase';
+import { useHistory } from 'react-router-dom';
+import Reslist from '../reslist/reslist';
+import { useSelector } from 'react-redux';
+import { CombinedStates } from '@store/reducers/custom';
 
 type SearchProps = {
     type: string;
 };
 
-export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
+const SearchBar = forwardRef((props: SearchProps, ref?: any) => {
+    const history = useHistory();
     const [searchVal, setSearchVal] = useState('');
-    //Hourglass modal state
-    const [isOpen, setIsOpen] = useState(false);
-    //Dialog modal state
+    const [tableOpen, setTableOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
-    //Dialog message state
     const [message, setMessage] = useState('');
-    //Selected resource
+    const [tableElements, setTableElements] = useState([]);
     const [selected, setSelected] = useState({ name: '' });
-    const dispatch = useDispatch();
-    const selectedRes = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
     const [searchedAlbums, setSearchedAlbums] = useState<any[]>([]);
+    const reslistRef = createRef<any>();
+    const prereq = useSelector<CombinedStates>((state) => state.ociReducer.config.prereq) as string;
 
     useEffect(() => {
         if (selected !== null && selected.name != searchVal) {
@@ -35,40 +35,11 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
         }
     }, [searchVal]);
 
-    function updateInfoData(dataInfo: any, dataUsage: any): void {
-        const arrInfo = [
-            { name: 'Nume', value: dataInfo['name'] },
-            { name: 'Lungime', value: dataInfo['length'] },
-            { name: 'Data upload', value: dataInfo['upload'] },
-            { name: 'Tags', value: dataInfo['tags'] },
-            { name: 'Descriere', value: dataInfo['description'] },
-        ];
-        const arrUsage = [
-            {
-                name: 'Total durata vizionari',
-                value: dataUsage['views_length'],
-            },
-            { name: 'Total vizionari', value: dataUsage['views'] },
-            {
-                name: 'Durata per utilizator',
-                value: dataUsage['views_per_user'],
-            },
-            { name: 'Aprecieri', value: dataUsage['likes'] },
-            { name: 'Favorizari', value: dataUsage['favs'] },
-            { name: 'Feedback-uri', value: dataUsage['nr_feedback'] },
-        ];
-        //* Store resource general information in redux
-        dispatch({ type: 'resdata/info', payload: arrInfo });
-        //* Store resource usage ingormation in redux
-        dispatch({ type: 'resdata/usage', payload: arrUsage });
-        //* Store general information as raw data in redux
-        dispatch({ type: 'resdata/infodata', payload: dataInfo });
-        //* Store name of selected resource
-        dispatch({
-            type: 'resdata/selected',
-            payload: searchVal,
-        });
-    }
+    useImperativeHandle(ref, () => ({
+        setSearchValue: (value: string): void => {
+            setSearchVal(value);
+        },
+    }));
 
     async function getResourceData(): Promise<void> {
         if (searchVal != '') {
@@ -82,70 +53,119 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
                 const q1 = query(q, where('name', '<=', temp + '\uf8ff'), limit(7));
                 const querySnapshot = await getDocs(q1);
                 const docs = querySnapshot.docs;
-                //Take all data now to avoid doing an additional request
-                for (const doc of docs) {
-                    const data = doc.data();
-                    albums.push({
-                        id: doc.id,
-                        name: data.name,
-                        upload_date: data.upload_date.toDate().toDateString(),
-                        category: data.category,
-                        description: data.description,
-                        tags: data.tags,
-                        length: data.length,
-                        artwork: data.artwork,
-                        songs: data.songs,
-                        total_songs: data.total_songs,
-                        likes: data.likes,
-                        favorites: data.favorites,
-                        reviews: data.reviews,
-                    });
+                if (docs.length > 0) {
+                    //Take all data now to avoid doing an additional request
+                    for (const doc of docs) {
+                        const data = doc.data();
+                        const arworkUrl = `${prereq}${doc.id}/artwork.${data.ext}`;
+                        albums.push({
+                            id: doc.id,
+                            name: data.name,
+                            upload_date: data.upload_date.toDate().toDateString(),
+                            category: data.category,
+                            description: data.description,
+                            tags: data.tags,
+                            length: data.length,
+                            artwork: arworkUrl,
+                            songs: data.songs,
+                            total_songs: data.total_songs,
+                            likes: data.likes,
+                            favorites: data.favorites,
+                            reviews: data.reviews,
+                        });
+                    }
+                    setSearchedAlbums(albums);
+                    //Show search results
+                    document.getElementById('searchbar-results').style.display = 'flex';
+                } else {
+                    //No results found
+                    document.getElementById('searchbar-results').style.display = 'none';
                 }
-                setSearchedAlbums(albums);
-                document.getElementById('searchbar-results').style.display = 'flex';
             } catch (error) {
-                console.log(error);
+                //Notify user about error
+                setMessage(error.message);
+                setDialogOpen(true);
             }
         } else {
+            //No input given
             document.getElementById('searchbar-results').style.display = 'none';
             setSearchedAlbums([]);
         }
     }
 
     async function getListOfResources(): Promise<void> {
-        return;
+        const albumsRef = collection(db, 'albums');
+        const docs = await getDocs(albumsRef);
+        const temp = [];
+        //Get all albums documents
+        for (const doc of docs.docs) {
+            const data = doc.data();
+            temp.push({
+                id: doc.id,
+                name: data.name,
+                artwork: `${prereq}${doc.id}/artwork.${data.ext}`,
+                upload_date: data.upload_date.toDate().toDateString(),
+                upload_sort: data.upload_date.toDate(),
+            });
+        }
+        //Sort elements by date
+        temp.sort(compareByDateDesc);
+        //Provide data to basic resource table
+        setTableElements(temp);
+        setTableOpen(true);
     }
 
-    function clearListModal(): void {
-        // setTableOpen(false);
-        // setTableElements([]);
+    function compareByDateDesc(a: any, b: any): number {
+        if (a.upload_sort < b.upload_sort) {
+            return 1;
+        }
+        if (a.upload_sort > b.upload_sort) {
+            return -1;
+        }
+        return 0;
     }
 
     function closeListView(): void {
-        clearListModal();
+        setTableOpen(false);
     }
 
     function cancelList(): void {
-        clearListModal();
+        setTableOpen(false);
     }
 
     function okList(): void {
-        clearListModal();
-        // setSearchVal(selected);
+        //Get selected item from resource table
+        const item = reslistRef.current.getSelectedItem();
+        if (item !== undefined) {
+            history.push(`/album/view/${item.id}`);
+        }
+        setTableOpen(false);
     }
 
     function onItemClick(name: string): void {
         setSearchVal(name);
-        const selectedItem = searchedAlbums.find((item) => item.name === name);
-        setSelected(selectedItem);
-        document.getElementById('searchbar-results').style.display = 'none';
+        if (searchedAlbums.length > 0) {
+            //Get selected album from search results
+            const selectedItem = searchedAlbums.find((item) => item.name === name);
+            setSelected(selectedItem);
+            document.getElementById('searchbar-results').style.display = 'none';
+            setSearchVal('');
+            history.push(`/album/view/${selectedItem.id}`);
+        }
     }
 
     async function onSearchBtnClick(): Promise<void> {
         await getResourceData();
-        document.getElementById('searchbar-results').style.display = 'none';
-        const selectedItem = searchedAlbums.find((item) => item.name === searchVal);
-        setSelected(selectedItem);
+        if (searchedAlbums.length > 0) {
+            //Get selected album from given input
+            const selectedItem = searchedAlbums.find((item) => item.name === searchVal);
+            document.getElementById('searchbar-results').style.display = 'none';
+            if (selectedItem !== undefined) {
+                setSelected(selectedItem);
+                setSearchVal('');
+                history.push(`/album/view/${selectedItem.id}`);
+            }
+        }
     }
 
     return (
@@ -159,12 +179,15 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
                 <FormControl
                     id="searchbar-albums"
                     placeholder={'Album name...'}
+                    autoComplete="off"
+                    autoCapitalize="on"
+                    autoCorrect="off"
                     aria-label={`Nume ${props.type}`}
                     aria-describedby="basic-addon2"
                     className="SearchBar"
                     value={searchVal}
-                    onChange={(e: any): void => {
-                        setSearchVal(e.target.value);
+                    onChange={(event: any): void => {
+                        setSearchVal(event.target.value.charAt(0).toUpperCase() + event.target.value.slice(1));
                     }}
                 />
                 <div id="searchbar-results">
@@ -197,15 +220,12 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
             >
                 <img src={Icons['ListIcon']} className="SearchIcon"></img>
             </Button>
-            <Modal isOpen={isOpen} style={hourglassStyle} ariaHideApp={false}>
-                <div className="hourglass"></div>
-            </Modal>
             <Modal style={dialogStyles} isOpen={dialogOpen} ariaHideApp={false}>
                 <MessageBox setIsOpen={setDialogOpen} message={message} />
             </Modal>
-            <Modal style={tableStyles} isOpen={false} ariaHideApp={false}>
-                {/* <Reslist entries={tableElements} selectFromList={setSelected} /> */}
-                <p className="modal-title">List {props.type}</p>
+            <Modal style={tableStyles} isOpen={tableOpen} ariaHideApp={false}>
+                <Reslist ref={reslistRef} entries={tableElements} onSelectFromList={onItemClick} />
+                <p className="modal-title">Albums</p>
                 <img src={Icons['CancelIcon']} className="cancel-icon" onClick={closeListView} />
                 <Button className="ListOk" onClick={okList}>
                     OK
@@ -216,4 +236,6 @@ export const SearchBar: React.FC<SearchProps> = (props: SearchProps) => {
             </Modal>
         </InputGroup>
     );
-};
+});
+
+export default SearchBar;

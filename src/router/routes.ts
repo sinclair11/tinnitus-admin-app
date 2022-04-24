@@ -4,6 +4,7 @@ export const routes = {
     ALBUM_VIEW: '/album/view/:id',
     ALBUM_EDIT: '/album/edit/:id',
     ALBUM_CREATE: '/album/create',
+    ALBUM_REVIEWS: '/album/reviews/:id',
     GENERATOR_VIEW: '/generator/view/:id',
     GENERATOR_EDIT: '/generator/edit/:id/',
     GENERATOR_CREATE: '/generator/create',

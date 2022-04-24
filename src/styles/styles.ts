@@ -20,7 +20,7 @@ export function modalStyle(): unknown {
 }
 export const dialogStyles = {
     content: {
-        width: '300px',
+        width: '360px',
         minHeight: '150px',
         display: 'inline-block',
         justifyContent: 'center',
@@ -85,7 +85,7 @@ export const tableStyles = {
         display: 'inline-block',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#0E3386' /*'rgb(0, 183, 255)'*/,
+        backgroundColor: '#0a2351',
         top: '50%',
         left: '50%',
         right: 'auto',

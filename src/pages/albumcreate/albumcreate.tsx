@@ -1,16 +1,16 @@
-import React, { useRef, useEffect, createRef, useState } from 'react';
+import React, { useRef, useEffect, createRef } from 'react';
 import Sidebar from '@components/sidebar/sidebar';
 import { Table } from '@components/table/table';
 import { useHistory } from 'react-router-dom';
 import { db, app } from '@config/firebase';
-import { collection, doc, getDoc } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { CombinedStates } from '@src/store/reducers/custom';
 import { getAuth } from 'firebase/auth';
 import ProgressbarUpload from '@components/progressbar/progressbar-upload';
 import AlbumForm from '@src/components/albumform/albumform';
 import Artwork from '@components/artwork/artwork';
-import { deleteAlbum, uploadAlbumArtwork, uploadAlbumInfo, uploadSong } from '@services/upload';
+import { deleteAlbum, uploadAlbumArtwork, uploadAlbumInfo, uploadSong } from '@src/services/album-services';
 import axios from 'axios';
 import { SongData } from '@src/types/album';
 
@@ -28,27 +28,11 @@ const AlbumCreate: React.FC = () => {
 
     useEffect(() => {
         if (auth) {
-            onFetchCategories().then((data) => {
-                //Pass categories to child components
-                tableRef.current.setCategories(data);
-                formRef.current.setCategories(data);
-                //Done loading
-                content.current.style.display = 'flex';
-            });
+            //Done loading
         } else {
             history.push('/');
         }
     }, [getAuth(app).currentUser]);
-
-    async function onFetchCategories(): Promise<Array<string>> {
-        try {
-            const docRef = doc(db, 'misc', 'albums');
-            const docSnap = await getDoc(docRef);
-            return docSnap.data().categories;
-        } catch (err) {
-            return ['General'];
-        }
-    }
 
     function calculateDuration(songs: Array<string>): void {
         formRef.current.setTotalDuration(songs);
@@ -98,6 +82,7 @@ const AlbumCreate: React.FC = () => {
                 updateProgress(95, 'success', res);
                 //Register album in database
                 const albumData = formRef.current.getData();
+                albumData.ext = artwork.name.split('.').pop();
                 res = await uploadAlbumInfo(docRef.id, albumData, tableData);
                 updateProgress(100, 'success', res);
                 progressbarRef.current.logMessage('info', 'All album data uploaded successfully!');
@@ -119,14 +104,14 @@ const AlbumCreate: React.FC = () => {
                 {/* Album details */}
                 <div className="upload-album">
                     {/* Artwork */}
-                    <Artwork ref={artworkRef} />
+                    <Artwork ref={artworkRef} type="create" />
                     {/* General info */}
                     <AlbumForm type={'create'} ref={formRef} />
                 </div>
                 {/* Table with songs */}
                 <Table
                     type="create"
-                    headers={['Name', 'Position', 'Category', 'Duration']}
+                    headers={['Position', 'Name', 'Duration', 'Category']}
                     ref={tableRef}
                     calculateDuration={calculateDuration}
                 />

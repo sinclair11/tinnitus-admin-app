@@ -7,6 +7,7 @@ const initialState: OciState = {
         tenancy: '',
         id: '',
         namespace: '',
+        prereq: '',
     },
 };
 

@@ -1,37 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ToolbarIcons } from '@utils/icons';
 import ReactTooltip from 'react-tooltip';
 import Modal from 'react-modal';
 import { MessageBox } from '../messagebox/messagebox';
 import { DialogBox } from '../dialogbox/dialogbox';
-import { dialogStyles, hourglassStyle } from '@src/styles/styles';
-import { useDispatch, useSelector } from 'react-redux';
-import { CombinedStates } from '@src/store/reducers/custom';
-import ErrorHandler from '@src/utils/errorhandler';
+import { dialogStyles } from '@src/styles/styles';
 import { routes } from '@src/router/routes';
+import { deleteAlbum } from '@src/services/album-services';
+import { useSelector } from 'react-redux';
+import { CombinedStates } from '@store/reducers/custom';
 
 type ToolbarProps = {
     container?: string;
-    type: string;
+    itemId: string;
+    item: any;
 };
 
-export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
+const Toolbar = forwardRef((props: ToolbarProps, ref?: any) => {
     const history = useHistory();
-    const [modalIsOpen, setIsOpen] = useState(false);
-    const [action, setAction] = useState('');
-    const [editData, setEditData] = useState({
-        name: '',
-        tags: '',
-        description: '',
-    });
+    const oci = useSelector<CombinedStates>((state) => state.ociReducer.config) as any;
     const [messageOpen, setMessageOpen] = useState(false);
     const [messageboxMsg, setMessageboxMsg] = useState('');
-    const [loading, setLoading] = useState(false);
     const [dialogbox, setDialogbox] = useState(false);
     const [accept, setAccept] = useState(false);
-    const dispatch = useDispatch();
-    const selected = useSelector<CombinedStates>((state) => state.resdataReducer.selected) as string;
+
+    useImperativeHandle(ref, () => ({
+        //
+    }));
 
     useEffect(() => {
         if (accept == true) {
@@ -41,111 +37,57 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
         }
     }, [accept]);
 
-    async function openModal(type: string): Promise<void> {
-        if (type === 'edit') {
-            //Check if there is a resource selected
-            if (selected !== '') {
-                try {
-                    //Activate loading screen
-                    setLoading(true);
-                    //First get the phase
-                    //Get info about resource from database
-                    // const response = await axios({
-                    //     method: 'get',
-                    //     url: `http://127.0.0.1:3000/api/admin/${props.type}/infodb/general?id=${selected}`,
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //         Authorization: `Bearer ${
-                    //             store.getState().generalReducer.token
-                    //         }`,
-                    //     },
-                    // });
-                    //Set received editable data
-                    // setEditData({
-                    //     name: response.data.name,
-                    //     tags: response.data.tags,
-                    //     description: response.data.description,
-                    // });
-                    //Close loading screen
-                    setLoading(false);
-                    //Open edit modal and pass editable data of this resource
-                    setAction(type);
-                    setIsOpen(true);
-                } catch (error) {
-                    //Close loading screen
-                    setLoading(false);
-                    //Info could not be retrieved from database
-                    //Handle error and display message
-                    const result = ErrorHandler.getErrorType(error);
-                    //Notify user about occured error
-                    setMessageboxMsg(result);
-                    setMessageOpen(true);
+    async function requestResourceDeletion(): Promise<void> {
+        //Activate loading screen
+        try {
+            if (props.item !== undefined && props.itemId !== undefined) {
+                //Make an array with all filenames under the album
+                const filesToDelete = [];
+                for (const song of props.item.songs) {
+                    filesToDelete.push(`${song.name}.${song.extension}`);
                 }
-            } else {
-                //Notify user that he must select a resource first
-                setMessageboxMsg('Selectati un album intai!');
-                setMessageOpen(true);
+                filesToDelete.push(`artwork.${props.item.ext}`);
+                //Delete album from storage and database
+                await deleteAlbum(props.itemId, oci, filesToDelete);
+                history.push('/album/view/0');
             }
-        } else if (type === 'upload') {
-            //Make sure editable data is clean
-            setEditData({
-                name: '',
-                tags: '',
-                description: '',
-            });
-            //Just open the upload modal
-            setAction(type);
-            setIsOpen(true);
+        } catch (error) {
+            //Set message and notify user about occured error
+            setMessageboxMsg(error.message);
+            setMessageOpen(true);
         }
     }
 
-    async function requestResourceDeletion(): Promise<void> {
-        //Activate loading screen
-        setLoading(true);
-        try {
-            //Reset selected resource state
-            dispatch({ type: 'resdata/selected', payload: '' });
-            //Close loading screen
-            setLoading(false);
-        } catch (error) {
-            //Close loading screen
-            setLoading(false);
-            //Retrieve message for corresponding status code
-            //Handle error and display message
-            const result = ErrorHandler.getErrorType(error);
-            //Set message and notify user about occured error
-            setMessageboxMsg(result);
-            setMessageOpen(true);
-        }
+    function onReviewClick(): void {
+        history.push(`/album/reviews/${props.itemId}`);
+    }
+
+    function onEditClick(): void {
+        history.push(`/album/edit/${props.itemId}`);
     }
 
     function onRequestDeleteClick(): void {
-        //First check if a resource was selected
-        if (selected != '') {
-            setDialogbox(true);
-        } else {
-            //Notify user that he must select a resource first
-            setMessageboxMsg('Selectati un album intai!');
-            setMessageOpen(true);
-        }
+        setDialogbox(true);
     }
 
     return (
         <div className={props.container + ' ToolbarContainer '}>
             <ReactTooltip place="top" type="dark" effect="float" delayShow={500} />
             <div className="toolbar-action" onClick={(): void => history.push(routes.ALBUM_CREATE)}>
-                <img src={ToolbarIcons['UploadIcon']} className="ActionIcon" />
+                <img src={ToolbarIcons.UploadIcon} className="ActionIcon" />
                 <p>Upload</p>
             </div>
-
-            <div className="toolbar-action" onClick={(): Promise<void> => openModal('edit')}>
-                <img src={ToolbarIcons['EditIcon']} className="ActionIcon" />
+            <div className="toolbar-action" onClick={onEditClick}>
+                <img src={ToolbarIcons.EditIcon} className="ActionIcon" />
                 <p>Edit</p>
             </div>
-
             <div className="toolbar-action" onClick={onRequestDeleteClick}>
-                <img data-tip="Sterge" src={ToolbarIcons['DeleteIcon']} className="ActionIcon" />
+                <img src={ToolbarIcons.DeleteIcon} className="ActionIcon" />
                 <p>Delete</p>
+            </div>
+            <div className="toolbar-action" onClick={onReviewClick}>
+                <img src={ToolbarIcons.Reviews} className="ActionIcon" />
+                <p>Reviews</p>
             </div>
             <Modal isOpen={messageOpen} style={dialogStyles} contentLabel="Upload" ariaHideApp={false}>
                 <MessageBox setIsOpen={setMessageOpen} message={messageboxMsg} />
@@ -153,13 +95,12 @@ export const Toolbar: React.FC<ToolbarProps> = (props?: ToolbarProps) => {
             <Modal isOpen={dialogbox} style={dialogStyles} contentLabel="Dialog box" ariaHideApp={false}>
                 <DialogBox
                     setIsOpen={setDialogbox}
-                    message="Esti sigur ca vrei sa stergi acest album?"
+                    message="Are you sure you want to delete this item ?"
                     setAccepted={setAccept}
                 />
             </Modal>
-            <Modal isOpen={loading} style={hourglassStyle} ariaHideApp={false}>
-                <div className="hourglass"></div>
-            </Modal>
         </div>
     );
-};
+});
+
+export default Toolbar;
