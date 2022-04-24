@@ -31,7 +31,7 @@ const AlbumInfoView: React.FC<AlbumInfoProps> = (props: AlbumInfoProps) => {
                             <p>{props.data.favorites}</p>
                         </div>
                         <div className="usage-div">
-                            <img data-tip="Reviews" data-delay-show="500" src={Icons.Feedbacks} />
+                            <img data-tip="Reviews" data-delay-show="500" src={Icons.Reviews} />
                             <p>{props.data.reviews}</p>
                         </div>
                     </div>

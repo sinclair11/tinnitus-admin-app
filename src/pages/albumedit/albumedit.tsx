@@ -10,7 +10,7 @@ import { Table } from '@components/table/table';
 import { useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { AlbumFormData, AlbumInfo } from '@src/types/album';
-import { editAlbumData } from '@src/services/upload';
+import { editAlbumData } from '@src/services/album-services';
 import Modal from 'react-modal';
 import { dialogStyles } from '@src/styles/styles';
 import { MessageBox } from '@components/messagebox/messagebox';
@@ -82,7 +82,7 @@ const AlbumEdit: React.FC = () => {
     function displayPage(): JSX.Element {
         if (loaded) {
             return (
-                <div className="page" id="page-upload-create">
+                <div className="page" id="page-upload-edit">
                     <Sidebar />
                     <div className="upload-section" ref={content}>
                         {/* Album details */}

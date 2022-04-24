@@ -100,7 +100,7 @@ const AlbumView: React.FC<AlbumViewProps> = () => {
         } else {
             if (dataFetched && albumData !== undefined) {
                 return (
-                    <div className="page">
+                    <div className="page" id="page-album-view">
                         <Sidebar />
                         <div className="section-album" ref={container}>
                             <div className="SearchBarDiv">

@@ -10,7 +10,7 @@ import { getAuth } from 'firebase/auth';
 import ProgressbarUpload from '@components/progressbar/progressbar-upload';
 import AlbumForm from '@src/components/albumform/albumform';
 import Artwork from '@components/artwork/artwork';
-import { deleteAlbum, uploadAlbumArtwork, uploadAlbumInfo, uploadSong } from '@services/upload';
+import { deleteAlbum, uploadAlbumArtwork, uploadAlbumInfo, uploadSong } from '@src/services/album-services';
 import axios from 'axios';
 import { SongData } from '@src/types/album';
 

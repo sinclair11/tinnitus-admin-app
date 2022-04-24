@@ -36,3 +36,10 @@ export type AlbumInfo = {
     favorites: number;
     songs: Array<SongData>;
 };
+
+export type ReviewData = {
+    uid: string;
+    email: string;
+    comment: string;
+    date: Date;
+};
