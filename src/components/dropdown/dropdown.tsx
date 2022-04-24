@@ -11,7 +11,6 @@ type DropdownProps = {
 
 const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
     const [toggle, setToggle] = useState(true);
-    const listDiv = useRef(null);
     const list = useRef(null);
     const [selected, setSelected] = useState(props.current !== null ? props.current : 'General');
 
@@ -21,9 +20,13 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
 
     function onDropdownClick(): void {
         if (toggle === true) {
-            listDiv.current.style.display = 'flex';
+            list.current.style.height = '200px';
+            list.current.style.border = '1px solid aquamarine';
+            list.current.style.overflowY = 'auto';
         } else {
-            listDiv.current.style.display = 'none';
+            list.current.style.height = '0px';
+            list.current.style.border = 'none';
+            list.current.style.overflowY = 'hidden';
         }
 
         setToggle(!toggle);
@@ -34,30 +37,19 @@ const Dropdown: React.FC<DropdownProps> = (props: DropdownProps) => {
         props.onChange(value, props.id);
     }
 
-    function onLeavingComponent(): void {
-        listDiv.current.style.display = 'none';
-    }
-
     return (
-        <div id={props.id} className={`dropdown ${props.className}`} onClick={onDropdownClick}>
+        <div className={`dropdown ${props.className}`} onClick={onDropdownClick}>
             <p>{selected}</p>
             <img src={Icons.ArrowDown} />
-            <div
-                ref={listDiv}
-                className="dropdown-list-div"
-                id="album-info-dropdown"
-                onBlur={(): void => onLeavingComponent()}
-            >
-                <ul ref={list}>
-                    {props.items.map((item, key) => {
-                        return (
-                            <li key={key} onClick={(): void => onListClick(item)}>
-                                {item}
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
+            <ul ref={list}>
+                {props.items.map((item, key) => {
+                    return (
+                        <li key={key} onClick={(): void => onListClick(item)}>
+                            {item}
+                        </li>
+                    );
+                })}
+            </ul>
         </div>
     );
 };

@@ -24,5 +24,7 @@
     "test/**/__snapshots__": true,
     "yarn.lock": true,
     "*.{css,sass,scss}.d.ts": true
-  }
+},
+"editor.fontFamily": "Fira Code",
+"editor.fontSize": 14
 }
