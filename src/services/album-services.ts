@@ -139,3 +139,11 @@ export async function deleteAlbum(id: string, oci: any, fileNames: string[]): Pr
         throw error;
     }
 }
+
+export async function getAlbumReviews(id: string, date: Date): Promise<any[]> {
+    try {
+        return [];
+    } catch (error) {
+        throw error;
+    }
+}
