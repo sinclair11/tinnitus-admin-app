@@ -7,7 +7,7 @@ import { MessageBox } from '../messagebox/messagebox';
 import { DialogBox } from '../dialogbox/dialogbox';
 import { dialogStyles } from '@src/styles/styles';
 import { routes } from '@src/router/routes';
-import { deleteAlbum } from '@services/upload';
+import { deleteAlbum } from '@src/services/album-services';
 import { useSelector } from 'react-redux';
 import { CombinedStates } from '@store/reducers/custom';
 
@@ -58,6 +58,10 @@ const Toolbar = forwardRef((props: ToolbarProps, ref?: any) => {
         }
     }
 
+    function onReviewClick(): void {
+        history.push(`/album/reviews/${props.itemId}`);
+    }
+
     function onEditClick(): void {
         history.push(`/album/edit/${props.itemId}`);
     }
@@ -70,18 +74,20 @@ const Toolbar = forwardRef((props: ToolbarProps, ref?: any) => {
         <div className={props.container + ' ToolbarContainer '}>
             <ReactTooltip place="top" type="dark" effect="float" delayShow={500} />
             <div className="toolbar-action" onClick={(): void => history.push(routes.ALBUM_CREATE)}>
-                <img src={ToolbarIcons['UploadIcon']} className="ActionIcon" />
+                <img src={ToolbarIcons.UploadIcon} className="ActionIcon" />
                 <p>Upload</p>
             </div>
-
             <div className="toolbar-action" onClick={onEditClick}>
-                <img src={ToolbarIcons['EditIcon']} className="ActionIcon" />
+                <img src={ToolbarIcons.EditIcon} className="ActionIcon" />
                 <p>Edit</p>
             </div>
-
             <div className="toolbar-action" onClick={onRequestDeleteClick}>
-                <img src={ToolbarIcons['DeleteIcon']} className="ActionIcon" />
+                <img src={ToolbarIcons.DeleteIcon} className="ActionIcon" />
                 <p>Delete</p>
+            </div>
+            <div className="toolbar-action" onClick={onReviewClick}>
+                <img src={ToolbarIcons.Reviews} className="ActionIcon" />
+                <p>Reviews</p>
             </div>
             <Modal isOpen={messageOpen} style={dialogStyles} contentLabel="Upload" ariaHideApp={false}>
                 <MessageBox setIsOpen={setMessageOpen} message={messageboxMsg} />
