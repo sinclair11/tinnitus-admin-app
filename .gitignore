@@ -48,6 +48,7 @@ Thumbs.db
 make
 package-lock.json
 build/
+build/assets/
 build/index.html
 build/assets/vendor.f90df071.js
 build/assets/index.764dec9c.css
