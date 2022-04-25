@@ -23,16 +23,18 @@ const Home: React.FC = () => {
 
     return (
         <div className="Stack">
-            <img src={logoIcon} className="Logo fade linear" />
+            <div className="header-div">
+                <img src={logoIcon} alt="logo" />
+                <h2>Content Management System</h2>
+            </div>
             <GridActionsMemo />
             <p
                 style={{
                     position: 'absolute',
-                    color: 'black',
                     bottom: '1px',
                 }}
             >
-                Copyright © 2021 Tinnitus Sounds
+                Copyright © 2022 Tinnitus Sounds
             </p>
         </div>
     );
@@ -55,22 +57,35 @@ const GridActions: React.FC = () => {
                     }
                 >
                     <img src={Icons['AudioIcon']} className="ButtonIcon" />
-                    Administreaza albume audio
+                    Albums
                 </Button>
-                <Button className="GridButton GridButtonText" onClick={(): void => goToRoute(routes.GENERATOR_VIEW)}>
+                <Button
+                    className="GridButton GridButtonText" /**onClick={(): void => goToRoute(routes.GENERATOR_VIEW)}**/
+                >
                     <img src={Icons['GeneratorIcon']} className="ButtonIcon" />
-                    Administreaza generator
+                    Generator
                 </Button>
                 <Button className="GridButton GridButtonText">
                     <img src={Icons['StatisticsIcon']} className="ButtonIcon" />
-                    Statistici si rapoarte
+                    Statistics and reports
                 </Button>
                 <Button
                     className="GridButton GridButtonText"
-                    onClick={(): Window => window.open('https://www.youtube.com/c/TinnitusSounds', 'modal')}
+                    onClick={(): Window => window.open('https://www.youtube.com/c/TinnitusSounds')}
                 >
                     <img src={Icons['ChannelIcon']} className="ButtonIcon" />
-                    Canal YouTube
+                    YouTube channel
+                </Button>
+                <Button
+                    className="GridButton GridButtonText"
+                    onClick={(): Window => window.open('https://earsbuzzing.com/')}
+                >
+                    <img src={Icons['EarsbuzzingSite']} className="ButtonIcon" />
+                    Ears Buzzing site
+                </Button>
+                <Button className="GridButton GridButtonText">
+                    <img src={Icons['Tutorial']} className="ButtonIcon" />
+                    Tutorial
                 </Button>
             </ButtonGroup>
         </div>

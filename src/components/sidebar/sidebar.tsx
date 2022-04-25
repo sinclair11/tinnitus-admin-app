@@ -22,11 +22,11 @@ const Sidebar: React.FC = () => {
                     <img src={Icons.AudioIcon} />
                     <p>Albums</p>
                 </div>
-                <div className="sidebar-menu-item" onClick={(): void => history.push(routes.GENERATOR_VIEW)}>
+                <div className="sidebar-menu-item" /**onClick={(): void => history.push(routes.GENERATOR_VIEW)}**/>
                     <img src={Icons.GeneratorIcon} />
                     <p>Generator</p>
                 </div>
-                <div className="sidebar-menu-item" onClick={(): void => history.push('/statistics')}>
+                <div className="sidebar-menu-item" /**onClick={(): void => history.push('/statistics')}**/>
                     <img src={Icons.StatisticsIcon} />
                     <p>Statistics and reports</p>
                 </div>
@@ -41,7 +41,7 @@ const Sidebar: React.FC = () => {
                     <img src={Icons.EarsbuzzingSite} />
                     <p>Ears Buzzing site</p>
                 </div>
-                <div className="sidebar-menu-item" onClick={(): void => history.push('/tutorial')}>
+                <div className="sidebar-menu-item" /**onClick={(): void => history.push('/tutorial')}**/>
                     <img src={Icons.Tutorial} />
                     <p>Tutorial</p>
                 </div>

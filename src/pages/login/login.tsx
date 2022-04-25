@@ -46,7 +46,7 @@ const Login: React.FC = () => {
                 await fetchConfig();
                 setAdmin('');
                 setPassw('');
-                history.push('/album/view/0');
+                history.push('/');
             } catch (error) {
                 //Handle error and display message
                 setPasswInvalid(error.message);
@@ -96,8 +96,10 @@ const Login: React.FC = () => {
                             placeholder="email"
                             className="LoginInput"
                             value={admin}
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            onChange={(e: any): void => setAdmin(e.target.value)}
+                            onChange={(e: any): void => {
+                                setAdmin(e.target.value);
+                                setAdminInvalid('');
+                            }}
                         />
                     </InputGroup>
                     <p className="InvalidRed" style={{ marginTop: '2px' }}>
@@ -112,8 +114,10 @@ const Login: React.FC = () => {
                             placeholder="password"
                             className="LoginInput"
                             value={passw}
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            onChange={(e: any): void => setPassw(e.target.value)}
+                            onChange={(e: any): void => {
+                                setPassw(e.target.value);
+                                setPasswInvalid('');
+                            }}
                         />
                     </InputGroup>
                     <p className="InvalidRed" style={{ marginTop: '2px' }}>
@@ -124,7 +128,7 @@ const Login: React.FC = () => {
                     Login
                 </Button>
             </Form>
-            <p className="Copyright">© 2021 Tinnitus Sounds</p>
+            <p className="Copyright">© 2022 Tinnitus Sounds</p>
         </div>
     );
 };

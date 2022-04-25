@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Redirect } from 'react-router-dom';
 import { Route } from 'react-router';
 import { routes } from './routes';
 import AlbumView from '@pages/albumview/albumview';
@@ -18,6 +18,7 @@ const Router: React.FC = () => {
             <Route exact path={routes.ALBUM_CREATE} component={AlbumCreate} />
             <Route exact path={routes.ALBUM_EDIT} component={AlbumEdit} />
             <Route exact path={routes.ALBUM_REVIEWS} component={AlbumReviews} />
+            <Redirect from="*" to={routes.HOME} />
         </BrowserRouter>
     );
 };
