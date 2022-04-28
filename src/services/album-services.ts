@@ -3,6 +3,11 @@ import { AlbumFormData, SongData } from '@src/types/album';
 import axios, { CancelToken } from 'axios';
 import { deleteDoc, doc, setDoc } from 'firebase/firestore';
 
+const prodHost = 'http://140.238.65.24:3000';
+const devHost = 'http://localhost:3000';
+
+const host = process.env.NODE_ENV === 'production' ? prodHost : devHost;
+
 export async function uploadSong(albumId: string, song: SongData, cancel?: CancelToken): Promise<string> {
     try {
         //Save each song at corresponding path in storage having firestore id as name
@@ -16,7 +21,7 @@ export async function uploadSong(albumId: string, song: SongData, cancel?: Cance
         formData.append('song', song.file);
         const res = await axios({
             method: 'post',
-            url: 'http://127.0.0.1:5001/albums/upload/song',
+            url: `${host}/albums/upload/song`,
             data: formData,
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -71,7 +76,7 @@ export async function uploadAlbumArtwork(id: string, artwork: File, cancel?: Can
 
         const res = await axios({
             method: 'post',
-            url: 'http://127.0.0.1:5001/albums/upload/artwork',
+            url: `${host}/albums/upload/artwork`,
             data: formData,
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -129,7 +134,7 @@ export async function deleteAlbum(id: string, oci: any, fileNames: string[]): Pr
     try {
         //Delete everyting related to this album
         await deleteDoc(doc(db, 'albums', id));
-        await axios.post('http://127.0.0.1:5001/albums/delete', {
+        await axios.post(`${host}/albums/delete`, {
             namespace: oci.namespace,
             bucket: 'albums',
             album: id,

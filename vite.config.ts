@@ -10,6 +10,9 @@ const projectRootDir = resolve(__dirname);
  * @description Development configuration
  */
 const devConfig = {
+    server: {
+        port: 5001,
+    },
     plugins: [react(), alias()],
     mode: 'development',
     resolve: {
